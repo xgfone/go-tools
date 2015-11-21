@@ -48,31 +48,6 @@ func IsDir(filename string) bool {
 	return false
 }
 
-// 获取指定目录下的所有文件，不进入下一级目录搜索，可以匹配后缀过滤。
-func ListDir1(dirPth string, suffix string, includeDir bool) ([]string, error) {
-	files := make([]string, 0, 25)
-
-	dir, err := ioutil.ReadDir(dirPth)
-	if err != nil {
-		return nil, err
-	}
-
-	suffix = strings.ToUpper(suffix) // 忽略后缀匹配的大小写
-	for _, fi := range dir {
-		if fi.IsDir() { // 忽略目录
-			if includeDir {
-				files = append(files, fi.Name())
-			}
-			continue
-		}
-		if strings.HasSuffix(strings.ToUpper(fi.Name()), suffix) { // 匹配文件
-			files = append(files, fi.Name())
-		}
-	}
-
-	return files, nil
-}
-
 func addFile(lists []string, fullPath, fileName string, isfull bool) []string {
 	if isfull {
 		return append(lists, fullPath)
@@ -85,6 +60,9 @@ func WalkDirFull(dirPth, suffix string, includeDir, recursion, fullPath, ignoreE
 	files := make([]string, 0, 30)
 	dirPth = strings.TrimRight(dirPth, "/")
 	dirPth = strings.TrimRight(dirPth, "\\")
+	if dirPth == "" {
+		dirPth = "."
+	}
 	_, rootDir := filepath.Split(dirPth)
 
 	suffix = strings.ToUpper(suffix)
@@ -123,14 +101,14 @@ func ListDir2(dirPth, suffix string, includeDir bool) ([]string, error) {
 	return WalkDirFull(dirPth, suffix, includeDir, false, false, true)
 }
 
-func ListDir(dirPth, suffix string, includeDir bool) ([]string, error) {
-	return WalkDirFull(dirPth, suffix, includeDir, false, false, true)
-}
-
-func List(dirPth string) ([]string, error) {
-	return WalkDirFull(dirPth, "", false, false, false, true)
-}
-
-func WalkDir(dirPth, suffix string, recursion bool) ([]string, error) {
+func WalkDir2(dirPth, suffix string, recursion bool) ([]string, error) {
 	return WalkDirFull(dirPth, suffix, false, recursion, true, true)
+}
+
+func ListDir(dirPth string) ([]string, error) {
+	return ListDir2(dirPth, "", false)
+}
+
+func WalkDir(dirPth string) ([]string, error) {
+	return WalkDir2(dirPth, "", true)
 }
