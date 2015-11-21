@@ -73,7 +73,15 @@ func ListDir1(dirPth string, suffix string, includeDir bool) ([]string, error) {
 	return files, nil
 }
 
-func WalkDirFull(dirPth, suffix string, includeDir, recursion, ignoreError bool) ([]string, error) {
+func addFile(lists []string, fullPath, fileName string, isfull bool) []string {
+	if isfull {
+		return append(lists, fullPath)
+	} else {
+		return append(lists, fileName)
+	}
+}
+
+func WalkDirFull(dirPth, suffix string, includeDir, recursion, fullPath, ignoreError bool) ([]string, error) {
 	files := make([]string, 0, 30)
 	dirPth = strings.TrimRight(dirPth, "/")
 	dirPth = strings.TrimRight(dirPth, "\\")
@@ -91,14 +99,14 @@ func WalkDirFull(dirPth, suffix string, includeDir, recursion, ignoreError bool)
 			}
 
 			if includeDir {
-				files = append(files, filename)
+				files = addFile(files, filename, fi.Name(), fullPath)
 			}
 
 			return filepath.SkipDir
 		}
 
 		if strings.HasSuffix(strings.ToUpper(fi.Name()), suffix) {
-			files = append(files, filename)
+			files = addFile(files, filename, fi.Name(), fullPath)
 		}
 
 		return nil
@@ -112,17 +120,17 @@ func WalkDirFull(dirPth, suffix string, includeDir, recursion, ignoreError bool)
 }
 
 func ListDir2(dirPth, suffix string, includeDir bool) ([]string, error) {
-	return WalkDirFull(dirPth, suffix, includeDir, false, true)
+	return WalkDirFull(dirPth, suffix, includeDir, false, false, true)
 }
 
 func ListDir(dirPth, suffix string, includeDir bool) ([]string, error) {
-	return WalkDirFull(dirPth, suffix, includeDir, false, true)
+	return WalkDirFull(dirPth, suffix, includeDir, false, false, true)
 }
 
 func List(dirPth string) ([]string, error) {
-	return WalkDirFull(dirPth, "", false, false, true)
+	return WalkDirFull(dirPth, "", false, false, false, true)
 }
 
 func WalkDir(dirPth, suffix string, recursion bool) ([]string, error) {
-	return WalkDirFull(dirPth, suffix, false, recursion, true)
+	return WalkDirFull(dirPth, suffix, false, recursion, true, true)
 }
