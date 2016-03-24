@@ -111,3 +111,58 @@ func ListDir(dirPth string) ([]string, error) {
 func WalkDir(dirPth string) ([]string, error) {
 	return WalkDir2(dirPth, "", true)
 }
+
+// SelfPath gets compiled executable file absolute path
+func SelfPath() string {
+	path, _ := filepath.Abs(os.Args[0])
+	return path
+}
+
+// get absolute filepath, based on built executable file
+func RealPath(fp string) (string, error) {
+	if path.IsAbs(fp) {
+		return fp, nil
+	}
+	wd, err := os.Getwd()
+	return path.Join(wd, fp), err
+}
+
+// SelfDir gets compiled executable file directory
+func SelfDir() string {
+	return filepath.Dir(SelfPath())
+}
+
+// mkdir dir if not exist
+func EnsureDir(fp string) error {
+	return os.MkdirAll(fp, os.ModePerm)
+}
+
+// Search a file in paths.
+// this is often used in search config file in /etc ~/
+func SearchFile(filename string, paths ...string) (fullPath string, err error) {
+	for _, path := range paths {
+		if fullPath = filepath.Join(path, filename); IsExist(fullPath) {
+			return
+		}
+	}
+	err = fmt.Errorf("%s not found in paths", fullPath)
+	return
+}
+
+// get file modified time
+func FileMTime(fp string) (int64, error) {
+	f, e := os.Stat(fp)
+	if e != nil {
+		return 0, e
+	}
+	return f.ModTime().Unix(), nil
+}
+
+// get file size as how many bytes
+func FileSize(fp string) (int64, error) {
+	f, e := os.Stat(fp)
+	if e != nil {
+		return 0, e
+	}
+	return f.Size(), nil
+}
