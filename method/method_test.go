@@ -16,6 +16,7 @@ func (t T) Get() (int, string) {
 }
 
 func TestMethod(t *testing.T) {
+	method.CallMustPanic = false
 	v := T{Id: 123, Name: "Aaron"}
 
 	if !method.Has(v, "Get") {
@@ -23,6 +24,18 @@ func TestMethod(t *testing.T) {
 	}
 
 	if method.Has(v, "Method") {
+		t.Fail()
+	}
+
+	if method.Get(v, "ID") != nil {
+		t.Fail()
+	}
+
+	if method.Call(v, "ID") != nil {
+		t.Fail()
+	}
+
+	if method.Call(v, "Get", 11) != nil {
 		t.Fail()
 	}
 
