@@ -17,6 +17,7 @@ func Call(t interface{}, method string, args ...interface{}) []interface{} {
 	return CallMethod(t, method, args...)
 }
 
+// Return true if `t` has the method of `method`.
 func HasMethod(t interface{}, method string) bool {
 	_, b := reflect.TypeOf(t).MethodByName(method)
 	if b {
@@ -33,10 +34,13 @@ func getMethod(t interface{}, method string) reflect.Value {
 	return m.Func
 }
 
+// Return the method, `method`, of `t`. If not, return nil.
 func GetMethod(t interface{}, method string) interface{} {
 	return getMethod(t, method).Interface()
 }
 
+// Call the method, `method`, of `t`, and return the result which that method
+// returned. It will panic if `t` does not have the method of `method`.
 func CallMethod(t interface{}, method string, args ...interface{}) []interface{} {
 	in := []reflect.Value{reflect.ValueOf(t)}
 	for _, arg := range args {
