@@ -1,24 +1,5 @@
-package server
-
-import (
-	"errors"
-	"fmt"
-	"net"
-)
-
-type Handle func(*net.TCPConn)
-
-func WrapError(handle Handle, conn *net.TCPConn) {
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Printf("Get a error: %v\n", err)
-		}
-	}()
-	handle(conn)
-	conn.Close()
-}
-
-//	// TCP Server
+// ```go
+// // TCP Server
 // package main
 //
 // import (
@@ -48,7 +29,9 @@ func WrapError(handle Handle, conn *net.TCPConn) {
 // 	err := server.TCPServerForever("tcp", ":8000", handle)
 // 	fmt.Println(err)
 // }
+// ```
 //
+// ```go
 // // TCP Client
 // package main
 //
@@ -76,6 +59,27 @@ func WrapError(handle Handle, conn *net.TCPConn) {
 // 		time.Sleep(time.Second)
 // 	}
 // }
+// ```
+
+package server
+
+import (
+	"errors"
+	"fmt"
+	"net"
+)
+
+type Handle func(*net.TCPConn)
+
+func WrapError(handle Handle, conn *net.TCPConn) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("Get a error: %v\n", err)
+		}
+	}()
+	handle(conn)
+	conn.Close()
+}
 
 func TCPServerForever(network, addr string, handle Handle) (e error) {
 	ln, err := net.Listen(network, addr)
