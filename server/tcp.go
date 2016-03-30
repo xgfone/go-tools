@@ -69,9 +69,9 @@ import (
 	"net"
 )
 
-type Handle func(*net.TCPConn)
+type THandle func(*net.TCPConn)
 
-func WrapError(handle Handle, conn *net.TCPConn) {
+func WrapError(handle THandle, conn *net.TCPConn) {
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Printf("Get a error: %v\n", err)
@@ -81,7 +81,7 @@ func WrapError(handle Handle, conn *net.TCPConn) {
 	conn.Close()
 }
 
-func TCPServerForever(network, addr string, handle Handle) (e error) {
+func TCPServerForever(network, addr string, handle THandle) (e error) {
 	ln, err := net.Listen(network, addr)
 	if err != nil {
 		return err
