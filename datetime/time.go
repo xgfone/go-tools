@@ -14,14 +14,17 @@ func Now() int64 {
 	return time.Now().Unix()
 }
 
+// Convert time.Time to "%H:%M:%S".
 func ToTime(t time.Time) string {
 	return t.Format(FMT_TIME)
 }
 
+// Convert time.Time to "%y-%m-%d".
 func ToDate(t time.Time) string {
 	return t.Format(FMT_DATE)
 }
 
+// Convert time.Time to "%y-%m-%d %H:%M:%S".
 func ToDateTime(t time.Time) string {
 	return t.Format(FMT_DATETIME)
 }
