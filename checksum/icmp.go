@@ -1,5 +1,6 @@
 package checksum
 
+// Calculate the checksum of ICMP package.
 func ICMP(data []byte) uint16 {
 	var (
 		sum    uint32
