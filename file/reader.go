@@ -7,10 +7,14 @@ import (
 	"strings"
 )
 
+// Read a file by byte.
+// error is not nil if there is a error.
 func ToBytes(filePath string) ([]byte, error) {
 	return ioutil.ReadFile(filePath)
 }
 
+// Read a file by string.
+// error is not nil if there is a error.
 func ToString(filePath string) (string, error) {
 	b, err := ioutil.ReadFile(filePath)
 	if err != nil {
@@ -19,6 +23,7 @@ func ToString(filePath string) (string, error) {
 	return string(b), nil
 }
 
+// Same as ToString, but remove the tail spaces.
 func ToTrimString(filePath string) (string, error) {
 	str, err := ToString(filePath)
 	if err != nil {
@@ -28,6 +33,7 @@ func ToTrimString(filePath string) (string, error) {
 	return strings.TrimSpace(str), nil
 }
 
+// Same as ToTrimString, but convert it to uint64.
 func ToUint64(filePath string) (uint64, error) {
 	content, err := ToTrimString(filePath)
 	if err != nil {
@@ -41,6 +47,7 @@ func ToUint64(filePath string) (uint64, error) {
 	return ret, nil
 }
 
+// Same as ToTrimString, but convert it to int64.
 func ToInt64(filePath string) (int64, error) {
 	content, err := ToTrimString(filePath)
 	if err != nil {
@@ -54,6 +61,7 @@ func ToInt64(filePath string) (int64, error) {
 	return ret, nil
 }
 
+// Read the content in the buffer by line.
 func ReadLine(r *bufio.Reader) ([]byte, error) {
 	line, isPrefix, err := r.ReadLine()
 	for isPrefix && err == nil {

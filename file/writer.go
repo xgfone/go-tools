@@ -5,6 +5,8 @@ import (
 	"path"
 )
 
+// Write the byte content to a file.
+// If successfully, return the byte nubmer to write and nil; Or return 0 and non-nil.
 func WriteBytes(filePath string, b []byte) (int, error) {
 	os.MkdirAll(path.Dir(filePath), os.ModePerm)
 	fw, err := os.Create(filePath)
@@ -15,6 +17,7 @@ func WriteBytes(filePath string, b []byte) (int, error) {
 	return fw.Write(b)
 }
 
+// Same as WriteBytes, but write the string to the file.
 func WriteString(filePath string, s string) (int, error) {
 	return WriteBytes(filePath, []byte(s))
 }

@@ -1,17 +1,22 @@
 package file
 
 import (
+	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
 
 const (
-	NOT_EXIST = iota
-	IS_FILE
-	IS_DIR
+	NOT_EXIST = iota // Represent that the file does not exist.
+	IS_FILE          // Represent a file.
+	IS_DIR           // Represent a directory.
 )
 
+// Decide the type of a file.
+//
+// It returns IS_FILE, IS_DIR, or NOT_EXIST.
 func FileType(name string) uint8 {
 	fi, err := os.Stat(name)
 	if err == nil {
@@ -26,6 +31,7 @@ func FileType(name string) uint8 {
 	return IS_FILE
 }
 
+// Return true if the file exists, or return false.
 func IsExist(filename string) bool {
 	if FileType(filename) == NOT_EXIST {
 		return false
@@ -33,6 +39,7 @@ func IsExist(filename string) bool {
 	return true
 }
 
+// Return true if it's a file, or return false.
 func IsFile(filename string) bool {
 	if FileType(filename) == IS_FILE {
 		return true
@@ -40,6 +47,7 @@ func IsFile(filename string) bool {
 	return false
 }
 
+// Return true if it's a directory, or return false.
 func IsDir(filename string) bool {
 	if FileType(filename) == IS_DIR {
 		return true
@@ -55,6 +63,14 @@ func addFile(lists []string, fullPath, fileName string, isfull bool) []string {
 	}
 }
 
+// Get the filename in a directory.
+//
+// dirPth is the directory where the file is in.
+// If suffix is not empty, it only returns the files which have the suffix of 'suffix'.
+// If includedir is true, it also returns the directory, not only the filename.
+// If recursion is true, it will walk recursively.
+// If fullpath is true, the filename is the full path, not only the name.
+// If ignoreerror is true, ignore the error; Or it will stop when a error occurs.
 func WalkDirFull(dirPth, suffix string, includeDir, recursion, fullPath, ignoreError bool) ([]string, error) {
 	files := make([]string, 0, 30)
 	dirPth = strings.TrimRight(dirPth, "/")
@@ -96,29 +112,35 @@ func WalkDirFull(dirPth, suffix string, includeDir, recursion, fullPath, ignoreE
 	return files, nil
 }
 
+// The short for Walkdirfull, only recursion is false, fullpath is false,
+// and ignoreerror is true.
 func ListDir2(dirPth, suffix string, includeDir bool) ([]string, error) {
 	return WalkDirFull(dirPth, suffix, includeDir, false, false, true)
 }
 
+// The short for Walkdirfull, only includedir is false, fullpath is true,
+// and ignoreerror is true.
 func WalkDir2(dirPth, suffix string, recursion bool) ([]string, error) {
 	return WalkDirFull(dirPth, suffix, false, recursion, true, true)
 }
 
+// The short for Listdir2, only suffix is empty, and includedir is false.
 func ListDir(dirPth string) ([]string, error) {
 	return ListDir2(dirPth, "", false)
 }
 
+// The short for Walkdir2, only suffix is empty, and recursion is true.
 func WalkDir(dirPth string) ([]string, error) {
 	return WalkDir2(dirPth, "", true)
 }
 
-// SelfPath gets compiled executable file absolute path
+// Get the absolute path where the compiled executable file is in.
 func SelfPath() string {
 	path, _ := filepath.Abs(os.Args[0])
 	return path
 }
 
-// get absolute filepath, based on built executable file
+// Get the absolute filepath, based on built executable file.
 func RealPath(fp string) (string, error) {
 	if path.IsAbs(fp) {
 		return fp, nil
@@ -127,18 +149,18 @@ func RealPath(fp string) (string, error) {
 	return path.Join(wd, fp), err
 }
 
-// SelfDir gets compiled executable file directory
+// Get the directory where the compiled executable file is in.
 func SelfDir() string {
 	return filepath.Dir(SelfPath())
 }
 
-// mkdir dir if not exist
+// Mkdir dir if not exist
 func EnsureDir(fp string) error {
 	return os.MkdirAll(fp, os.ModePerm)
 }
 
 // Search a file in paths.
-// this is often used in search config file in /etc ~/
+// This is often used in search config file in /etc, ~/.
 func SearchFile(filename string, paths ...string) (fullPath string, err error) {
 	for _, path := range paths {
 		if fullPath = filepath.Join(path, filename); IsExist(fullPath) {
@@ -149,7 +171,7 @@ func SearchFile(filename string, paths ...string) (fullPath string, err error) {
 	return
 }
 
-// get file modified time
+// Get the modified time of the file
 func FileMTime(fp string) (int64, error) {
 	f, e := os.Stat(fp)
 	if e != nil {
@@ -158,7 +180,7 @@ func FileMTime(fp string) (int64, error) {
 	return f.ModTime().Unix(), nil
 }
 
-// get file size as how many bytes
+// Get the size of the file as how many bytes
 func FileSize(fp string) (int64, error) {
 	f, e := os.Stat(fp)
 	if e != nil {
