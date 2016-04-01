@@ -1,5 +1,9 @@
 package extremum
 
+// Return the maximal of both the slices.
+// Return -1 if the type is not supported.
+//
+// The type of both the slices may be []int, []uint, []int64, []uint64.
 func MaxInSlice(v interface{}) int {
 	switch _v := v.(type) {
 	case []int:
@@ -15,6 +19,7 @@ func MaxInSlice(v interface{}) int {
 	}
 }
 
+// Return the maximal of both the slice of []int.
 func MaxIntInSlice(v []int) int {
 	_len := len(v)
 	if _len == 0 {
@@ -30,6 +35,7 @@ func MaxIntInSlice(v []int) int {
 	return result
 }
 
+// Return the maximal of both the slice of []uint.
 func MaxUintInSlice(v []uint) int {
 	_len := len(v)
 	if _len == 0 {
@@ -45,6 +51,7 @@ func MaxUintInSlice(v []uint) int {
 	return result
 }
 
+// Return the maximal of both the slice of []int64.
 func MaxInt64InSlice(v []int64) int {
 	_len := len(v)
 	if _len == 0 {
@@ -60,6 +67,7 @@ func MaxInt64InSlice(v []int64) int {
 	return result
 }
 
+// Return the maximal of both the slice of []uint64.
 func MaxUint64InSlice(v []uint64) int {
 	_len := len(v)
 	if _len == 0 {
