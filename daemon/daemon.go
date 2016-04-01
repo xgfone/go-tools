@@ -7,6 +7,12 @@ import (
 	"syscall"
 )
 
+// Make it into the daemon process.
+//
+// If chdir is true, chroot to the root direcotry of "/".
+// If _close is true, redirect STDIN, STDOUT, STDERR to "/dev/null".
+//
+// Return true if successfully, or return false.
 func Daemon(chdir, _close bool) bool {
 	var ret, ret2 uintptr
 	var err syscall.Errno
