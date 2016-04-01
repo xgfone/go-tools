@@ -2,6 +2,12 @@ package compare
 
 import "strings"
 
+// Compare whether v1 is greater than v2.
+// Return a positive integer if greater, 0 if equal, a negative if less.
+//
+// v1 and v2 may be a byte, rune, int, uint, int8, int16, int32, int64,
+// uint8, uint16, uint32, uint64, float32, float64, string, or their slice,
+// or a struct implementing the interface of Comparer.
 func Compare(v1, v2 interface{}) int {
 	if _v1, ok := v1.(Comparer); ok {
 		return _v1.Compare(v2)
@@ -100,26 +106,32 @@ func Compare(v1, v2 interface{}) int {
 	}
 }
 
+// Same as Compare, but return true if v1 is less than v2, or return false.
 func LT(v1, v2 interface{}) bool {
 	return Compare(v1, v2) < 0
 }
 
+// Same as LT, but greater than.
 func GT(v1, v2 interface{}) bool {
 	return Compare(v1, v2) > 0
 }
 
+// Same as LT, but equal to.
 func EQ(v1, v2 interface{}) bool {
 	return Compare(v1, v2) == 0
 }
 
+// Same as LT, but not equal to.
 func NE(v1, v2 interface{}) bool {
 	return !EQ(v1, v2)
 }
 
+// Same as LT, but greater than or equal to.
 func GE(v1, v2 interface{}) bool {
 	return GT(v1, v2) || EQ(v1, v2)
 }
 
+// Same as LT, but less than or equal to.
 func LE(v1, v2 interface{}) bool {
 	return LT(v1, v2) || EQ(v1, v2)
 }

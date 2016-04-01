@@ -7,6 +7,7 @@ import (
 	"github.com/xgfone/go-tools/extremum"
 )
 
+// Same as Compare, but only compare the slice.
 func CompareSlice(v1, v2 interface{}) int {
 	switch _v1 := v1.(type) {
 	case []int:
@@ -92,6 +93,7 @@ func CompareSlice(v1, v2 interface{}) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the int slice.
 func CompareIntSlice(v1, v2 []int) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
@@ -112,6 +114,7 @@ func CompareIntSlice(v1, v2 []int) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the uint slice.
 func CompareUintSlice(v1, v2 []uint) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
@@ -132,6 +135,7 @@ func CompareUintSlice(v1, v2 []uint) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the int8 slice.
 func CompareInt8Slice(v1, v2 []int8) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
@@ -152,6 +156,7 @@ func CompareInt8Slice(v1, v2 []int8) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the uint8 slice.
 func CompareUint8Slice(v1, v2 []uint8) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
@@ -172,6 +177,7 @@ func CompareUint8Slice(v1, v2 []uint8) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the int16 slice.
 func CompareInt16Slice(v1, v2 []int16) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
@@ -192,6 +198,7 @@ func CompareInt16Slice(v1, v2 []int16) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the uint16 slice.
 func CompareUint16Slice(v1, v2 []uint16) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
@@ -212,6 +219,7 @@ func CompareUint16Slice(v1, v2 []uint16) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the int32 slice.
 func CompareInt32Slice(v1, v2 []int32) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
@@ -232,6 +240,7 @@ func CompareInt32Slice(v1, v2 []int32) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the uint32 slice.
 func CompareUint32Slice(v1, v2 []uint32) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
@@ -252,6 +261,7 @@ func CompareUint32Slice(v1, v2 []uint32) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the int64 slice.
 func CompareInt64Slice(v1, v2 []int64) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
@@ -272,6 +282,7 @@ func CompareInt64Slice(v1, v2 []int64) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the uint64 slice.
 func CompareUint64Slice(v1, v2 []uint64) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
@@ -292,6 +303,7 @@ func CompareUint64Slice(v1, v2 []uint64) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the float32 slice.
 func CompareFloat32Slice(v1, v2 []float32) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
@@ -312,6 +324,7 @@ func CompareFloat32Slice(v1, v2 []float32) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the float64 slice.
 func CompareFloat64Slice(v1, v2 []float64) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
@@ -332,6 +345,7 @@ func CompareFloat64Slice(v1, v2 []float64) int {
 	}
 }
 
+// Same as CompareSlice, but only compare the string slice.
 func CompareStringSlice(v1, v2 []string) int {
 	len1, len2 := len(v1), len(v2)
 	_len := extremum.MinInt(len1, len2)
