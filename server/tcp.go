@@ -71,6 +71,7 @@ import (
 
 type THandle func(*net.TCPConn)
 
+// Wrap a panic, and ignore it.
 func WrapError(handle THandle, conn *net.TCPConn) {
 	defer func() {
 		if err := recover(); err != nil {
@@ -81,6 +82,11 @@ func WrapError(handle THandle, conn *net.TCPConn) {
 	conn.Close()
 }
 
+// Start a TCP server and never return. Return a error when returns.
+//
+// network MUST be "tcp", "tcp4", "tcp6".
+// addr is like "host:port", such as "127.0.0.1:8000", and host or port
+// may be omitted.
 func TCPServerForever(network, addr string, handle THandle) (e error) {
 	ln, err := net.Listen(network, addr)
 	if err != nil {
