@@ -39,7 +39,7 @@ func SetValueWithDefault(out interface{}, slice interface{}, index int, _default
 // Set the value of 'out' to 'slice[index]' and return true.
 //
 // Return false if the value of out can't be changed, that's, out need to be a pointer.
-// Return false if slice is not a slice type.
+// Return false if slice is not a slice type or index >= len(slice).
 // Panic for other cases.
 func SetValue(out interface{}, slice interface{}, index int) bool {
     return setValue(out, slice, index, nil, false)
