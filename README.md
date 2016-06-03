@@ -5,3 +5,6 @@ A utility tool library of Golang.
 ```shell
 $ go get -u github.com/xgfone/go-tools
 ```
+
+## Example
+See the `test` file of each subpackage.
