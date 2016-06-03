@@ -11,29 +11,29 @@ func TestSlice(t *testing.T) {
 	ss := []interface{}{11, "aa", values.SMap{"abcd": 11, "ok": false, "slice": values.Slice(ms)}, true}
 	s := values.Slice(ss)
 
-	if _, ok := s.Int(0); !ok {
+	if v, ok := s.Int(0); !ok || v != 11 {
 		t.Fail()
 	}
 
-	if _, ok := s.String(1); !ok {
+	if v, ok := s.String(1); !ok || v != "aa" {
 		t.Fail()
 	}
 
 	if v, ok := s.SMap(2); !ok {
 		t.Fail()
 	} else {
-		if _, ok := v.Int("abcd"); !ok {
+		if vv, ok := v.Int("abcd"); !ok || vv != 11 {
 			t.Fail()
 		}
 
-		if _, ok := v.Bool("ok"); !ok {
+		if vv, ok := v.Bool("ok"); !ok || vv != false {
 			t.Fail()
 		}
 
 		if _s, ok := v.Slice("slice"); !ok {
 			t.Fail()
 		} else {
-			if _, ok := _s.String(0); !ok {
+			if v, ok := _s.String(0); !ok || v != "test" {
 				t.Fail()
 			}
 		}
