@@ -24,4 +24,8 @@ func TestCompare(t *testing.T) {
 	if !compare.EQ([]int{1, 2, 3}, []int{1, 2, 3}) {
 		t.Fail()
 	}
+
+	if compare.LT([]int{1, 2, 3}, []int{1, 2, 3}) {
+		t.Fail()
+	}
 }
