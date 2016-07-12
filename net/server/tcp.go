@@ -2,9 +2,26 @@ package server
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"net"
+	"os"
 )
+
+var (
+	_logger *log.Logger
+)
+
+func init() {
+	_logger = log.New(os.Stderr, "[TCP Server] ", log.LstdFlags)
+}
+
+func SetLogger(logger *log.Logger) {
+	_logger = logger
+}
+
+func GetLogger() *log.Logger {
+	return _logger
+}
 
 type THandle interface {
 	Handle(conn *net.TCPConn)
@@ -18,7 +35,7 @@ func WrapError(conn *net.TCPConn, handle interface{}) {
 	yes := true
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Printf("Get a error: %v\n", err)
+			_logger.Printf("[Error] Get a error: %v", err)
 			if !yes {
 				panic(err)
 			}
@@ -52,12 +69,12 @@ func TCPServerForever(network, addr string, handle interface{}) (e error) {
 		return errors.New("Must be a TCP Listener")
 	}
 
-	fmt.Printf("Listen on %v\n", addr)
+	_logger.Printf("[Debug] Listen on %v", addr)
 	for {
 		conn, err := tcpln.AcceptTCP()
 		if err != nil {
 			e = err
-			fmt.Printf("Failed to AcceptTCP: %v\n", err)
+			_logger.Printf("[Error] Failed to AcceptTCP: %v", err)
 		} else {
 			e = nil
 			go WrapError(conn, handle)
