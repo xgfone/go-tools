@@ -4,9 +4,10 @@
 //
 // import (
 // 	"fmt"
-// 	"github.com/xgfone/go-tools/server"
 // 	"io"
 // 	"net"
+//
+// 	"github.com/xgfone/go-tools/net/server"
 // )
 //
 // func handle(conn *net.TCPConn) {
@@ -69,17 +70,31 @@ import (
 	"net"
 )
 
-type THandle func(*net.TCPConn)
+type THandle interface {
+	Handle(conn *net.TCPConn)
+}
 
 // Wrap a panic, and ignore it.
-func WrapError(handle THandle, conn *net.TCPConn) {
+func WrapError(conn *net.TCPConn, handle interface{}) {
+	yes := true
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Printf("Get a error: %v\n", err)
+			if !yes {
+				panic(err)
+			}
 		}
 	}()
-	handle(conn)
-	conn.Close()
+	defer conn.Close()
+
+	if handler, ok := handle.(THandle); ok {
+		handler.Handle(conn)
+	} else if handler, ok := handle.(func(*net.TCPConn)); ok {
+		handler(conn)
+	} else {
+		yes = false
+		panic("Don't support the handler")
+	}
 }
 
 // Start a TCP server and never return. Return a error when returns.
@@ -87,7 +102,7 @@ func WrapError(handle THandle, conn *net.TCPConn) {
 // network MUST be "tcp", "tcp4", "tcp6".
 // addr is like "host:port", such as "127.0.0.1:8000", and host or port
 // may be omitted.
-func TCPServerForever(network, addr string, handle THandle) (e error) {
+func TCPServerForever(network, addr string, handle interface{}) (e error) {
 	ln, err := net.Listen(network, addr)
 	if err != nil {
 		return err
@@ -106,7 +121,7 @@ func TCPServerForever(network, addr string, handle THandle) (e error) {
 			fmt.Printf("Failed to AcceptTCP: %v\n", err)
 		} else {
 			e = nil
-			go WrapError(handle, conn)
+			go WrapError(conn, handle)
 		}
 	}
 	return nil
