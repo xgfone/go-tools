@@ -51,7 +51,8 @@ func UDPWithError(conn *net.UDPConn, p *pool.BufPool, handle interface{}, buf []
 }
 
 // Start a UDP server and never return. Return an error if returns.
-// But if wrap exists and returns true, return nil. Or continue to execute.
+// But there is one exception: if wrap exists and returns true, it returns nil.
+// Or continue to execute and never return.
 //
 // network MUST be "udp", "udp4", "udp6".
 // addr is like "host:port", such as "127.0.0.1:8000", and host or port
