@@ -1,27 +1,6 @@
 package server
 
-import (
-	"errors"
-	"log"
-	"net"
-	"os"
-)
-
-var (
-	_logger *log.Logger
-)
-
-func init() {
-	_logger = log.New(os.Stderr, "[TCP Server] ", log.LstdFlags)
-}
-
-func SetLogger(logger *log.Logger) {
-	_logger = logger
-}
-
-func GetLogger() *log.Logger {
-	return _logger
-}
+import "net"
 
 type THandle interface {
 	Handle(conn *net.TCPConn)
@@ -31,7 +10,7 @@ type THandle interface {
 //
 // handle is a function, whose type is `func (*net.TCPConn)`, or a struct, which
 // has implemented the interface `THandle`.
-func WrapError(conn *net.TCPConn, handle interface{}) {
+func TCPWrapError(conn *net.TCPConn, handle interface{}) {
 	yes := true
 	defer func() {
 		if err := recover(); err != nil {
@@ -53,32 +32,31 @@ func WrapError(conn *net.TCPConn, handle interface{}) {
 	}
 }
 
-// Start a TCP server and never return. Return a error when returns.
+// Start a TCP server and never return. Return an error if returns.
 //
 // network MUST be "tcp", "tcp4", "tcp6".
 // addr is like "host:port", such as "127.0.0.1:8000", and host or port
 // may be omitted.
-func TCPServerForever(network, addr string, handle interface{}) (e error) {
-	ln, err := net.Listen(network, addr)
-	if err != nil {
+func TCPServerForever(network, addr string, handle interface{}) error {
+	var ln *net.TCPListener
+	if _addr, err := net.ResolveTCPAddr(network, addr); err != nil {
 		return err
-	}
-
-	tcpln, ok := ln.(*net.TCPListener)
-	if !ok {
-		return errors.New("Must be a TCP Listener")
+	} else {
+		if ln, err = net.ListenTCP(network, _addr); err != nil {
+			return err
+		}
 	}
 
 	_logger.Printf("[Debug] Listen on %v", addr)
 	for {
-		conn, err := tcpln.AcceptTCP()
+		conn, err := ln.AcceptTCP()
 		if err != nil {
-			e = err
 			_logger.Printf("[Error] Failed to AcceptTCP: %v", err)
 		} else {
-			e = nil
-			go WrapError(conn, handle)
+			go TCPWrapError(conn, handle)
 		}
 	}
+
+	// Never execute forever.
 	return nil
 }
