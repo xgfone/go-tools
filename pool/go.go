@@ -69,7 +69,7 @@ func (p *GoPool) del() {
 //
 // Return an error when the first argument f is not a function, the arguments
 // is incorrect, or it can not start a new goroutine. Return nil when starting
-// a new goroutine. Even though the arguments is correct, it don't guarantee '
+// a new goroutine. Even though the arguments is correct, it don't guarantee
 // that the function can be called successfully.
 //
 // It is the same as the keyword, go, which discards the returned values.
