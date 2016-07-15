@@ -6,6 +6,7 @@ package function
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 )
 
@@ -17,38 +18,45 @@ var (
 	ArgsTypeError = errors.New("The type of the argument is incorrect")
 )
 
-func Call(f interface{}, args ...interface{}) ([]interface{}, error) {
-	defer func() {
-		if err := recover(); err != nil {
-			return nil, errors.New(err)
-		}
-	}()
-
-	vf := reflect.ValueOf(f)
+func Valid(f interface{}, args ...interface{}) (vf reflect.Value, vargs []reflect.Value, err error) {
+	vf = reflect.ValueOf(f)
 	if vf.Kind() != reflect.Func {
-		return nil, NotFuncError
+		return reflect.ValueOf(nil), nil, NotFuncError
 	}
 
 	tf := vf.Type()
 	_len := len(args)
 	if tf.NumIn() != _len {
-		return nil, ArgsNumError
+		return reflect.ValueOf(nil), nil, ArgsNumError
 	}
 
-	_args := make([]reflect.Value, _len)
+	vargs = make([]reflect.Value, _len)
 	for i := 0; i < _len; i++ {
 		if tf.In(i).Kind() != reflect.TypeOf(args[i]).Kind() {
-			return nil, ArgsTypeError
+			return reflect.ValueOf(nil), nil, ArgsTypeError
 		}
-		_args[i] = reflect.ValueOf(args[i])
+		vargs[i] = reflect.ValueOf(args[i])
 	}
+	return vf, vargs, nil
+}
 
-	ret := vf.Call(_args)
-	_len = len(ret)
-	results := make([]interface{}, _len)
+func Call(f interface{}, args ...interface{}) (results []interface{}, err error) {
+	defer func() {
+		if _err := recover(); _err != nil {
+			err = errors.New(fmt.Sprintf("%v", _err))
+			results = nil
+		}
+	}()
+
+	vf, vargs, _err := Valid(f, args...)
+	if _err != nil {
+		return nil, _err
+	}
+	ret := vf.Call(vargs)
+	_len := len(ret)
+	results = make([]interface{}, _len)
 	for i := 0; i < _len; i++ {
 		results[i] = ret[i].Interface()
 	}
-
-	return results, nil
+	return
 }
