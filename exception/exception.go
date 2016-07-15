@@ -1,9 +1,16 @@
 // Exception handler like "parent.child.sub-child...sub-child".
+//
+// "A.B" is the parent exception is "A.B.C", "A.B.D" and "A.B.C.D", not "A.C".
+//
 package exception
 
 import (
 	"fmt"
 	"strings"
+)
+
+var (
+	SEPARATOR = "."
 )
 
 type Exception struct {
@@ -17,7 +24,7 @@ func New(_type string, msg string) Exception {
 
 func fixType(_type string) string {
 	_type = strings.TrimSpace(_type)
-	return strings.Trim(_type, ".")
+	return strings.Trim(_type, SEPARATOR)
 }
 
 func (e Exception) Error() string {
@@ -49,7 +56,7 @@ func (e Exception) IsSame(other Exception) bool {
 }
 
 func (e Exception) GetTypeList() (list []string) {
-	return getListBySep(e._type, ".")
+	return getListBySep(e._type, SEPARATOR)
 }
 
 func getListBySep(s string, sep string) (list []string) {
