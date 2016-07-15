@@ -15,13 +15,9 @@ type UHandle interface {
 	Handle(buf []byte, addr *net.UDPAddr) []byte
 }
 
-func UDPWithError(conn *net.UDPConn, p *pool.BufPool, handle interface{}, buf []byte, addr *net.UDPAddr) {
+func UDPWithError(conn *net.UDPConn, handle interface{}, buf []byte, addr *net.UDPAddr) {
 	yes := true
 	defer func() {
-		if p != nil {
-			p.Put(buf)
-		}
-
 		if err := recover(); err != nil {
 			_logger.Printf("[Error] Get a error: %v", err)
 			if !yes {
@@ -45,8 +41,10 @@ func UDPWithError(conn *net.UDPConn, p *pool.BufPool, handle interface{}, buf []
 		return
 	}
 
-	if _, err := conn.WriteToUDP(result, addr); err != nil {
+	if n, err := conn.WriteToUDP(result, addr); err != nil {
 		_logger.Printf("[Error] Failed to send the data to %s: %v", addr, err)
+	} else {
+		_logger.Printf("[Debug] Send %v bytes successfully\n", n)
 	}
 }
 
@@ -97,8 +95,10 @@ func UDPServerForever(network, addr string, size int, handle interface{}, wrap f
 		if err != nil {
 			_logger.Printf("[Error] Failed to read the UDP data: %v", err)
 		} else {
-			go UDPWithError(conn, _pool, handle, buf[:num], caddr)
+			//go UDPWithError(conn, handle, buf[:num], caddr)
+			UDPWithError(conn, handle, buf[:num], caddr)
 		}
+		_pool.Put(buf)
 	}
 
 	// Never execute forever.

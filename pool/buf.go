@@ -21,10 +21,10 @@ func NewBufPool(size int) *BufPool {
 // Get a buffer.
 func (p *BufPool) Get() []byte {
 	x := p.pool.Get()
-	if b, ok := x.([]byte); ok {
-		return b
+	if x == nil {
+		return make([]byte, p.size)
 	}
-	return make([]byte, p.size)
+	return x.([]byte)
 }
 
 // Put a buffer to the pool.
