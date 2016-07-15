@@ -32,6 +32,7 @@ var (
 //     (1) https://golang.org/pkg/runtime/debug/#SetMaxThreads
 //     (2) https://github.com/golang/go/issues/4056
 //
+// At present, the maximal limit is 9999.
 func SetMaxLimit(num int) (old int) {
 	if num < 1 || num > maxLimit {
 		return -1
@@ -64,15 +65,16 @@ func (p *GoPool) del() {
 	p.num -= 1
 }
 
-// Call the function with the arguments in a goroutine.
+// Call the function with the arguments in a new goroutine.
 //
-// Return nil when the arguments is correct and it can start a goroutine,
-// or an error. Even though the arguments is correct, it don't guarantee that
-// the function can be called successfully.
+// Return an error when the first argument f is not a function, the arguments
+// is incorrect, or it can not start a new goroutine. Return nil when starting
+// a new goroutine. Even though the arguments is correct, it don't guarantee '
+// that the function can be called successfully.
 //
 // It is the same as the keyword, go, which discards the returned values.
 // But the difference of both is that this method will capture the panic which
-// occurs in the called function.
+// occurs in the called function and don't allow it to panic.
 func (p *GoPool) Go(f interface{}, args ...interface{}) error {
 	p.Lock()
 	defer p.Unlock()
