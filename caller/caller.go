@@ -1,3 +1,4 @@
+// Get the filename and the line number where to call these functions.
 package caller
 
 import (

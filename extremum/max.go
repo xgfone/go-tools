@@ -1,3 +1,4 @@
+// Get the maximal or the minimal of both the values.
 package extremum
 
 // Return the maximal of both int64.

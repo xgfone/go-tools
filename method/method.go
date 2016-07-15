@@ -1,3 +1,8 @@
+// Call the method of a type dynamically.
+//
+// The constraint will be checked at the runtime, it may panic if CallMustPanic
+// is true.
+//
 package method
 
 import (

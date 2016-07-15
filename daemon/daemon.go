@@ -1,3 +1,4 @@
+// Make the current process to the daemon process.
 package daemon
 
 import (

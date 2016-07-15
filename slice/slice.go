@@ -1,3 +1,7 @@
+// Get a value from a slice.
+//
+// If the index is out-of-bounds, return the default value.
+//
 package slice
 
 import (

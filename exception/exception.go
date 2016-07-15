@@ -1,3 +1,4 @@
+// Exception handler like "parent.child.sub-child...sub-child".
 package exception
 
 import (

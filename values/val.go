@@ -1,3 +1,7 @@
+// Get a value from the slice or the map.
+//
+// If failed, return (ZERO, false).
+//
 package values
 
 var (

@@ -1,3 +1,4 @@
+// Some convenient functions about datetime.
 package datetime
 
 import (

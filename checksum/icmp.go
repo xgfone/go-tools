@@ -1,3 +1,4 @@
+// Calculate the checksum.
 package checksum
 
 // Calculate the checksum of ICMP package.

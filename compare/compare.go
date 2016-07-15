@@ -1,3 +1,8 @@
+// Compare whether the first is greater than, less than, or equal to the second.
+//
+// The values are either one of the builtin types or their slice, and their
+// types MUST be the same, or panic.
+//
 package compare
 
 import "strings"
