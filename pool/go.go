@@ -10,13 +10,38 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
+	"sync/atomic"
 
 	"github.com/xgfone/go-tools/function"
 )
 
 var (
 	MaxGoroutineError = errors.New("More than the goroutine")
+
+	total gonum
 )
+
+// Get the number of all the goroutines that are managered by this package.
+//
+// If you want to known the total number of all the goroutines in the current
+// process, please use runtime.NumGoroutine().
+func GetTotalNum() uint32 {
+	return total.get()
+}
+
+type gonum uint32
+
+func (g gonum) get() uint32 {
+	return atomic.LoadUint32((*uint32)(&g))
+}
+
+func (g gonum) add() {
+	atomic.AddUint32((*uint32)(&g), 1)
+}
+
+func (g gonum) del() {
+	atomic.AddUint32((*uint32)(&g), ^uint32(0))
+}
 
 type GoPool struct {
 	sync.Mutex
@@ -61,6 +86,7 @@ func (p *GoPool) reduce() {
 	p.Lock()
 	defer p.Unlock()
 	p.num -= 1
+	total.del()
 }
 
 func (p GoPool) test() bool {
@@ -91,6 +117,7 @@ func (p *GoPool) Go(f interface{}, args ...interface{}) error {
 		return MaxGoroutineError
 	}
 	p.num += 1
+	total.add()
 
 	vf, vargs, err := function.Valid(f, args...)
 	if err != nil {
