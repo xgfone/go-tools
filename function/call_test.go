@@ -22,6 +22,21 @@ func TestCall(t *testing.T) {
 	}
 }
 
+func TestCallWithPointer(t *testing.T) {
+	f := func(v *int) (old int) {
+		old = *v
+		*v += 1
+		return
+	}
+
+	v := 1
+	ret, _ := function.Call(f, &v)
+	// The returned value is the old, which is 1, and v became 2.
+	if ret[0].(int) != 1 || v != 2 {
+		t.Fail()
+	}
+}
+
 func ExampleCall() {
 	f := func(i int, j int) (int, error) {
 		return i + j, errors.New("This is not an error")
