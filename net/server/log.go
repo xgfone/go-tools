@@ -13,11 +13,11 @@ var (
 )
 
 func init() {
-	_logger = &logger{l: log.New(os.Stderr, "[TCP Server] ", log.LstdFlags)}
+	_logger = &logger{_logger: log.New(os.Stderr, "[TCP Server] ", log.LstdFlags)}
 }
 
 type logger struct {
-	l *log.Logger
+	_logger *log.Logger
 }
 
 func (l logger) Debug(format string, args ...interface{}) {
@@ -41,7 +41,7 @@ func (l logger) Output(level int, format string, args ...interface{}) {
 	}
 
 	f := fmt.Sprintf("[%v] %v\n", prefix, format)
-	fmt.Printf(f, args...)
+	l._logger.Printf(f, args...)
 }
 
 func (l logger) Info(format string, args ...interface{}) {
@@ -57,9 +57,9 @@ func (l logger) Error(format string, args ...interface{}) {
 }
 
 func SetLogger(logger *log.Logger) {
-	_logger.l = logger
+	_logger._logger = logger
 }
 
 func GetLogger() *log.Logger {
-	return _logger.l
+	return _logger._logger
 }
