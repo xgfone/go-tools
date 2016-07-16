@@ -32,7 +32,8 @@ func Valid(f interface{}, args ...interface{}) (vf reflect.Value, vargs []reflec
 
 	vargs = make([]reflect.Value, _len)
 	for i := 0; i < _len; i++ {
-		if tf.In(i).Kind() != reflect.TypeOf(args[i]).Kind() {
+		typ := tf.In(i).Kind()
+		if (typ != reflect.Interface) && (typ != reflect.TypeOf(args[i]).Kind()) {
 			return reflect.ValueOf(nil), nil, ArgsTypeError
 		}
 		vargs[i] = reflect.ValueOf(args[i])
