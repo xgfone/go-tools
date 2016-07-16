@@ -1,6 +1,10 @@
 package server
 
-import "net"
+import (
+	"net"
+
+	"github.com/xgfone/go-tools/pool"
+)
 
 type THandle interface {
 	Handle(conn *net.TCPConn)
@@ -39,7 +43,7 @@ func TCPWrapError(conn *net.TCPConn, handle interface{}) {
 // network MUST be "tcp", "tcp4", "tcp6".
 // addr is like "host:port", such as "127.0.0.1:8000", and host or port
 // may be omitted.
-func TCPServerForever(network, addr string, handle interface{}) error {
+func TCPServerForever(network, addr string, gopool *pool.GoPool, handle interface{}) error {
 	var ln *net.TCPListener
 	if _addr, err := net.ResolveTCPAddr(network, addr); err != nil {
 		return err
@@ -51,6 +55,10 @@ func TCPServerForever(network, addr string, handle interface{}) error {
 
 	defer ln.Close()
 
+	if gopool == nil {
+		gopool = pool.NewGoPool()
+	}
+
 	_logger.Info("Listen on %v", addr)
 
 	for {
@@ -58,7 +66,11 @@ func TCPServerForever(network, addr string, handle interface{}) error {
 		if err != nil {
 			_logger.Error("Failed to AcceptTCP: %v", err)
 		} else {
-			go TCPWrapError(conn, handle)
+			_logger.Debug("Get a connection from %v", conn.RemoteAddr())
+			//go TCPWrapError(conn, handle)
+			if err := gopool.Go(TCPWrapError, conn, handle); err != nil {
+				_logger.Error("Failed to run goroutine: %v", err)
+			}
 		}
 	}
 
