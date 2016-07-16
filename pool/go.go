@@ -14,55 +14,63 @@ import (
 	"github.com/xgfone/go-tools/function"
 )
 
-const (
-	maxLimit = 9999
-)
-
 var (
-	goLimit int = 9000
-
 	MaxGoroutineError = errors.New("More than the goroutine")
 )
 
-// Set the maximal limit num of goroutine, and return the old.
-//
-// Return -1 and don't set it if num is less than 1, or too big,
-// such as more than the thread limit, see
-//
-//     (1) https://golang.org/pkg/runtime/debug/#SetMaxThreads
-//     (2) https://github.com/golang/go/issues/4056
-//
-// At present, the maximal limit is 9999.
-func SetMaxLimit(num int) (old int) {
-	if num < 1 || num > maxLimit {
-		return -1
-	}
-	old = goLimit
-	goLimit = num
-	return
-}
-
 type GoPool struct {
 	sync.Mutex
-	num int
+	num   uint
+	total uint
 }
 
 // Get a goroutine pool, also get it by &GoPool{} directly.
+//
+// The default doesn't limit the number of goroutine. If it's not what you want,
+// you can set up the limit by GoPool.SetMaxLimit(n).
 func NewGoPool() *GoPool {
 	return &GoPool{}
 }
 
+// Set the maximal limit num of goroutine, and return the old.
+//
+// If the num is 0, it won't limit the number of goroutine.
+//
+// Don't suggest to set it to too large number. See
+//
+//     (1) https://golang.org/pkg/runtime/debug/#SetMaxThreads
+//     (2) https://github.com/golang/go/issues/4056
+//
+func (p *GoPool) SetMaxLimit(num uint) (old uint) {
+	p.Lock()
+	defer p.Unlock()
+
+	old = p.total
+	p.total = num
+	return
+}
+
 // Get the number of all the current running goroutines.
-func (p *GoPool) GetNum() int {
+func (p *GoPool) GetNum() uint {
 	p.Lock()
 	defer p.Unlock()
 	return p.num
 }
 
-func (p *GoPool) del() {
+func (p *GoPool) reduce() {
 	p.Lock()
 	defer p.Unlock()
 	p.num -= 1
+}
+
+func (p GoPool) test() bool {
+	if p.total == 0 {
+		return true
+	} else if p.num < p.total {
+		return true
+	} else {
+		return false
+	}
 }
 
 // Call the function with the arguments in a new goroutine.
@@ -78,7 +86,8 @@ func (p *GoPool) del() {
 func (p *GoPool) Go(f interface{}, args ...interface{}) error {
 	p.Lock()
 	defer p.Unlock()
-	if p.num > goLimit {
+
+	if !p.test() {
 		return MaxGoroutineError
 	}
 	p.num += 1
@@ -100,7 +109,7 @@ func (p *GoPool) run(f reflect.Value, args []reflect.Value) {
 		}
 	}()
 
-	defer p.del()
+	defer p.reduce()
 
 	f.Call(args)
 }
