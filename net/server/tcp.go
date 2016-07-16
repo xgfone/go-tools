@@ -12,7 +12,7 @@ type THandle interface {
 // has implemented the interface `THandle`.
 // wrap is the wrapper of *net.TCPConn, which sets the socket connection, and
 // is used by TCPServerForever. In general, it is nil.
-func TCPWrapError(conn *net.TCPConn, handle interface{}, wrap func(*net.TCPConn)) {
+func TCPWrapError(conn *net.TCPConn, handle interface{}) {
 	yes := true
 	defer func() {
 		if err := recover(); err != nil {
@@ -23,10 +23,6 @@ func TCPWrapError(conn *net.TCPConn, handle interface{}, wrap func(*net.TCPConn)
 		}
 	}()
 	defer conn.Close()
-
-	if wrap != nil {
-		wrap(conn)
-	}
 
 	if handler, ok := handle.(THandle); ok {
 		handler.Handle(conn)
@@ -43,7 +39,7 @@ func TCPWrapError(conn *net.TCPConn, handle interface{}, wrap func(*net.TCPConn)
 // network MUST be "tcp", "tcp4", "tcp6".
 // addr is like "host:port", such as "127.0.0.1:8000", and host or port
 // may be omitted.
-func TCPServerForever(network, addr string, handle interface{}, wrap func(*net.TCPConn)) error {
+func TCPServerForever(network, addr string, handle interface{}) error {
 	var ln *net.TCPListener
 	if _addr, err := net.ResolveTCPAddr(network, addr); err != nil {
 		return err
@@ -62,7 +58,7 @@ func TCPServerForever(network, addr string, handle interface{}, wrap func(*net.T
 		if err != nil {
 			_logger.Error("Failed to AcceptTCP: %v", err)
 		} else {
-			go TCPWrapError(conn, handle, wrap)
+			go TCPWrapError(conn, handle)
 		}
 	}
 

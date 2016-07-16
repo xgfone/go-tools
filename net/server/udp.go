@@ -78,9 +78,6 @@ func UDPServerForever(network, addr string, size int, handle interface{}, wrap f
 
 	_logger.Info("Listen on %v", addr)
 
-	// If don't set it, the connection will be blocked when send a large number of datas.
-	//conn.SetDeadline(time.Now().Add(time.Second * 3))
-
 	if wrap != nil {
 		if wrap(conn) {
 			return nil
