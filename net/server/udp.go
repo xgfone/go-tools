@@ -19,7 +19,7 @@ func UDPWithError(conn *net.UDPConn, handle interface{}, buf []byte, addr *net.U
 	yes := true
 	defer func() {
 		if err := recover(); err != nil {
-			_logger.Printf("[Error] Get a error: %v", err)
+			_logger.Error("Get a error: %v", err)
 			if !yes {
 				panic(err)
 			}
@@ -42,9 +42,9 @@ func UDPWithError(conn *net.UDPConn, handle interface{}, buf []byte, addr *net.U
 	}
 
 	if n, err := conn.WriteToUDP(result, addr); err != nil {
-		_logger.Printf("[Error] Failed to send the data to %s: %v", addr, err)
+		_logger.Error("Failed to send the data to %s: %v", addr, err)
 	} else {
-		_logger.Printf("[Debug] Send %v bytes successfully\n", n)
+		_logger.Debug("Send %v bytes successfully", n)
 	}
 }
 
@@ -76,7 +76,10 @@ func UDPServerForever(network, addr string, size int, handle interface{}, wrap f
 		return errors.New("handle and wrap neither be nil.")
 	}
 
-	_logger.Printf("[Debug] Listen on %v", addr)
+	_logger.Info("Listen on %v", addr)
+
+	// If don't set it, the connection will be blocked when send a large number of datas.
+	//conn.SetDeadline(time.Now().Add(time.Second * 3))
 
 	if wrap != nil {
 		if wrap(conn) {
@@ -94,7 +97,7 @@ func UDPServerForever(network, addr string, size int, handle interface{}, wrap f
 		buf := _pool.Get()
 		num, caddr, err := conn.ReadFromUDP(buf)
 		if err != nil {
-			_logger.Printf("[Error] Failed to read the UDP data: %v", err)
+			_logger.Error("Failed to read the UDP data: %v", err)
 		} else {
 			//go UDPWithError(conn, handle, buf[:num], caddr)
 			UDPWithError(conn, handle, buf[:num], caddr)

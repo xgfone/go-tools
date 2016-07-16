@@ -16,7 +16,7 @@ func TCPWrapError(conn *net.TCPConn, handle interface{}, wrap func(*net.TCPConn)
 	yes := true
 	defer func() {
 		if err := recover(); err != nil {
-			_logger.Printf("[Error] Get a error: %v", err)
+			_logger.Error("Get a error: %v", err)
 			if !yes {
 				panic(err)
 			}
@@ -55,12 +55,12 @@ func TCPServerForever(network, addr string, handle interface{}, wrap func(*net.T
 
 	defer ln.Close()
 
-	_logger.Printf("[Debug] Listen on %v", addr)
+	_logger.Info("Listen on %v", addr)
 
 	for {
 		conn, err := ln.AcceptTCP()
 		if err != nil {
-			_logger.Printf("[Error] Failed to AcceptTCP: %v", err)
+			_logger.Error("Failed to AcceptTCP: %v", err)
 		} else {
 			go TCPWrapError(conn, handle, wrap)
 		}
