@@ -59,6 +59,7 @@ func TCPServerForever(network, addr string, size int, handle interface{}) error 
 	var gopool *pool.GoPool
 	if size > 0 {
 		gopool = pool.NewGoPool()
+		gopool.SetMaxLimit(uint(size))
 	}
 
 	_logger.Info("Listen on %v", addr)
