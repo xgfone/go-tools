@@ -8,6 +8,7 @@ type TokenBucket struct {
 	sleep   time.Duration
 	started bool
 	stoped  bool
+	num     int64
 }
 
 // NewTB creates a new token bucket.
@@ -15,11 +16,6 @@ type TokenBucket struct {
 func NewTokenBucket(rate uint64) *TokenBucket {
 	t := &TokenBucket{}
 	return t.SetRate(rate).SetBucketSize(1024)
-}
-
-func (t TokenBucket) calcSleep(rate uint64) time.Duration {
-	return time.Second / time.Duration(rate)
-	//return time.Duration(uint64(time.Second) / rate)
 }
 
 // Set the size of the token bucket.
@@ -37,7 +33,15 @@ func (t *TokenBucket) SetBucketSize(size uint) *TokenBucket {
 //
 // Allow that adjust the rate in running.
 func (t *TokenBucket) SetRate(rate uint64) *TokenBucket {
-	t.sleep = t.calcSleep(rate)
+	t.num = 1
+	min_sleep := time.Millisecond * time.Duration(10)
+	sleep := time.Second / time.Duration(rate)
+	if sleep < min_sleep {
+		t.num = min_sleep / sleep
+	} else {
+		t.sleep = sleep
+	}
+
 	return t
 }
 
@@ -85,7 +89,10 @@ func (t *TokenBucket) Stop() {
 
 func (t *TokenBucket) start() {
 	for !t.stoped {
-		t.bucket <- true
+		for i := 0; i < t.num; i++ {
+			t.bucket <- true
+		}
+
 		time.Sleep(t.sleep)
 	}
 }
