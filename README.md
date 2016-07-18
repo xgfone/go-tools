@@ -19,7 +19,7 @@ compare      | Compare whether the first is greater than, less than, or equal to
 count        | Atomic count.
 daemon       | Make the current process to the daemon process.
 datetime     | Some convenient functions about datetime.
-exception    | Exception handler like "parent.child.sub-child...sub-child".
+exception    | Exception handler like `"parent.child.sub-child...sub-child"`.
 extremum     | Get the maximal or the minimal of both the values.
 file         | Some convenient functions about the file operation.
 function     | Call a function dynamically.
@@ -28,7 +28,7 @@ net/endian   | Convert between int/uint and the big/little endian.
 net/mac      | Standardize the mac address.
 net/server   | The simple TCP/UDP server.
 parse        | Convert a string to bool, int, uint, float, etc.
-pool         | Some simple convenient pools, such as BufPool, GoPool, etc.
+pool         | Some simple convenient pools, such as `BufPool`, `GoPool`, etc.
 slice        | Get a value from a slice.
 tbucket      | The Simple Token Bucket like HTB in Linux TC.
 values       | Get a value from the slice or the map.
