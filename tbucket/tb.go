@@ -1,9 +1,9 @@
 // The Simple Token Bucket like HTB in Linux TC.
-package tb
+package tbucket
 
 import "time"
 
-type TB struct {
+type TokenBucket struct {
 	bucket  chan bool
 	sleep   time.Duration
 	started bool
@@ -12,12 +12,12 @@ type TB struct {
 
 // NewTB creates a new token bucket.
 // The default size of the token bucket is 1024.
-func NewTB(rate uint64) *TB {
-	t := &TB{}
+func NewTokenBucket(rate uint64) *TokenBucket {
+	t := &TokenBucket{}
 	return t.SetRate(rate).SetBucketSize(1024)
 }
 
-func (t TB) calcSleep(rate uint64) time.Duration {
+func (t TokenBucket) calcSleep(rate uint64) time.Duration {
 	return time.Second / time.Duration(rate)
 	//return time.Duration(uint64(time.Second) / rate)
 }
@@ -25,7 +25,7 @@ func (t TB) calcSleep(rate uint64) time.Duration {
 // Set the size of the token bucket.
 //
 // If the token bucket server has been started, calling this method will panic.
-func (t *TB) SetBucketSize(size uint) *TB {
+func (t *TokenBucket) SetBucketSize(size uint) *TokenBucket {
 	if t.started {
 		panic("The token bucket server has been started")
 	}
@@ -36,7 +36,7 @@ func (t *TB) SetBucketSize(size uint) *TB {
 // Set the rate to produce the token. The unit is token/s.
 //
 // Allow that adjust the rate in running.
-func (t *TB) SetRate(rate uint64) *TB {
+func (t *TokenBucket) SetRate(rate uint64) *TokenBucket {
 	t.sleep = t.calcSleep(rate)
 	return t
 }
@@ -47,7 +47,7 @@ func (t *TB) SetRate(rate uint64) *TB {
 // have got the token.
 //
 // If the token bucket server has not been started, calling this method will panic.
-func (t *TB) Get() {
+func (t *TokenBucket) Get() {
 	if !t.started {
 		panic("The token bucket server isn't started")
 	}
@@ -59,7 +59,7 @@ func (t *TB) Get() {
 // the token from the bucket by calling t.Get().
 //
 // If the token bucket server has been started, calling this method will panic.
-func (t *TB) Start() {
+func (t *TokenBucket) Start() {
 	if t.started {
 		panic("The token bucket server has been started")
 	}
@@ -72,7 +72,7 @@ func (t *TB) Start() {
 // Stop the token bucket server. Later you can start it again.
 //
 // If the token bucket server has not been started, calling this method will panic.
-func (t *TB) Stop() {
+func (t *TokenBucket) Stop() {
 	if !t.started {
 		panic("The token bucket server isn't started")
 	}
@@ -83,7 +83,7 @@ func (t *TB) Stop() {
 	time.Sleep(t.sleep)
 }
 
-func (t *TB) start() {
+func (t *TokenBucket) start() {
 	for !t.stoped {
 		t.bucket <- true
 		time.Sleep(t.sleep)

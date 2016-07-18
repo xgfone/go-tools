@@ -1,21 +1,21 @@
-package tb_test
+package tbucket_test
 
 import (
 	"fmt"
 
-	"github.com/xgfone/go-tools/tb"
+	"github.com/xgfone/go-tools/tbucket"
 )
 
 func ExampleTB() {
 	// Get a token from the bucket per second.
-	_tb := tb.NewTB(1)
-	_tb.Start()
-	go func(_tb *tb.TB) {
+	tb := tbucket.NewTokenBucket(1)
+	tb.Start()
+	go func(tb *tbucket.TokenBucket) {
 		for {
-			_tb.Get()
+			tb.Get()
 			fmt.Println("Get a token") // You can see it prints once per second.
 		}
-	}(_tb)
+	}(tb)
 
 	for {
 	}
