@@ -1,13 +1,13 @@
-package count_test
+package atomics_test
 
 import (
 	"fmt"
 
-	"github.com/xgfone/go-tools/count"
+	"github.com/xgfone/go-tools/atomics"
 )
 
 func ExampleCount() {
-	c := count.NewCount()
+	c := atomics.NewCount()
 	c.Set(100)
 	fmt.Println(c.Get())
 	c.Add()

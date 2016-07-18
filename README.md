@@ -13,10 +13,10 @@ $ go get -u github.com/xgfone/go-tools
 
 subpackage   |   notice
 -------------|-----------
+atomics      | Some atomic types, such as Bool, Count.
 caller       | Get the filename and the line number where to call these functions.
 checksum     | Calculate the checksum, such as icmp.
 compare      | Compare whether the first is greater than, less than, or equal to the second.
-count        | Atomic count.
 daemon       | Make the current process to the daemon process.
 datetime     | Some convenient functions about datetime.
 exception    | Exception handler like `"parent.child.sub-child...sub-child"`.

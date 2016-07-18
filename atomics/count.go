@@ -1,5 +1,4 @@
-// Atomic count.
-package count
+package atomics
 
 import "sync/atomic"
 
