@@ -13,7 +13,7 @@ func ExampleTB() {
 	go func(_tb *tb.TB) {
 		for {
 			_tb.Get()
-			fmt.Println("Get a token") // You can see that print once per second.
+			fmt.Println("Get a token") // You can see it prints once per second.
 		}
 	}(_tb)
 

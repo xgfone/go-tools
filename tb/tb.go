@@ -4,7 +4,7 @@ package tb
 import "time"
 
 type TB struct {
-	buffer  chan bool
+	bucket  chan bool
 	sleep   time.Duration
 	started bool
 	stoped  bool
@@ -14,7 +14,7 @@ type TB struct {
 // The default size of the token bucket is 1024.
 func NewTB(rate uint64) *TB {
 	t := &TB{}
-	return t.SetRate(rate).SetBufSize(1024)
+	return t.SetRate(rate).SetBucketSize(1024)
 }
 
 func (t TB) calcSleep(rate uint64) time.Duration {
@@ -25,15 +25,15 @@ func (t TB) calcSleep(rate uint64) time.Duration {
 // Set the size of the token bucket.
 //
 // If the token bucket server has been started, calling this method will panic.
-func (t *TB) SetBufSize(size uint) *TB {
+func (t *TB) SetBucketSize(size uint) *TB {
 	if t.started {
 		panic("The token bucket server has been started")
 	}
-	t.buffer = make(chan bool, size)
+	t.bucket = make(chan bool, size)
 	return t
 }
 
-// Set the rate to produce the token. The unit is TB/s.
+// Set the rate to produce the token. The unit is token/s.
 //
 // Allow that adjust the rate in running.
 func (t *TB) SetRate(rate uint64) *TB {
@@ -51,12 +51,12 @@ func (t *TB) Get() {
 	if !t.started {
 		panic("The token bucket server isn't started")
 	}
-	<-t.buffer
+	<-t.bucket
 	return
 }
 
-// Start to produce the token and put it to the bucket. You can get the token
-// from the bucket by calling t.Get().
+// Start to produce the token and put it to the bucket. Then you can get
+// the token from the bucket by calling t.Get().
 //
 // If the token bucket server has been started, calling this method will panic.
 func (t *TB) Start() {
@@ -85,7 +85,7 @@ func (t *TB) Stop() {
 
 func (t *TB) start() {
 	for !t.stoped {
-		t.buffer <- true
+		t.bucket <- true
 		time.Sleep(t.sleep)
 	}
 }
