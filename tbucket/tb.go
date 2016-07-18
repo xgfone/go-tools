@@ -9,16 +9,21 @@ type TokenBucket struct {
 	started bool
 	stoped  bool
 	num     int64
+	tick    time.Duration
+	cache   uint64
 }
 
 // NewTB creates a new token bucket.
 // The default size of the token bucket is 1024.
 func NewTokenBucket(rate uint64) *TokenBucket {
-	t := &TokenBucket{}
-	return t.SetRate(rate).SetBucketSize(1024)
+	t := &TokenBucket{cache: rate}
+	return t.SetMinTick(time.Millisecond * 10).SetBucketSize(1024)
 }
 
-// Set the size of the token bucket.
+// Set the size of the token bucket. The default is 1024.
+//
+// Please set it up according to the real case. If you need the more tokens,
+// you had better set it up to a larger value.
 //
 // If the token bucket server has been started, calling this method will panic.
 func (t *TokenBucket) SetBucketSize(size uint) *TokenBucket {
@@ -31,23 +36,49 @@ func (t *TokenBucket) SetBucketSize(size uint) *TokenBucket {
 
 // Set the rate to produce the token. The unit is token/s.
 //
-// Allow that adjust the rate in running.
+// Allow that adjust the rate in running. But please don't calling it concurrently.
+// If needing to do this, please use the synchrolock, such as sync.Mutex, by yourself.
+//
+// If rate * tick > time.Second, recommend to use that value, which multiply
+// rate by tick is divisibled by time.Second, as the rate. If tick is 10ms and
+// rate is greater than 100, for example, please use the multiple of 100 as
+// the rate. Of course, you don't have to use the multiple of 100, and can use
+// the arbitrary value, but it will be truncated to the multiple of 100.
 func (t *TokenBucket) SetRate(rate uint64) *TokenBucket {
 	t.num = 1
-	min_sleep := time.Millisecond * time.Duration(10)
-	sleep := time.Second / time.Duration(rate)
-	if sleep < min_sleep {
-		t.num = min_sleep / sleep
-	} else {
-		t.sleep = sleep
+	t.sleep = time.Second / time.Duration(rate)
+	if t.sleep < t.tick {
+		t.num = int64(t.tick / t.sleep)
+		t.sleep = t.tick
 	}
-
 	return t
+}
+
+// Set the minimal time granularity. The default is 10ms. Don't suggest to set
+// it to a smaller number, unless you known what to happen. You can regard it
+// as the clock tick in OS.
+//
+// Notice: The larger the value of tick is, the higher the load of OS is.
+//
+// When calling this method, it will recalculate the real clock tick and the
+// number of the tokens which are produced in one clock tick.
+func (t *TokenBucket) SetMinTick(tick time.Duration) *TokenBucket {
+	t.tick = tick
+	if t.cache > 0 {
+		t.SetRate(t.cache)
+	}
+	return t
+}
+
+// Audit returns the real clock tick, and the number of the tokens which are
+// produced in one clock tick.
+func (t TokenBucket) Audit() (tick time.Duration, num int64) {
+	return t.sleep, t.num
 }
 
 // Get the token from the bucket.
 //
-// This method isn't the returned value. That it returns is indicating that you
+// This method doesn't return a value. That it returns is indicating that you
 // have got the token.
 //
 // If the token bucket server has not been started, calling this method will panic.
@@ -59,6 +90,11 @@ func (t *TokenBucket) Get() {
 	return
 }
 
+// Return true if the token bucket server has been started. Or false.
+func (t TokenBucket) IsStart() bool {
+	return t.started
+}
+
 // Start to produce the token and put it to the bucket. Then you can get
 // the token from the bucket by calling t.Get().
 //
@@ -68,9 +104,8 @@ func (t *TokenBucket) Start() {
 		panic("The token bucket server has been started")
 	}
 
-	go t.start()
 	t.started = true
-	t.stoped = false
+	go t.start()
 }
 
 // Stop the token bucket server. Later you can start it again.
@@ -80,7 +115,6 @@ func (t *TokenBucket) Stop() {
 	if !t.started {
 		panic("The token bucket server isn't started")
 	}
-	t.stoped = true
 	t.started = false
 
 	// In order to let the for loop ends in t.start().
@@ -88,8 +122,8 @@ func (t *TokenBucket) Stop() {
 }
 
 func (t *TokenBucket) start() {
-	for !t.stoped {
-		for i := 0; i < t.num; i++ {
+	for t.started {
+		for i := int64(0); i < t.num; i++ {
 			t.bucket <- true
 		}
 

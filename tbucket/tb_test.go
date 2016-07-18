@@ -9,6 +9,7 @@ import (
 func ExampleTokenBucket() {
 	// Get a token from the bucket per second.
 	tb := tbucket.NewTokenBucket(1)
+	//tb.SetMinTick(time.Millisecond).SetRate(150)
 	tb.Start()
 	go func(tb *tbucket.TokenBucket) {
 		for {
