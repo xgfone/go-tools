@@ -56,6 +56,18 @@ func UDPWithError(conn *net.UDPConn, handle interface{}, buf []byte, addr *net.U
 // addr is like "host:port", such as "127.0.0.1:8000", and host or port
 // may be omitted.
 // size is the size of the buffer.
+//
+// Example:
+//   type Handler struct {
+//   }
+//
+//   func (h Handler) Handle(buf []byte, addr *net.UDPAddr) []byte {
+//   	fmt.Println("Receive %v bytes from %v", len(buf), addr)
+//   	return buf
+//   }
+//
+//    err1 := server.UDPServerForever("udp", ":8000", 8192, Handler{}, nil)
+//    fmt.Println(err1)
 func UDPServerForever(network, addr string, size int, handle interface{}, wrap func(*net.UDPConn) bool) error {
 	var conn *net.UDPConn
 	if _addr, err := net.ResolveUDPAddr(network, addr); err != nil {
