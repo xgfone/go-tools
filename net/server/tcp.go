@@ -1,3 +1,4 @@
+// The simple TCP/UDP server.
 package server
 
 import (

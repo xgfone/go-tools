@@ -1,3 +1,4 @@
+// Convert between int/uint and the big/little endian.
 package endian
 
 var Big bigEndian

@@ -1,8 +1,4 @@
-// Goroutine pool, the wrapper of the keyword, go.
-//
-// If the number of the running goroutine exceeds the maximal, it refuses to
-// execute the goroutine.
-//
+// Some simple convenient pools, such as BufPool, GoPool, etc.
 package pool
 
 import (
@@ -43,6 +39,10 @@ func (g gonum) del() {
 	atomic.AddUint32((*uint32)(&g), ^uint32(0))
 }
 
+// Goroutine pool, the wrapper of the keyword, go.
+//
+// If the number of the running goroutine exceeds the maximal, it refuses to
+// execute the goroutine.
 type GoPool struct {
 	sync.Mutex
 	num   uint

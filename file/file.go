@@ -1,4 +1,4 @@
-// Some convenient functions about the file.
+// Some convenient functions about the file operation.
 package file
 
 import (

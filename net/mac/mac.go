@@ -1,3 +1,4 @@
+// Standardize the mac address.
 package mac
 
 import (
