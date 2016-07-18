@@ -6,7 +6,7 @@ import (
 	"github.com/xgfone/go-tools/tbucket"
 )
 
-func ExampleTB() {
+func ExampleTokenBucket() {
 	// Get a token from the bucket per second.
 	tb := tbucket.NewTokenBucket(1)
 	tb.Start()
