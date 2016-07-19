@@ -21,6 +21,13 @@ func ExampleTag() {
 	fmt.Println(tag.Get("tag2"))
 	fmt.Println(tag.Get("tag4"))
 
+	// Gets
+	//_tags := tag.Gets("tag1")
+	for _, t := range tag.Gets("tag1") {
+		fmt.Println(t.Field, t.Value)
+	}
+	fmt.Println(tag.Gets("tag7"))
+
 	// GetWithField
 	fmt.Println(tag.GetWithField("tag1"))
 	field, value := tag.GetWithField("tag4")
@@ -45,6 +52,10 @@ func ExampleTag() {
 	// 123
 	// 456
 	//
+	// F1 123
+	// F2 aaa
+	// F3 ddd
+	// []
 	// F1 123
 	//   End
 	// F2 zzz

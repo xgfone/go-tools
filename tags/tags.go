@@ -1,3 +1,4 @@
+// Manage the tags in a struct.
 package tags
 
 import (
@@ -14,22 +15,26 @@ var (
 // A struct to manage the tags of a struct.
 type Tag struct {
 	name   string
-	fields []fTag
-	f2t    map[string][]tTag
-	t2f    map[string][]tField
+	fields []ft
+	f2t    map[string][]tv
+	t2f    map[string][]FV
 }
 
-type fTag struct {
+type ft struct {
 	field string
 	tag   reflect.StructTag
 }
 
-type tField struct {
-	field string
-	value string
+// It is used for the method Gets().
+type FV struct {
+	// The field name which the tag belongs to.
+	Field string
+
+	// The value of the tag.
+	Value string
 }
 
-type tTag struct {
+type tv struct {
 	tag   string
 	value string
 }
@@ -40,11 +45,11 @@ func debugf(format string, args ...interface{}) {
 	}
 }
 
-// Create a new Tag to manage the tags of a certain struct.
+// Create a new Tag to manage the tags in a certain struct.
 //
-// s is a struct variable or a pointer to a struct.
-func NewTag(s interface{}) *Tag {
-	typ := reflect.TypeOf(s)
+// v is a struct variable or a pointer to a struct.
+func NewTag(v interface{}) *Tag {
+	typ := reflect.TypeOf(v)
 	if typ.Kind() == reflect.Ptr {
 		typ = typ.Elem()
 	}
@@ -55,8 +60,8 @@ func NewTag(s interface{}) *Tag {
 	nf := typ.NumField()
 	for i := 0; i < nf; i++ {
 		field := typ.Field(i)
-		t.fields = append(t.fields, fTag{field: field.Name, tag: field.Tag})
-		t.f2t[field.Name] = make([]tTag, 0)
+		t.fields = append(t.fields, ft{field: field.Name, tag: field.Tag})
+		t.f2t[field.Name] = make([]tv, 0)
 	}
 
 	return t
@@ -65,33 +70,38 @@ func NewTag(s interface{}) *Tag {
 func newTag(name string) *Tag {
 	return &Tag{
 		name:   name,
-		fields: make([]fTag, 0),
-		f2t:    make(map[string][]tTag),
-		t2f:    make(map[string][]tField),
+		fields: make([]ft, 0),
+		f2t:    make(map[string][]tv),
+		t2f:    make(map[string][]FV),
 	}
 }
 
-// Build the tag on the struct. That's, analyze and get the information of all
-// the tags in the struct.
+// Build the tag upon the struct. That's, analyze and get the values of the
+// tag in all the fields of the struct.
+//
+// Notice: Building the tag is in turn according to the order of the field. You
+// can set Debug to true to see the building order. If a field defines the tag
+// and its value is empty or only whitespaces, it's treated that it doesn't exist.
 func (t *Tag) BuildTag(tag string) *Tag {
 	tag = strings.TrimSpace(tag)
 	if _, ok := t.t2f[tag]; ok {
 		return t
 	}
-	t.t2f[tag] = make([]tField, 0)
+	t.t2f[tag] = make([]FV, 0)
 	for _, fields := range t.fields {
 		_tag := fields.tag
 		field := fields.field
 		if v := strings.TrimSpace(_tag.Get(tag)); v != "" {
-			debugf("Build: Field:[%v] Tag:[%v] Value:[%v]", field, tag, v)
-			t.t2f[tag] = append(t.t2f[tag], tField{field: field, value: v})
-			t.f2t[field] = append(t.f2t[field], tTag{tag: tag, value: v})
+			debugf("Building: Field:[%v] Tag:[%v] Value:[%v]", field, tag, v)
+			t.t2f[tag] = append(t.t2f[tag], FV{Field: field, Value: v})
+			t.f2t[field] = append(t.f2t[field], tv{tag: tag, value: v})
 		}
 	}
 	return t
 }
 
-// Build a set of the tags. See BuildTag().
+// Build a set of the tags, which is equivalent to calling BuildTag() more than
+// once. See BuildTag().
 func (t *Tag) BuildTags(tags []string) *Tag {
 	for _, tag := range tags {
 		t.BuildTag(tag)
@@ -99,7 +109,7 @@ func (t *Tag) BuildTags(tags []string) *Tag {
 	return t
 }
 
-// Return the name of Tag, that's, the name of the struct.
+// Return the name of Tag, which is the name of the struct.
 func (t Tag) Name() string {
 	return t.name
 }
@@ -107,13 +117,15 @@ func (t Tag) Name() string {
 // Get the value of the corresponding tag.
 //
 // If more than one field has the tag, return the value of the tag of the first
-// field according to the order defined in the struct.
+// field according to the order defined in the struct. Return an empty string
+// if no field defines the tag.
 func (t Tag) Get(tag string) string {
 	_, v := t.GetWithField(tag)
 	return v
 }
 
 // Same as Get(), but also return the field name except its value.
+// Return ("", "") if no field defines the tag.
 func (t Tag) GetWithField(tag string) (field, value string) {
 	tag = strings.TrimSpace(tag)
 	if v, ok := t.t2f[tag]; !ok {
@@ -121,11 +133,12 @@ func (t Tag) GetWithField(tag string) (field, value string) {
 	} else if len(v) == 0 {
 		return "", ""
 	} else {
-		return v[0].field, v[0].value
+		return v[0].Field, v[0].Value
 	}
 }
 
-// Return the value of the tag in a specified field.
+// Return the value of the tag in a specified field. Return an empty string if
+// the field doesn't have the tag.
 func (t Tag) GetByField(tag, field string) string {
 	if v, ok := t.f2t[field]; !ok {
 		return ""
@@ -141,7 +154,8 @@ func (t Tag) GetByField(tag, field string) string {
 	}
 }
 
-// Return the list of the fields which defines the tag.
+// Return the list of the fields which defines the tag. Return nil if no field
+// defines the tag.
 func (t Tag) GetToField(tag string) []string {
 	if v, ok := t.t2f[tag]; !ok {
 		return nil
@@ -150,8 +164,21 @@ func (t Tag) GetToField(tag string) []string {
 	} else {
 		fields := make([]string, 0)
 		for _, value := range v {
-			fields = append(fields, value.field)
+			fields = append(fields, value.Field)
 		}
 		return fields
+	}
+}
+
+// Get the information of all the tags defined in all the fields.
+func (t Tag) Gets(tag string) (v []FV) {
+	if fv, ok := t.t2f[tag]; !ok {
+		return nil
+	} else if len(fv) == 0 {
+		return nil
+	} else {
+		v = make([]FV, len(fv))
+		copy(v, fv)
+		return
 	}
 }
