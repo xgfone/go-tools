@@ -43,6 +43,18 @@ type TV struct {
 	Value string
 }
 
+// It is used for the method GetAll().
+type FT struct {
+	// The name of the field.
+	Field string
+
+	// The name of the tag which defined in Field.
+	Tag string
+
+	// The value of the tag which defined in Field.
+	Value string
+}
+
 func debugf(format string, args ...interface{}) {
 	if Debug {
 		fmt.Printf(format+"\n", args...)
@@ -81,7 +93,7 @@ func newTag(name string) *Tag {
 }
 
 // Build the tag upon the struct. That's, analyze and get the values of the
-// tag in all the fields of the struct.
+// tag in all the fields of the struct. If the tag has been built, ignore it.
 //
 // Notice: Building the tag is in turn according to the order of the field. You
 // can set Debug to true to see the building order. If a field defines the tag
@@ -159,6 +171,7 @@ func (t Tag) GetByField(tag, field string) string {
 }
 
 // Get the information of all the tags defined in all the fields.
+// Return nil if no field defines the tag.
 func (t Tag) GetToField(tag string) (fv []FV) {
 	if v, ok := t.t2f[tag]; !ok {
 		return nil
@@ -182,4 +195,19 @@ func (t Tag) GetAllByField(field string) (tv []TV) {
 		copy(tv, v)
 		return
 	}
+}
+
+// Get all the information parsed by the tag manager. Return nil if no tag is
+// parsed. It's almost used to debug or traverse the tags in all the fields.
+//
+// The returned list is sorted on the basis of the order of the field which is
+// defined in the struct. But the tags defined in the same field is unordered.
+func (t Tag) GetAll() []FT {
+	ft := make([]FT, 0)
+	for field, tvs := range t.f2t {
+		for _, tv := range tvs {
+			ft = append(ft, FT{Field: field, Tag: tv.Tag, Value: tv.Value})
+		}
+	}
+	return ft
 }

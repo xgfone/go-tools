@@ -45,6 +45,21 @@ func ExampleTag() {
 	fmt.Println(tag.GetByField("tag1", "F2"))
 	fmt.Println(tag.GetByField("tag4", "F2"))
 
+	// GetAll
+	// for _, ft := range tag.GetAll() {
+	// 	fmt.Println(ft.Field, ft.Tag, ft.Value)
+	// }
+	//
+	// //Print the information like this:
+	// F1 tag1 123
+	// F1 tag2 456
+	// F2 tag1 aaa
+	// F2 tag2 bbb
+	// F2 tag5 zzz
+	// F3 tag1 ddd
+	// F3 tag2 eee
+	// F3 tag6 yyy
+
 	// Output:
 	// 123
 	// 456
