@@ -158,22 +158,6 @@ func (t Tag) GetByField(tag, field string) string {
 	}
 }
 
-// Return the list of the fields which defines the tag. Return nil if no field
-// defines the tag.
-func (t Tag) GetToField(tag string) []string {
-	if v, ok := t.t2f[tag]; !ok {
-		return nil
-	} else if len(v) == 0 {
-		return nil
-	} else {
-		fields := make([]string, 0)
-		for _, value := range v {
-			fields = append(fields, value.Field)
-		}
-		return fields
-	}
-}
-
 // Get the information of all the tags defined in all the fields.
 func (t Tag) Gets(tag string) (fv []FV) {
 	if v, ok := t.t2f[tag]; !ok {
