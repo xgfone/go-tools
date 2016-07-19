@@ -17,13 +17,14 @@ type TokenBucket struct {
 // The default size of the token bucket is 1024.
 func NewTokenBucket(rate uint64) *TokenBucket {
 	t := &TokenBucket{cache: rate}
-	return t.SetMinTick(time.Millisecond * 10).SetBucketSize(1024)
+	return t.SetMinTick(time.Millisecond * 2).SetBucketSize(1024)
 }
 
 // Set the size of the token bucket. The default is 1024.
 //
 // Please set it up according to the real case. If you need the more tokens,
-// you had better set it up to a larger value.
+// you maybe set it up to a larger value. But the larger the size is, the more
+// the burst quantity.
 //
 // If the token bucket server has been started, calling this method will panic.
 func (t *TokenBucket) SetBucketSize(size uint) *TokenBucket {
@@ -44,6 +45,7 @@ func (t *TokenBucket) SetBucketSize(size uint) *TokenBucket {
 // rate is greater than 100, for example, please use the multiple of 100 as
 // the rate. Of course, you don't have to use the multiple of 100, and can use
 // the arbitrary value, but it will be truncated to the multiple of 100.
+// Also see SetMinTick(tick).
 func (t *TokenBucket) SetRate(rate uint64) *TokenBucket {
 	t.num = 1
 	t.sleep = time.Second / time.Duration(rate)
@@ -54,14 +56,23 @@ func (t *TokenBucket) SetRate(rate uint64) *TokenBucket {
 	return t
 }
 
-// Set the minimal time granularity. The default is 10ms. Don't suggest to set
+// Set the minimal time granularity. The default is 2ms. Don't suggest to set
 // it to a smaller number, unless you known what to happen. You can regard it
 // as the clock tick in OS.
 //
-// Notice: The larger the value of tick is, the higher the load of OS is.
-//
 // When calling this method, it will recalculate the real clock tick and the
 // number of the tokens which are produced in one clock tick.
+//
+// Notice:
+// The larger the value of tick is, the higher the load of OS is. Based on a
+// simple network rate test, which one token stands for the rate of 1KB/s, 2ms
+// is a suitable tick. If it's bad for your case, you can adjust it smaller or
+// bigger (recommend), such as 4ms, 8ms, 10ms, which had better be a multiple
+// of 2 or 10.
+//
+// The final real clock tick is decided by both the default tick and the rate.
+// See SetRate(rate). You can get the final real clock tick and the number of
+// the tokens which are produced in one clock tick. See Audit().
 func (t *TokenBucket) SetMinTick(tick time.Duration) *TokenBucket {
 	t.tick = tick
 	if t.cache > 0 {
