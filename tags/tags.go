@@ -16,7 +16,7 @@ var (
 type Tag struct {
 	name   string
 	fields []ft
-	f2t    map[string][]tv
+	f2t    map[string][]TV
 	t2f    map[string][]FV
 }
 
@@ -34,9 +34,13 @@ type FV struct {
 	Value string
 }
 
-type tv struct {
-	tag   string
-	value string
+// It is used for the method GetAllByField().
+type TV struct {
+	// The name of the tag.
+	Tag string
+
+	// The value of the tag.
+	Value string
 }
 
 func debugf(format string, args ...interface{}) {
@@ -61,7 +65,7 @@ func NewTag(v interface{}) *Tag {
 	for i := 0; i < nf; i++ {
 		field := typ.Field(i)
 		t.fields = append(t.fields, ft{field: field.Name, tag: field.Tag})
-		t.f2t[field.Name] = make([]tv, 0)
+		t.f2t[field.Name] = make([]TV, 0)
 	}
 
 	return t
@@ -71,7 +75,7 @@ func newTag(name string) *Tag {
 	return &Tag{
 		name:   name,
 		fields: make([]ft, 0),
-		f2t:    make(map[string][]tv),
+		f2t:    make(map[string][]TV),
 		t2f:    make(map[string][]FV),
 	}
 }
@@ -94,7 +98,7 @@ func (t *Tag) BuildTag(tag string) *Tag {
 		if v := strings.TrimSpace(_tag.Get(tag)); v != "" {
 			debugf("Building: Field:[%v] Tag:[%v] Value:[%v]", field, tag, v)
 			t.t2f[tag] = append(t.t2f[tag], FV{Field: field, Value: v})
-			t.f2t[field] = append(t.f2t[field], tv{tag: tag, value: v})
+			t.f2t[field] = append(t.f2t[field], TV{Tag: tag, Value: v})
 		}
 	}
 	return t
@@ -146,8 +150,8 @@ func (t Tag) GetByField(tag, field string) string {
 		return ""
 	} else {
 		for _, value := range v {
-			if tag == value.tag {
-				return value.value
+			if tag == value.Tag {
+				return value.Value
 			}
 		}
 		return ""
@@ -171,14 +175,27 @@ func (t Tag) GetToField(tag string) []string {
 }
 
 // Get the information of all the tags defined in all the fields.
-func (t Tag) Gets(tag string) (v []FV) {
-	if fv, ok := t.t2f[tag]; !ok {
+func (t Tag) Gets(tag string) (fv []FV) {
+	if v, ok := t.t2f[tag]; !ok {
 		return nil
-	} else if len(fv) == 0 {
+	} else if len(v) == 0 {
 		return nil
 	} else {
-		v = make([]FV, len(fv))
-		copy(v, fv)
+		fv = make([]FV, len(v))
+		copy(fv, v)
+		return
+	}
+}
+
+// Get all the tags of the field. Return nil if the field has no tags.
+func (t Tag) GetAllByField(field string) (tv []TV) {
+	if v, ok := t.f2t[field]; !ok {
+		return nil
+	} else if len(v) == 0 {
+		return nil
+	} else {
+		tv = make([]TV, len(v))
+		copy(tv, v)
 		return
 	}
 }
