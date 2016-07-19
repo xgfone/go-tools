@@ -21,11 +21,11 @@ func ExampleTag() {
 	fmt.Println(tag.Get("tag2"))
 	fmt.Println(tag.Get("tag4"))
 
-	// Gets
-	for _, t := range tag.Gets("tag1") {
+	// GetToField
+	for _, t := range tag.GetToField("tag1") {
 		fmt.Println(t.Field, t.Value)
 	}
-	fmt.Println(tag.Gets("tag7"))
+	fmt.Println(tag.GetToField("tag7"))
 
 	// GetAllByField
 	for _, tv := range tag.GetAllByField("F1") {

@@ -25,7 +25,7 @@ type ft struct {
 	tag   reflect.StructTag
 }
 
-// It is used for the method Gets().
+// It is used for the method GetToField().
 type FV struct {
 	// The field name which the tag belongs to.
 	Field string
@@ -159,7 +159,7 @@ func (t Tag) GetByField(tag, field string) string {
 }
 
 // Get the information of all the tags defined in all the fields.
-func (t Tag) Gets(tag string) (fv []FV) {
+func (t Tag) GetToField(tag string) (fv []FV) {
 	if v, ok := t.t2f[tag]; !ok {
 		return nil
 	} else if len(v) == 0 {
