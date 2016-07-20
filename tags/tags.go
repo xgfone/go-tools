@@ -267,3 +267,31 @@ func (t Tag) Audit() string {
 
 	return buf.String()
 }
+
+// Travel the information of the tag, which is the funcational programming of
+// GetToField.
+//
+// The type of the trvaeling function is func(string, string), which needs two
+// arguments and no return value. The first argument is the name of the tag,
+// and the second is the value of the tag.
+func (t Tag) TravelByTag(tag string, f func(string, string)) {
+	if fts, ok := t.t2f[tag]; ok {
+		for _, ft := range fts {
+			f((*ft).Field, (*ft).Value)
+		}
+	}
+}
+
+// Travel the information of the field, which is the funcational programming of
+// GetAllByField.
+//
+// The type of the trvaeling function is func(string, string), which needs two
+// arguments and no return value. The first argument is the name of the field,
+// and the second is the value of the tag.
+func (t Tag) TravelByField(field string, f func(string, string)) {
+	if fts, ok := t.f2t[field]; ok {
+		for _, ft := range fts {
+			f((*ft).Tag, (*ft).Value)
+		}
+	}
+}

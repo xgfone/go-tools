@@ -57,6 +57,18 @@ func ExampleTag() {
 		fmt.Println(ft.Field, ft.Tag, ft.Value)
 	}
 
+	// TravelByTag
+	fmt.Println("--------- TravelByTag")
+	tag.TravelByTag("tag1", func(field, value string) {
+		fmt.Println(field, value)
+	})
+
+	// TravelByField
+	fmt.Println("--------- TravelByField")
+	tag.TravelByField("F1", func(tag, value string) {
+		fmt.Println(tag, value)
+	})
+
 	// Output:
 	// --------- Get
 	// 123
@@ -89,4 +101,11 @@ func ExampleTag() {
 	// F3 tag1 ddd
 	// F3 tag2 eee
 	// F3 tag6 yyy
+	// --------- TravelByTag
+	// F1 123
+	// F2 aaa
+	// F3 ddd
+	// --------- TravelByField
+	// tag1 123
+	// tag2 456
 }
