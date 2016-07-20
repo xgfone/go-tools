@@ -2,6 +2,7 @@
 package tags
 
 import (
+	"bytes"
 	"fmt"
 	"reflect"
 	"strings"
@@ -15,14 +16,14 @@ var (
 // A struct to manage the tags of a struct.
 type Tag struct {
 	name   string
-	fields []ft
-	f2t    map[string][]TV
-	t2f    map[string][]FV
+	fields []*ft
+	f2t    map[string][]*FT
+	t2f    map[string][]*FT
 }
 
 type ft struct {
-	field string
-	tag   reflect.StructTag
+	Field string
+	Tag   reflect.StructTag
 }
 
 // It is used for the method GetToField().
@@ -76,8 +77,8 @@ func NewTag(v interface{}) *Tag {
 	nf := typ.NumField()
 	for i := 0; i < nf; i++ {
 		field := typ.Field(i)
-		t.fields = append(t.fields, ft{field: field.Name, tag: field.Tag})
-		t.f2t[field.Name] = make([]TV, 0)
+		t.fields = append(t.fields, &ft{Field: field.Name, Tag: field.Tag})
+		t.f2t[field.Name] = make([]*FT, 0)
 	}
 
 	return t
@@ -86,9 +87,9 @@ func NewTag(v interface{}) *Tag {
 func newTag(name string) *Tag {
 	return &Tag{
 		name:   name,
-		fields: make([]ft, 0),
-		f2t:    make(map[string][]TV),
-		t2f:    make(map[string][]FV),
+		fields: make([]*ft, 0),
+		f2t:    make(map[string][]*FT),
+		t2f:    make(map[string][]*FT),
 	}
 }
 
@@ -103,14 +104,15 @@ func (t *Tag) BuildTag(tag string) *Tag {
 	if _, ok := t.t2f[tag]; ok {
 		return t
 	}
-	t.t2f[tag] = make([]FV, 0)
-	for _, fields := range t.fields {
-		_tag := fields.tag
-		field := fields.field
-		if v := strings.TrimSpace(_tag.Get(tag)); v != "" {
-			debugf("Building: Field:[%v] Tag:[%v] Value:[%v]", field, tag, v)
-			t.t2f[tag] = append(t.t2f[tag], FV{Field: field, Value: v})
-			t.f2t[field] = append(t.f2t[field], TV{Tag: tag, Value: v})
+	t.t2f[tag] = make([]*FT, 0)
+	for _, field := range t.fields {
+		stag := (*field).Tag
+		_field := (*field).Field
+		if v := strings.TrimSpace(stag.Get(tag)); v != "" {
+			debugf("Building: Field:[%v] Tag:[%v] Value:[%v]", _field, tag, v)
+			value := &FT{Field: _field, Tag: tag, Value: v}
+			t.t2f[tag] = append(t.t2f[tag], value)
+			t.f2t[_field] = append(t.f2t[_field], value)
 		}
 	}
 	return t
@@ -149,7 +151,8 @@ func (t Tag) GetWithField(tag string) (field, value string) {
 	} else if len(v) == 0 {
 		return "", ""
 	} else {
-		return v[0].Field, v[0].Value
+		value := *v[0]
+		return value.Field, value.Value
 	}
 }
 
@@ -162,8 +165,8 @@ func (t Tag) GetByField(tag, field string) string {
 		return ""
 	} else {
 		for _, value := range v {
-			if tag == value.Tag {
-				return value.Value
+			if tag == (*value).Tag {
+				return (*value).Value
 			}
 		}
 		return ""
@@ -179,7 +182,11 @@ func (t Tag) GetToField(tag string) (fv []FV) {
 		return nil
 	} else {
 		fv = make([]FV, len(v))
-		copy(fv, v)
+		i := 0
+		for _, value := range v {
+			fv[i] = FV{Field: (*value).Field, Value: (*value).Value}
+			i++
+		}
 		return
 	}
 }
@@ -192,7 +199,12 @@ func (t Tag) GetAllByField(field string) (tv []TV) {
 		return nil
 	} else {
 		tv = make([]TV, len(v))
-		copy(tv, v)
+		i := 0
+		for _, value := range v {
+			_v := *value
+			tv[i] = TV{Tag: _v.Tag, Value: _v.Value}
+			i++
+		}
 		return
 	}
 }
@@ -201,13 +213,57 @@ func (t Tag) GetAllByField(field string) (tv []TV) {
 // parsed. It's almost used to debug or traverse the tags in all the fields.
 //
 // The returned list is sorted on the basis of the order of the field which is
-// defined in the struct. But the tags defined in the same field is unordered.
+// defined in the struct. And the tags is based on the order which they are
+// building.
 func (t Tag) GetAll() []FT {
 	ft := make([]FT, 0)
 	for field, tvs := range t.f2t {
 		for _, tv := range tvs {
-			ft = append(ft, FT{Field: field, Tag: tv.Tag, Value: tv.Value})
+			ft = append(ft, FT{Field: field, Tag: (*tv).Tag, Value: (*tv).Value})
 		}
 	}
 	return ft
+}
+
+// Audit the result that the manager parses the tags upon the struct.
+// It's almost used to debug.
+func (t Tag) Audit() string {
+	buf := bytes.NewBufferString("")
+
+	buf.WriteString(fmt.Sprintf("Name: %v\n", t.name))
+
+	buf.WriteString("\nFields:\n")
+	for _, ft := range t.fields {
+		buf.WriteString(fmt.Sprintf("%+v\n", *ft))
+	}
+
+	buf.WriteString("\nField To Tag:\n")
+	for field, values := range t.f2t {
+		buf.WriteString(fmt.Sprintf("Field: %v, Value: [", field))
+		first := true
+		for _, ft := range values {
+			if !first {
+				buf.WriteString(", ")
+			}
+			buf.WriteString(fmt.Sprintf("%v", *ft))
+			first = false
+		}
+		buf.WriteString("]\n")
+	}
+
+	buf.WriteString("\nTag To Field:\n")
+	for tag, values := range t.t2f {
+		buf.WriteString(fmt.Sprintf("Tag: %v, Value: [", tag))
+		first := true
+		for _, ft := range values {
+			if !first {
+				buf.WriteString(", ")
+			}
+			buf.WriteString(fmt.Sprintf("%v", *ft))
+			first = false
+		}
+		buf.WriteString("]\n")
+	}
+
+	return buf.String()
 }

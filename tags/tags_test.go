@@ -12,45 +12,75 @@ func ExampleTag() {
 		F2 string `tag1:"aaa" tag2:"bbb" tag3:"ccc" tag5:"zzz"`
 		F3 string `tag1:"ddd" tag2:"eee" tag3:"fff" tag6:"yyy"`
 	}
-	//tags.Debug = true
+	// tags.Debug = true
 	tag := tags.NewTag(TagTest{})
 	tag.BuildTags([]string{"tag1", "tag2"}).BuildTag("tag5").BuildTag("tag6")
+	// fmt.Println(tag.Audit())
 
-	// Get
+	// // Get
+	fmt.Println("--------- Get")
 	fmt.Println(tag.Get("tag1"))
 	fmt.Println(tag.Get("tag2"))
 	fmt.Println(tag.Get("tag4"))
 
-	// GetToField
+	// // GetToField
+	fmt.Println("--------- GetToField")
 	for _, t := range tag.GetToField("tag1") {
 		fmt.Println(t.Field, t.Value)
 	}
 	fmt.Println(tag.GetToField("tag7"))
 
 	// GetAllByField
+	fmt.Println("--------- GetAllByField")
 	for _, tv := range tag.GetAllByField("F1") {
 		fmt.Println(tv.Tag, tv.Value)
 	}
 	fmt.Println(tag.GetAllByField("F4"))
 
-	// GetWithField
+	// // GetWithField
+	fmt.Println("--------- GetWithField")
 	fmt.Println(tag.GetWithField("tag1"))
 	field, value := tag.GetWithField("tag4")
 	fmt.Println(field, value, "End") // End is for saving the output whitespaces.
 	fmt.Println(tag.GetWithField("tag5"))
 	fmt.Println(tag.GetWithField("tag6"))
 
-	// GetByField
+	// // GetByField
+	fmt.Println("--------- GetByField")
 	fmt.Println(tag.GetByField("tag1", "F1"))
 	fmt.Println(tag.GetByField("tag1", "F2"))
 	fmt.Println(tag.GetByField("tag4", "F2"))
 
 	// GetAll
-	// for _, ft := range tag.GetAll() {
-	// 	fmt.Println(ft.Field, ft.Tag, ft.Value)
-	// }
+	fmt.Println("--------- GetAll")
+	for _, ft := range tag.GetAll() {
+		fmt.Println(ft.Field, ft.Tag, ft.Value)
+	}
+
+	// Output:
+	// --------- Get
+	// 123
+	// 456
 	//
-	// //Print the information like this:
+	// --------- GetToField
+	// F1 123
+	// F2 aaa
+	// F3 ddd
+	// []
+	// --------- GetAllByField
+	// tag1 123
+	// tag2 456
+	// []
+	// --------- GetWithField
+	// F1 123
+	//   End
+	// F2 zzz
+	// F3 yyy
+	// --------- GetByField
+	// 123
+	// aaa
+	//
+	// --------- GetAll
 	// F1 tag1 123
 	// F1 tag2 456
 	// F2 tag1 aaa
@@ -59,24 +89,4 @@ func ExampleTag() {
 	// F3 tag1 ddd
 	// F3 tag2 eee
 	// F3 tag6 yyy
-
-	// Output:
-	// 123
-	// 456
-	//
-	// F1 123
-	// F2 aaa
-	// F3 ddd
-	// []
-	// tag1 123
-	// tag2 456
-	// []
-	// F1 123
-	//   End
-	// F2 zzz
-	// F3 yyy
-	// 123
-	// aaa
-	//
-
 }
