@@ -227,6 +227,25 @@ func (t Tag) GetAll() []FT {
 
 // Audit the result that the manager parses the tags upon the struct.
 // It's almost used to debug.
+//
+// For the example above, the returned format is like:
+// 	Name: TagTest
+//
+// 	Fields:
+// 	{Field:F1 Tag:tag1:"123" tag2:"456" tag3:"789" tag4:"000"}
+// 	{Field:F2 Tag:tag1:"aaa" tag2:"bbb" tag3:"ccc" tag5:"zzz"}
+// 	{Field:F3 Tag:tag1:"ddd" tag2:"eee" tag3:"fff" tag6:"yyy"}
+//
+// 	Field To Tag:
+// 	Field: F1, Value: [{F1 tag1 123}, {F1 tag2 456}]
+// 	Field: F2, Value: [{F2 tag1 aaa}, {F2 tag2 bbb}, {F2 tag5 zzz}]
+// 	Field: F3, Value: [{F3 tag1 ddd}, {F3 tag2 eee}, {F3 tag6 yyy}]
+//
+// 	Tag To Field:
+// 	Tag: tag1, Value: [{F1 tag1 123}, {F2 tag1 aaa}, {F3 tag1 ddd}]
+// 	Tag: tag2, Value: [{F1 tag2 456}, {F2 tag2 bbb}, {F3 tag2 eee}]
+// 	Tag: tag5, Value: [{F2 tag5 zzz}]
+// 	Tag: tag6, Value: [{F3 tag6 yyy}]
 func (t Tag) Audit() string {
 	buf := bytes.NewBufferString("")
 
