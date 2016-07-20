@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	// If true, output the procedure building the tags. If having a question
-	// about the building, you can set it to true.
+	// If true, output the procedure building the tags.
+	// If having a question about the building, you can set it to true.
 	Debug = false
 )
 
@@ -323,9 +323,9 @@ func (t Tag) TravelByField(field string, f func(string, string)) {
 // The building procedure is:
 // 	(1) Travel all the exposed fields by the order which are defined in the struct.
 // 	(2) For each field, parse out its tags according to the order that they appear,
-// 		and in turn build them.
+// 	    and in turn build them.
 //
-// 	Suggest to use this method firstly, unless you want to build the specific tags.
+// Suggest to use this method firstly, unless you want to build the specific tags.
 func (t Tag) Build() {
 	for _, ft := range t.fields {
 		_tags := getAllTags((*ft).Tag)
