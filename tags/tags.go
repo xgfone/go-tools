@@ -326,7 +326,7 @@ func (t Tag) TravelByField(field string, f func(string, string)) {
 // 	    and in turn build them.
 //
 // Suggest to use this method firstly, unless you want to build the specific tags.
-func (t Tag) Build() {
+func (t *Tag) Build() {
 	for _, ft := range t.fields {
 		_tags := getAllTags((*ft).Tag)
 		debugf("Parsed the field[%v]: %v", (*ft).Field, _tags)
