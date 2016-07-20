@@ -3,16 +3,16 @@ package tags
 import (
 	"reflect"
 	"strconv"
+	"strings"
 )
 
-// Get returns the value associated with key in the tag string.
-// If there is no such key in the tag, Get returns the empty string.
-// If the tag does not have the conventional format, the value
-// returned by Get is unspecified.
-func getAllTags(tag reflect.StructTag) []*TV {
+// Copy from the method Get() from reflect.StructTag. But it returns all the
+// tags defined in the fields, not the value of the specific tag.
+func getAllTags(tag reflect.StructTag) []string {
 	// When modifying this code, also update the validateStructTag code
 	// in golang.org/x/tools/cmd/vet/structtag.go.
 
+	_tags := make([]string, 0)
 	for tag != "" {
 		// Skip leading space.
 		i := 0
@@ -52,13 +52,11 @@ func getAllTags(tag reflect.StructTag) []*TV {
 		qvalue := string(tag[:i+1])
 		tag = tag[i+1:]
 
-		if key == name {
-			value, err := strconv.Unquote(qvalue)
-			if err != nil {
-				break
+		if value, err := strconv.Unquote(qvalue); err == nil {
+			if strings.TrimSpace(value) != "" {
+				_tags = append(_tags, name)
 			}
-			return value
 		}
 	}
-	return ""
+	return _tags
 }

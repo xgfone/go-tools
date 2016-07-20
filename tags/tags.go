@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	// If true, output the procedure building the tags.
+	// If true, output the procedure building the tags. If having a question
+	// about the building, you can set it to true.
 	Debug = false
 )
 
@@ -102,6 +103,7 @@ func newTag(name string) *Tag {
 func (t *Tag) BuildTag(tag string) *Tag {
 	tag = strings.TrimSpace(tag)
 	if _, ok := t.t2f[tag]; ok {
+		debugf("Has parsed the tag[%v]", tag)
 		return t
 	}
 	t.t2f[tag] = make([]*FT, 0)
@@ -109,7 +111,7 @@ func (t *Tag) BuildTag(tag string) *Tag {
 		stag := (*field).Tag
 		_field := (*field).Field
 		if v := strings.TrimSpace(stag.Get(tag)); v != "" {
-			debugf("Building: Field:[%v] Tag:[%v] Value:[%v]", _field, tag, v)
+			debugf("Building: Field[%v] Tag[%v] Value[%v]", _field, tag, v)
 			value := &FT{Field: _field, Tag: tag, Value: v}
 			t.t2f[tag] = append(t.t2f[tag], value)
 			t.f2t[_field] = append(t.f2t[_field], value)
@@ -226,7 +228,8 @@ func (t Tag) GetAll() []FT {
 }
 
 // Audit the result that the manager parses the tags upon the struct.
-// It's almost used to debug.
+// It's almost used to debug. If having a question about the built result, you
+// can use it and print the returned value to check.
 //
 // For the example above, the returned format is like:
 // 	Name: TagTest
@@ -312,5 +315,21 @@ func (t Tag) TravelByField(field string, f func(string, string)) {
 		for _, ft := range fts {
 			f((*ft).Tag, (*ft).Value)
 		}
+	}
+}
+
+// Build all the tags in the struct automatically.
+//
+// The building procedure is:
+// 	(1) Travel all the exposed fields by the order which are defined in the struct.
+// 	(2) For each field, parse out its tags according to the order that they appear,
+// 		and in turn build them.
+//
+// 	Suggest to use this method firstly, unless you want to build the specific tags.
+func (t Tag) Build() {
+	for _, ft := range t.fields {
+		_tags := getAllTags((*ft).Tag)
+		debugf("Parsed the field[%v]: %v", (*ft).Field, _tags)
+		t.BuildTags(_tags)
 	}
 }

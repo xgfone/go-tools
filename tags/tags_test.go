@@ -12,8 +12,9 @@ func ExampleTag() {
 		F2 string `tag1:"aaa" tag2:"bbb" tag3:"ccc" tag5:"zzz"`
 		F3 string `tag1:"ddd" tag2:"eee" tag3:"fff" tag6:"yyy"`
 	}
-	// tags.Debug = true
+	//tags.Debug = true
 	tag := tags.NewTag(TagTest{})
+	//tag.Build() // Suggest to use this method.
 	tag.BuildTags([]string{"tag1", "tag2"}).BuildTag("tag5").BuildTag("tag6")
 	// fmt.Println(tag.Audit())
 
