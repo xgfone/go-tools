@@ -8,11 +8,20 @@ import (
 
 // Copy from the method Get() from reflect.StructTag. But it returns all the
 // tags defined in the fields, not the value of the specific tag.
-func getAllTags(tag reflect.StructTag) []string {
-	// When modifying this code, also update the validateStructTag code
-	// in golang.org/x/tools/cmd/vet/structtag.go.
+//
+// The type of the argument tag must be eithor string or reflect.StructTag.
+// Or panic.
+func GetAllTags(t interface{}) []TV {
+	var tag reflect.StructTag
+	if _tag, ok := t.(reflect.StructTag); ok {
+		tag = _tag
+	} else if _tag, ok := t.(string); ok {
+		tag = reflect.StructTag(_tag)
+	} else {
+		panic("The type of the argument must be eithor string or reflect.StructTag")
+	}
 
-	_tags := make([]string, 0)
+	_tags := make([]TV, 0)
 	for tag != "" {
 		// Skip leading space.
 		i := 0
@@ -54,7 +63,7 @@ func getAllTags(tag reflect.StructTag) []string {
 
 		if value, err := strconv.Unquote(qvalue); err == nil {
 			if strings.TrimSpace(value) != "" {
-				_tags = append(_tags, name)
+				_tags = append(_tags, TV{Tag: name, Value: value})
 			}
 		}
 	}

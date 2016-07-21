@@ -219,8 +219,9 @@ func (t Tag) GetAllByField(field string) (tv []TV) {
 // building.
 func (t Tag) GetAll() []FT {
 	ft := make([]FT, 0)
-	for field, tvs := range t.f2t {
-		for _, tv := range tvs {
+	for _, _ft := range t.fields {
+		field := (*_ft).Field
+		for _, tv := range t.f2t[field] {
 			ft = append(ft, FT{Field: field, Tag: (*tv).Tag, Value: (*tv).Value})
 		}
 	}
@@ -328,8 +329,10 @@ func (t Tag) TravelByField(field string, f func(string, string)) {
 // Suggest to use this method firstly, unless you want to build the specific tags.
 func (t *Tag) Build() {
 	for _, ft := range t.fields {
-		_tags := getAllTags((*ft).Tag)
-		debugf("Parsed the field[%v]: %v", (*ft).Field, _tags)
-		t.BuildTags(_tags)
+		_tags := GetAllTags((*ft).Tag)
+		for _, tv := range _tags {
+			debugf("Parsed the field[%v]: [%v]:[%v]", (*ft).Field, tv.Tag, tv.Value)
+			t.BuildTag(tv.Tag)
+		}
 	}
 }
