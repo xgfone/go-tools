@@ -49,7 +49,9 @@ func getMethod(t interface{}, method string) reflect.Value {
 
 // Return the method, `method`, of `t`. If not, return nil.
 //
-// Notice: The first argument of the returned function is the receiver of t.
+// Notice: The first argument of the returned function is the receiver. That's,
+// when calling the function, you must pass the receiver as the first argument
+// of that, but, which the passed receiver needs not be identical to t.
 func GetMethod(t interface{}, method string) interface{} {
 	m := getMethod(t, method)
 	if !m.IsValid() || m.IsNil() {
