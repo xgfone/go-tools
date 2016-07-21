@@ -257,7 +257,9 @@ func (t Tag) Audit() string {
 
 	buf.WriteString("\nFields:\n")
 	for _, ft := range t.fields {
-		buf.WriteString(fmt.Sprintf("%+v\n", *ft))
+		//buf.WriteString(fmt.Sprintf("%+v\n", *ft))
+		s := fmt.Sprintf("{Field:%v Tag:[%v]}\n", (*ft).Field, (*ft).Tag)
+		buf.WriteString(s)
 	}
 
 	buf.WriteString("\nField To Tag:\n")
@@ -329,8 +331,7 @@ func (t Tag) TravelByField(field string, f func(string, string)) {
 // Suggest to use this method firstly, unless you want to build the specific tags.
 func (t *Tag) Build() {
 	for _, ft := range t.fields {
-		_tags := GetAllTags((*ft).Tag)
-		for _, tv := range _tags {
+		for _, tv := range GetAllTags((*ft).Tag) {
 			debugf("Parsed the field[%v]: [%v]:[%v]", (*ft).Field, tv.Tag, tv.Value)
 			t.BuildTag(tv.Tag)
 		}
