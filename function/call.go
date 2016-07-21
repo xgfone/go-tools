@@ -11,8 +11,6 @@ import (
 )
 
 var (
-	TOTALGO uint = 9900
-
 	NotFuncError  = errors.New("The first argument is not the function")
 	ArgsNumError  = errors.New("The number of the argument is incorrect")
 	ArgsTypeError = errors.New("The type of the argument is incorrect")
