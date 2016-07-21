@@ -236,9 +236,9 @@ func (t Tag) GetAll() []FT {
 // 	Name: TagTest
 //
 // 	Fields:
-// 	{Field:F1 Tag:tag1:"123" tag2:"456" tag3:"789" tag4:"000"}
-// 	{Field:F2 Tag:tag1:"aaa" tag2:"bbb" tag3:"ccc" tag5:"zzz"}
-// 	{Field:F3 Tag:tag1:"ddd" tag2:"eee" tag3:"fff" tag6:"yyy"}
+// 	{Field:F1 Tag:[tag1:"123" tag2:"456" tag3:"789" tag4:"000"]}
+// 	{Field:F2 Tag:[tag1:"aaa" tag2:"bbb" tag3:"ccc" tag5:"zzz"]}
+// 	{Field:F3 Tag:[tag1:"ddd" tag2:"eee" tag3:"fff" tag6:"yyy"]}
 //
 // 	Field To Tag:
 // 	Field: F1, Value: [{F1 tag1 123}, {F1 tag2 456}]
