@@ -88,7 +88,7 @@ func UDPServerForever(network, addr string, size int, handle interface{}, wrap f
 		return errors.New("handle and wrap neither be nil.")
 	}
 
-	_logger.Info("Listen on %v", addr)
+	_logger.Info("Listening on %v", addr)
 
 	if wrap != nil {
 		if wrap(conn) {

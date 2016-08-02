@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	// If true, output the verbose information.
+	// If true, output the verbose information.(deprecated)
 	Debug   bool
 	_logger *logger
 )
@@ -25,10 +25,6 @@ func (l logger) Debug(format string, args ...interface{}) {
 }
 
 func (l logger) Output(level int, format string, args ...interface{}) {
-	if !Debug {
-		return
-	}
-
 	var prefix string
 	if level <= 10 {
 		prefix = "Debug"
