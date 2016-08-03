@@ -1,4 +1,6 @@
-// Convert a string to bool, int, uint, float, etc.
+// Convert something from a string to `bool`, `int`, `uint`, `float`,
+// or from a certain type to string, etc.
+//
 // If failed, return their ZERO value.
 //
 package parse
