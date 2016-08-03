@@ -1,4 +1,4 @@
-// Get a value from a slice.
+// Get a value from a slice and check whether a value exists in a slice.
 //
 // If the index is out-of-bounds, return the default value.
 //
@@ -6,6 +6,8 @@ package slice
 
 import (
 	"reflect"
+
+	"github.com/xgfone/go-tools/compare"
 )
 
 func setValue(out interface{}, slice interface{}, index int, _default interface{}, yes bool) bool {
@@ -35,7 +37,7 @@ func setValue(out interface{}, slice interface{}, index int, _default interface{
 }
 
 // Same as SetValue, but if index >= len(slice), set the value of out to _default,
-// and return true.
+// and return true always.
 func SetValueWithDefault(out interface{}, slice interface{}, index int, _default interface{}) bool {
 	return setValue(out, slice, index, _default, true)
 }
@@ -47,4 +49,44 @@ func SetValueWithDefault(out interface{}, slice interface{}, index int, _default
 // Panic for other cases.
 func SetValue(out interface{}, slice interface{}, index int) bool {
 	return setValue(out, slice, index, nil, false)
+}
+
+// Return true if value is in slice. Or false. Also reutrn false if value or
+// slice is nil, or the length of slice is 0.
+//
+// The type of value must be consistent with the type of the element of slice.
+// Or panic.
+func In(value interface{}, slice interface{}) bool {
+	if value == nil || slice == nil {
+		return false
+	}
+
+	stype := reflect.ValueOf(slice)
+	if stype.Kind() == reflect.Ptr {
+		stype = stype.Elem()
+	}
+
+	if stype.Kind() != reflect.Array && stype.Kind() != reflect.Slice {
+		panic("The second argument is not a slice or an array")
+	}
+
+	slen := stype.Len()
+	if slen == 0 {
+		return false
+	}
+
+	vv := reflect.ValueOf(value)
+	if stype.Index(0).Kind() != reflect.ValueOf(value).Kind() {
+		panic("The type of value must be consistent with the type of the element of slice")
+	}
+
+	for i := 0; i < slen; i++ {
+		v1 := vv.Interface()
+		v2 := stype.Index(i).Interface()
+		if compare.EQ(v1, v2) {
+			return true
+		}
+	}
+
+	return false
 }

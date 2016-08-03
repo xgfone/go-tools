@@ -45,13 +45,23 @@ func ExampleSetValue() {
 func ExampleSetValueWithDefault() {
 	ss := []int{1, 2, 3, 4, 5, 6}
 	out := 0
-	ok1 := slice.SetValue(&out, ss, 1, -1)
+	ok1 := slice.SetValueWithDefault(&out, ss, 1, -1)
 	fmt.Println(out, ok1)
 
 	out = 0
-	ok2 := slice.SetValue(&out, ss, 6, -1)
+	ok2 := slice.SetValueWithDefault(&out, ss, 6, -1)
 	fmt.Println(out, ok2)
 	// Output:
 	// 2 true
-	// -1 fasle
+	// -1 true
+}
+
+func ExampleIn() {
+	ss := []string{"hello", "world"}
+	fmt.Println(slice.In("hello", ss))
+	fmt.Println(slice.In("aaron", ss))
+
+	// Output:
+	// true
+	// false
 }

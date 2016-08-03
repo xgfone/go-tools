@@ -30,7 +30,7 @@ net/server   | The simple `TCP` / `UDP` server.
 parse        | Convert a string to `bool`, `int`, `uint`, `float`, etc.
 pool         | Some simple convenient pools, such as `BufPool`, `GoPool`, etc.
 tags         | Manage the tags in a struct.
-slice        | Get a value from a slice.
+slice        | Get a value from a slice and check whether a value exists in a slice.
 tbucket      | The Simple Token Bucket like `HTB` in Linux `TC`.
 values       | Get a value from a `slice` or `map`.
 
