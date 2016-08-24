@@ -1,0 +1,36 @@
+package worker_test
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/xgfone/go-tools/worker"
+)
+
+func ExampleDispatcher() {
+	JobQueue := make(chan worker.Job, 2)
+	dispatcher := worker.NewDispatcher(5, JobQueue, func(job worker.Job) {
+		//fmt.Printf("Receive job: %v\n", job.Payload)
+		fmt.Printf("Receive job\n")
+	})
+	dispatcher.Run()
+
+	for _, i := range []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10} {
+		JobQueue <- worker.Job{Payload: i}
+	}
+
+	time.Sleep(time.Second)
+	dispatcher.Stop()
+
+	// Output:
+	// Receive job
+	// Receive job
+	// Receive job
+	// Receive job
+	// Receive job
+	// Receive job
+	// Receive job
+	// Receive job
+	// Receive job
+	// Receive job
+}
