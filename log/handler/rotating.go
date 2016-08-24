@@ -104,9 +104,12 @@ func (self TimedRotatingFile) shouldRollover() bool {
 	return false
 }
 
-func (self *TimedRotatingFile) close() {
-	self.w.Close()
+func (self *TimedRotatingFile) Close() (err error) {
+	if err = self.w.Close(); err != nil {
+		return
+	}
 	self.w = nil
+	return
 }
 
 func (self *TimedRotatingFile) open() error {
@@ -119,8 +122,10 @@ func (self *TimedRotatingFile) open() error {
 	}
 }
 
-func (self *TimedRotatingFile) doRollover() error {
-	self.close()
+func (self *TimedRotatingFile) doRollover() (err error) {
+	if err = self.Close(); err != nil {
+		return
+	}
 
 	dstTime := self.rotatorAt - self.interval
 	dstPath := self.filename + "." + time.Unix(dstTime, 0).Format(time2fmt[self.when])
@@ -129,8 +134,7 @@ func (self *TimedRotatingFile) doRollover() error {
 	}
 
 	if file.IsFile(self.filename) {
-		err := os.Rename(self.filename, dstPath)
-		if err != nil {
+		if err = os.Rename(self.filename, dstPath); err != nil {
 			return err
 		}
 	}
