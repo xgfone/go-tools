@@ -29,7 +29,8 @@ var (
 	}
 )
 
-// The file handler based on the timed rotating.
+// A file handler based on the timed rotating, like
+// `logging.handlers.TimedRotatingFileHandler` in Python.
 // Now only support the rotation by day.
 type TimedRotatingFile struct {
 	sync.Mutex
