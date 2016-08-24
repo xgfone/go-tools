@@ -1,3 +1,4 @@
+// The handler of the logger.
 package handler
 
 import (
@@ -28,6 +29,8 @@ var (
 	}
 )
 
+// The file handler based on the timed rotating.
+// Now only support the rotation by day.
 type TimedRotatingFile struct {
 	sync.Mutex
 	w io.WriteCloser
@@ -40,6 +43,7 @@ type TimedRotatingFile struct {
 	extRE       *regexp.Regexp
 }
 
+// Create a new TimedRotatingFile.
 func NewTimedRotatingFile(filename string) *TimedRotatingFile {
 	filename, _ = filepath.Abs(filename)
 	t := TimedRotatingFile{filename: filename, when: day, extRE: dayRE}
@@ -50,10 +54,12 @@ func NewTimedRotatingFile(filename string) *TimedRotatingFile {
 	return &t
 }
 
+// Write the string data into the file, which may rotate the file if necessary.
 func (self *TimedRotatingFile) WriteString(data string) (n int, err error) {
 	return self.Write([]byte(data))
 }
 
+// Write the byte slice data into the file, which may rotate the file if necessary.
 func (self *TimedRotatingFile) Write(data []byte) (n int, err error) {
 	self.Lock()
 	defer self.Unlock()
@@ -67,11 +73,13 @@ func (self *TimedRotatingFile) Write(data []byte) (n int, err error) {
 	return self.w.Write(data)
 }
 
+// Set the number of the backup file. The default is 31.
 func (self *TimedRotatingFile) SetBackupCount(num int) *TimedRotatingFile {
 	self.backupCount = num
 	return self
 }
 
+// Set the interval day number to rotate. The default is 1.
 func (self *TimedRotatingFile) SetInterval(interval int) *TimedRotatingFile {
 	self.interval = int64(interval) * self.when
 	self.reComputeRollover()
