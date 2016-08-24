@@ -2,6 +2,7 @@
 package handler
 
 import (
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -27,6 +28,10 @@ var (
 	time2fmt = map[int64]string{
 		day: DAY_FMT,
 	}
+)
+
+var (
+	ErrFileNotOpen = errors.New("The file is not opened")
 )
 
 // A file handler based on the timed rotating, like
@@ -64,6 +69,11 @@ func (self *TimedRotatingFile) WriteString(data string) (n int, err error) {
 func (self *TimedRotatingFile) Write(data []byte) (n int, err error) {
 	self.Lock()
 	defer self.Unlock()
+
+	if self.w == nil {
+		err = ErrFileNotOpen
+		return
+	}
 
 	if self.shouldRollover() {
 		if err = self.doRollover(); err != nil {
