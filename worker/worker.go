@@ -1,4 +1,4 @@
-// A worker pool with the dispatcher.
+// A worker pool with the dispatcher based on channel.
 package worker
 
 // Job represents the job to be run
