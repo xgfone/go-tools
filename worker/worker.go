@@ -1,3 +1,4 @@
+// A worker pool with the dispatcher.
 package worker
 
 // Job represents the job to be run
