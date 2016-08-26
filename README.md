@@ -28,6 +28,7 @@ method       | Call the method of a type dynamically.
 net/endian   | Convert between `int/uint` and the `big/little` endian.
 net/mac      | Standardize the mac address.
 net/server   | The simple `TCP` / `UDP` server.
+pagination   | It is usually used to compute the web pagination.
 parse        | Convert something from a string to `bool`, `int`, `uint`, `float`, or from a certain type to string, etc.
 pool         | Some simple convenient pools, such as `BufPool`, `GoPool`, etc.
 tags         | Manage the tags in a struct.
