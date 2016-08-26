@@ -17,8 +17,8 @@ import (
 const (
 	DAY_FMT = "2006-01-02"
 
-	FILE_MODE = os.O_APPEND | os.O_CREATE | os.O_WRONLY
-	FILE_PERM = os.ModePerm
+	FILE_MODE             = os.O_APPEND | os.O_CREATE | os.O_WRONLY
+	FILE_PERM os.FileMode = 0666
 )
 
 var (
