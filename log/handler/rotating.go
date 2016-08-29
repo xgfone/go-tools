@@ -50,6 +50,8 @@ type TimedRotatingFile struct {
 }
 
 // Create a new TimedRotatingFile.
+//
+// If failed, it will panic.
 func NewTimedRotatingFile(filename string) *TimedRotatingFile {
 	filename, _ = filepath.Abs(filename)
 	t := TimedRotatingFile{filename: filename, when: day, extRE: dayRE}
