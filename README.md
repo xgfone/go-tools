@@ -23,6 +23,7 @@ exception    | Exception handler like `"parent.child.sub-child...sub-child"`.
 extremum     | Get the maximal or the minimal of both the values.
 file         | Some convenient functions about the file operation.
 function     | Call a function dynamically.
+io2          | The assistant functions of io.
 log/handler  | The logger handler, such as `TimedRotatingFile` like `logging.handlers.TimedRotatingFileHandler` in Python.
 method       | Call the method of a type dynamically.
 net/mac      | Standardize the mac address.
