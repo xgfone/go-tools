@@ -25,7 +25,6 @@ file         | Some convenient functions about the file operation.
 function     | Call a function dynamically.
 log/handler  | The logger handler, such as `TimedRotatingFile` like `logging.handlers.TimedRotatingFileHandler` in Python.
 method       | Call the method of a type dynamically.
-net/endian   | Convert between `int/uint` and the `big/little` endian.
 net/mac      | Standardize the mac address.
 net/server   | The simple `TCP` / `UDP` server.
 pagination   | It is usually used to compute the web pagination.
