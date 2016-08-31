@@ -14,6 +14,7 @@
 //
 // This package is from https://github.com/Unknwon/com/regex.go
 
+// Some validations, such as email, url, etc.
 package validation
 
 import "regexp"

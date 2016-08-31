@@ -1,3 +1,4 @@
+// Some utility functions, which are classified to a certain package.
 package utils
 
 import "runtime"

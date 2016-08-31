@@ -31,9 +31,11 @@ net/server   | The simple `TCP` / `UDP` server.
 pagination   | It is usually used to compute the web pagination.
 parse        | Convert something from a string to `bool`, `int`, `uint`, `float`, or from a certain type to string, etc.
 pool         | Some simple convenient pools, such as `BufPool`, `GoPool`, etc.
-tags         | Manage the tags in a struct.
 slice        | Get a value from a slice and check whether a value exists in a slice.
+tags         | Manage the tags in a struct.
 tbucket      | The Simple Token Bucket like `HTB` in Linux `TC`.
+utils        | Some utility functions, which are classified to a certain package.
+validation   | Some validations, such as email, url, etc.
 values       | Get a value from a `slice` or `map`.
 worker       | A worker pool with the dispatcher based on channel.
 
