@@ -1,20 +1,16 @@
 // A worker pool with the dispatcher based on channel.
 package worker
 
-// Job represents the job to be run
-type Job struct {
-	Payload interface{}
-}
-
 // The task interface to handle the job.
 type Task interface {
-	Handle(Job)
+	// The argument is the job object.
+	Handle(interface{})
 }
 
 // Worker represents the worker that executes the job
-type Worker struct {
-	workerPool chan chan Job
-	jobChannel chan Job
+type worker struct {
+	workerPool chan chan interface{}
+	jobChannel chan interface{}
 	quit       chan bool
 	handler    interface{}
 }
@@ -24,10 +20,10 @@ type Worker struct {
 // The worker registers its job channel into workPool to get the job,
 // then handle it by handler, either which implements the interface Task,
 // or whose type is func(Job).
-func NewWorker(workerPool chan chan Job, handler interface{}) *Worker {
-	return &Worker{
+func newWorker(workerPool chan chan interface{}, handler interface{}) *worker {
+	return &worker{
 		workerPool: workerPool,
-		jobChannel: make(chan Job),
+		jobChannel: make(chan interface{}),
 		quit:       make(chan bool),
 		handler:    handler,
 	}
@@ -35,7 +31,7 @@ func NewWorker(workerPool chan chan Job, handler interface{}) *Worker {
 
 // Start method starts the run loop for the worker, listening for a quit channel in
 // case we need to stop it
-func (w *Worker) Start() {
+func (w *worker) Start() {
 	go func() {
 		for {
 			// register the current worker into the worker queue.
@@ -53,7 +49,7 @@ func (w *Worker) Start() {
 	}()
 }
 
-func (w *Worker) handle(job Job) {
+func (w *worker) handle(job interface{}) {
 	recovered := true
 
 	defer func() {
@@ -64,7 +60,7 @@ func (w *Worker) handle(job Job) {
 
 	if h, ok := w.handler.(Task); ok {
 		h.Handle(job)
-	} else if h, ok := w.handler.(func(Job)); ok {
+	} else if h, ok := w.handler.(func(interface{})); ok {
 		h(job)
 	} else {
 		recovered = false
@@ -73,7 +69,7 @@ func (w *Worker) handle(job Job) {
 }
 
 // Stop signals the worker to stop listening for work requests.
-func (w *Worker) Stop() {
+func (w *worker) Stop() {
 	go func() {
 		w.quit <- true
 	}()
