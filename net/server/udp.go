@@ -3,8 +3,6 @@ package server
 import (
 	"errors"
 	"net"
-
-	"github.com/xgfone/go-tools/pool"
 )
 
 type UHandle interface {
@@ -15,36 +13,27 @@ type UHandle interface {
 	Handle(buf []byte, addr *net.UDPAddr) []byte
 }
 
-func UDPWithError(conn *net.UDPConn, handle interface{}, buf []byte, addr *net.UDPAddr) {
-	yes := true
+// Wrap the function handler to the interface THandle.
+type UHandleFunc (func([]byte, *net.UDPAddr) []byte)
+
+func (h UHandleFunc) Handle(buf []byte, addr *net.UDPAddr) []byte {
+	return h(buf, addr)
+}
+
+func UDPWithError(conn *net.UDPConn, handler UHandle, buf []byte, addr *net.UDPAddr) {
 	defer func() {
 		if err := recover(); err != nil {
 			_logger.Error("Get a error: %v", err)
-			if !yes {
-				panic(err)
-			}
 		}
 	}()
 
-	var result []byte
-	if handler, ok := handle.(UHandle); ok {
-		result = handler.Handle(buf, addr)
-	} else if handler, ok := handle.(func([]byte, *net.UDPAddr) []byte); ok {
-		result = handler(buf, addr)
-	} else {
-		yes = false
-		panic("Don't support the handler")
-	}
-
 	// If returning nil, don't send the response to the client.
-	if result == nil {
-		return
-	}
-
-	if n, err := conn.WriteToUDP(result, addr); err != nil {
-		_logger.Error("Failed to send the data to %s: %v", addr, err)
-	} else {
-		_logger.Debug("Send %v bytes successfully", n)
+	if result := handler.Handle(buf, addr); result != nil {
+		if n, err := conn.WriteToUDP(result, addr); err != nil {
+			_logger.Error("Failed to send the data to %s: %v", addr, err)
+		} else {
+			_logger.Debug("Send %v bytes successfully", n)
+		}
 	}
 }
 
@@ -68,7 +57,19 @@ func UDPWithError(conn *net.UDPConn, handle interface{}, buf []byte, addr *net.U
 //
 //    err1 := server.UDPServerForever("udp", ":8000", 8192, Handler{}, nil)
 //    fmt.Println(err1)
-func UDPServerForever(network, addr string, size int, handle interface{}, wrap func(*net.UDPConn) bool) error {
+func UDPServerForever(network, addr string, size int, handle interface{}) error {
+	var handler UHandle
+	var wrap func(*net.UDPConn) error
+	if _handler, ok := handle.(UHandle); ok {
+		handler = _handler
+	} else if _handler, ok := handle.(func([]byte, *net.UDPAddr) []byte); ok {
+		handler = UHandleFunc(_handler)
+	} else if _wrap, ok := handle.(func(*net.UDPConn) error); ok {
+		wrap = _wrap
+	} else {
+		panic("Don't support the handler")
+	}
+
 	var conn *net.UDPConn
 	if _addr, err := net.ResolveUDPAddr(network, addr); err != nil {
 		return err
@@ -77,41 +78,25 @@ func UDPServerForever(network, addr string, size int, handle interface{}, wrap f
 			return err
 		}
 	}
-
 	defer conn.Close()
+	_logger.Info("Listening on %v", addr)
+
+	if wrap != nil {
+		return wrap(conn)
+	}
 
 	if size < 1 || size > 65536 {
 		return errors.New("The size of the buffer is limited between 1 and 65536.")
 	}
-
-	if handle == nil && wrap == nil {
-		return errors.New("handle and wrap neither be nil.")
-	}
-
-	_logger.Info("Listening on %v", addr)
-
-	if wrap != nil {
-		if wrap(conn) {
-			return nil
-		}
-	}
-
-	if handle == nil {
-		return nil
-	}
-
-	_pool := pool.NewBufPool(size)
+	buf := make([]byte, size)
 
 	for {
-		buf := _pool.Get()
 		num, caddr, err := conn.ReadFromUDP(buf)
 		if err != nil {
 			_logger.Error("Failed to read the UDP data: %v", err)
 		} else {
-			//go UDPWithError(conn, handle, buf[:num], caddr)
-			UDPWithError(conn, handle, buf[:num], caddr)
+			UDPWithError(conn, handler, buf[:num], caddr)
 		}
-		_pool.Put(buf)
 	}
 
 	// Never execute forever.

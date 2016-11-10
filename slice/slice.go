@@ -55,7 +55,8 @@ func SetValue(out interface{}, slice interface{}, index int) bool {
 // slice is nil, or the length of slice is 0.
 //
 // The type of value must be consistent with the type of the element of slice.
-// Or panic.
+// Or panic. If the type is the customizable struct, it MUST implement the interface
+// Comparer in the package "github.com/xgfone/go-tools/compare".
 func In(value interface{}, slice interface{}) bool {
 	if value == nil || slice == nil {
 		return false

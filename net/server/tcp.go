@@ -11,32 +11,26 @@ type THandle interface {
 	Handle(conn *net.TCPConn)
 }
 
+// Wrap the function handler to the interface THandle.
+type THandleFunc (func(*net.TCPConn))
+
+func (h THandleFunc) Handle(conn *net.TCPConn) {
+	h(conn)
+}
+
 // Wrap a panic, only print it, but ignore it.
-//
-// handle is a function, whose type is `func (*net.TCPConn)`, or a struct, which
-// has implemented the interface `THandle`.
-// wrap is the wrapper of *net.TCPConn, which sets the socket connection, and
-// is used by TCPServerForever. In general, it is nil.
-func TCPWrapError(conn *net.TCPConn, handle interface{}) {
-	yes := true
+func TCPWrapError(conn *net.TCPConn, handler THandle) {
 	defer func() {
 		if err := recover(); err != nil {
 			_logger.Error("Get a error: %v", err)
-			if !yes {
-				panic(err)
-			}
+		}
+
+		if conn != nil {
+			conn.Close()
 		}
 	}()
-	defer conn.Close()
 
-	if handler, ok := handle.(THandle); ok {
-		handler.Handle(conn)
-	} else if handler, ok := handle.(func(*net.TCPConn)); ok {
-		handler(conn)
-	} else {
-		yes = false
-		panic("Don't support the handler")
-	}
+	handler.Handle(conn)
 }
 
 // Start a TCP server and never return. Return an error if returns.
@@ -46,8 +40,17 @@ func TCPWrapError(conn *net.TCPConn, handle interface{}) {
 // size is the number of the pool. If it's 0, it's infinite.
 // handle is the handler to handle the connection came from the client.
 // handle is either a function whose type is func(*net.TCPConn), or a struct
-// which implements the interface, THandle.
+// which implements the interface, THandle. Of course, you may wrap it by THandleFunc.
 func TCPServerForever(network, addr string, size int, handle interface{}) error {
+	var handler THandle
+	if _handler, ok := handle.(THandle); !ok {
+		handler = _handler
+	} else if _handler, ok := handle.(func(*net.TCPConn)); ok {
+		handler = THandleFunc(_handler)
+	} else {
+		panic("Don't support the handler")
+	}
+
 	var ln *net.TCPListener
 	if _addr, err := net.ResolveTCPAddr(network, addr); err != nil {
 		return err
@@ -74,9 +77,9 @@ func TCPServerForever(network, addr string, size int, handle interface{}) error 
 		} else {
 			_logger.Debug("Get a connection from %v", conn.RemoteAddr())
 			if gopool == nil {
-				go TCPWrapError(conn, handle)
+				go TCPWrapError(conn, handler)
 			} else {
-				if err := gopool.Go(TCPWrapError, conn, handle); err != nil {
+				if err := gopool.Go(TCPWrapError, conn, handler); err != nil {
 					_logger.Error("Failed to run goroutine: %v", err)
 				}
 			}
