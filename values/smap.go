@@ -184,6 +184,8 @@ func (m SMap) Slice(k string) (Slice, bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(Slice); ok {
 			return v2, true
+		} else if v3, ok := v1.([]interface{}); ok {
+			return Slice(v3), true
 		}
 	}
 	return nil, false
@@ -193,6 +195,8 @@ func (m SMap) SMap(k string) (SMap, bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(SMap); ok {
 			return v2, true
+		} else if v3, ok := v1.(map[string]interface{}); ok {
+			return SMap(v3), true
 		}
 	}
 	return nil, false

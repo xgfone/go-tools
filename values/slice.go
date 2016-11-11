@@ -161,6 +161,8 @@ func (s Slice) Interface(i int) (interface{}, bool) {
 func (s Slice) Slice(i int) (Slice, bool) {
 	if v, ok := s[i].(Slice); ok {
 		return v, true
+	} else if v, ok := s[i].([]interface{}); ok {
+		return Slice(v), true
 	} else {
 		return nil, false
 	}
@@ -169,6 +171,8 @@ func (s Slice) Slice(i int) (Slice, bool) {
 func (s Slice) SMap(i int) (SMap, bool) {
 	if v, ok := s[i].(SMap); ok {
 		return v, true
+	} else if v, ok := s[i].(map[string]interface{}); ok {
+		return SMap(v), true
 	} else {
 		return nil, false
 	}
