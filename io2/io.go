@@ -17,6 +17,7 @@ func readN2Buf(r io.Reader, buf []byte) (m int, err error) {
 }
 
 // ReadN2Buf must read and return len(buf) bytes from r to buf.
+// Deprecated, see io.ReadFull.
 //
 // Return nil if reading len(n) bytes successfully, or non-nil.
 //
@@ -27,6 +28,7 @@ func ReadN2Buf(r io.Reader, buf []byte) error {
 }
 
 // ReadN is same as ReadN2Buf, but return the read buffer.
+// Deprecated, see io.ReadFull.
 //
 // Return the read bytes if failed.
 func ReadN(r io.Reader, n int) ([]byte, error) {
@@ -36,6 +38,7 @@ func ReadN(r io.Reader, n int) ([]byte, error) {
 }
 
 // WriteN must write n bytes to w.
+// Deprecated, see io.CopyN.
 //
 // Return nil if writing len(n) bytes successfully, or non-nil.
 func WriteN(w io.Writer, data []byte) error {
