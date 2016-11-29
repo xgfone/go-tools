@@ -1,6 +1,8 @@
 // The manager of the lifecycle of some apps in a program.
 package lifecycle
 
+import "errors"
+
 // LifeCycleManager manage the lifecycle of some apps in a program.
 type LifeCycleManager struct {
 	callbacks []func()
@@ -17,7 +19,14 @@ func NewLifeCycleManager() *LifeCycleManager {
 //
 // The parameter in is used to notice the app to end. And out is used to notice
 // the manager that the app has cleaned and ended successfully.
+//
+// NOTICE: The capacity of in and out must all be ZERO, that's, the two channels
+// must be synchronized.
 func (self *LifeCycleManager) RegisterChannel(in chan<- interface{}, out <-chan interface{}) *LifeCycleManager {
+	if cap(in) != 0 || cap(out) != 0 {
+		panic(errors.New("The capacity of the channel is not 0"))
+	}
+
 	return self.Register(func() {
 		in <- true
 		<-out
