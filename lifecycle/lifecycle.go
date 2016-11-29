@@ -17,8 +17,8 @@ func NewLifeCycleManager() *LifeCycleManager {
 //
 // The parameter in is used to notice the app to end. And out is used to notice
 // the manager that the app has cleaned and ended successfully.
-func (self *LifeCycleManager) RegisterChannel(in chan<- interface{}, out <-chan interface{}) {
-	self.Register(func() {
+func (self *LifeCycleManager) RegisterChannel(in chan<- interface{}, out <-chan interface{}) *LifeCycleManager {
+	return self.Register(func() {
 		in <- true
 		<-out
 	})
