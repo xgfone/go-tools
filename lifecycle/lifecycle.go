@@ -1,4 +1,4 @@
-// The manager of the lifecycle of a program.
+// The manager of the lifecycle of some apps in a program.
 package lifecycle
 
 // LifeCycleManager manage the lifecycle of some apps in a program.
