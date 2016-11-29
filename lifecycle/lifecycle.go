@@ -33,9 +33,21 @@ func (self *LifeCycleManager) Register(f func()) *LifeCycleManager {
 	return self
 }
 
-// Stop terminates all the apps.
+// Stop terminates and cleans all the apps.
+//
+// This method will be blocked until all the apps finish the clean.
+// If the cleaning function of a certain app panics, ignore it and continue to
+// call the cleaning function of the next app.
 func (self LifeCycleManager) Stop() {
 	for _, f := range self.callbacks {
-		f()
+		// f()
+		callFuncAndIgnorePanic(f)
 	}
+}
+
+func callFuncAndIgnorePanic(f func()) {
+	defer func() {
+		recover()
+	}()
+	f()
 }
