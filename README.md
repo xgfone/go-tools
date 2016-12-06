@@ -27,8 +27,8 @@ io2          | The assistant functions of io.
 lifecycle    | The manager of the lifecycle of some apps in a program.
 log/handler  | The logger handler, such as `TimedRotatingFile` like `logging.handlers.TimedRotatingFileHandler` in Python.
 method       | Call the method of a type dynamically.
-net/mac      | Standardize the mac address.
-net/server   | The simple `TCP` / `UDP` server.
+nets/mac     | Standardize the mac address.
+nets/server  | The simple `TCP` / `UDP` server.
 pagination   | It is usually used to compute the web pagination.
 parse        | Convert something from a string to `bool`, `int`, `uint`, `float`, or from a certain type to string, etc.
 pool         | Some simple convenient pools, such as `BufPool`, `GoPool`, etc.
