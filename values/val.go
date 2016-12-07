@@ -4,7 +4,7 @@
 //
 package values
 
-import "reflect"
+import "text/template"
 
 var (
 	FZERO32 float32
@@ -19,36 +19,37 @@ var (
 // no element. For the array, it is ZERO if the value has no element.
 // For string, the empty string is ZERO. For struct, it always is false.
 func IsZero(v interface{}) bool {
-	_v := reflect.ValueOf(v)
-	switch _v.Kind() {
-	case reflect.Bool:
-		return !_v.Bool()
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return _v.Int() == 0
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return _v.Uint() == 0
-	case reflect.Complex64, reflect.Complex128:
-		vv := _v.Complex()
-		if real(vv) == 0.0 && imag(vv) == 0.0 {
-			return true
-		}
-		return false
-	case reflect.Chan, reflect.Func, reflect.Map, reflect.Slice:
-		return (_v.IsNil() || _v.Len() == 0)
-	case reflect.Ptr:
-		return _v.IsNil()
-	case reflect.Interface:
-		return _v.IsNil()
-	case reflect.Array, reflect.String:
-		return _v.Len() == 0
-	case reflect.Struct:
-		return false
-	case reflect.Uintptr:
-		return _v.UnsafeAddr() == 0
+	ok, _ := template.IsTrue(v)
+	return !ok
 
-	case reflect.Invalid: // We think it as the interface nil
-		return true
-	}
-
-	return false
+	// _v := reflect.ValueOf(v)
+	// switch _v.Kind() {
+	// case reflect.Bool:
+	// 	return !_v.Bool()
+	// case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+	// 	return _v.Int() == 0
+	// case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+	// 	return _v.Uint() == 0
+	// case reflect.Complex64, reflect.Complex128:
+	// 	vv := _v.Complex()
+	// 	if real(vv) == 0.0 && imag(vv) == 0.0 {
+	// 		return true
+	// 	}
+	// 	return false
+	// case reflect.Chan, reflect.Func, reflect.Map, reflect.Slice:
+	// 	return (_v.IsNil() || _v.Len() == 0)
+	// case reflect.Ptr:
+	// 	return _v.IsNil()
+	// case reflect.Interface:
+	// 	return _v.IsNil()
+	// case reflect.Array, reflect.String:
+	// 	return _v.Len() == 0
+	// case reflect.Struct:
+	// 	return false
+	// case reflect.Uintptr:
+	// 	return _v.UnsafeAddr() == 0
+	// case reflect.Invalid: // We think it as the interface nil
+	// 	return true
+	// }
+	// return false
 }
