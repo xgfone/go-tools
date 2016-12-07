@@ -4,17 +4,19 @@ package utils
 import "runtime"
 
 var (
-	default_nls = "\n"
-
-	newlines map[string]string
+	Mac     = "\r"
+	Unix    = "\n"
+	Windows = "\r\n"
 )
+
+var newlines map[string]string
 
 func init() {
 	newlines = map[string]string{
-		"windows": "\r\n",
-		"darwin":  "\r",
-		"linux":   "\n",
-		"freebsd": "\n",
+		"windows": Windows,
+		"darwin":  Mac,
+		"linux":   Unix,
+		"freebsd": Unix,
 	}
 }
 
@@ -24,6 +26,6 @@ func NewLine() string {
 	if v, ok := newlines[runtime.GOOS]; ok {
 		return v
 	} else {
-		return default_nls
+		return Unix
 	}
 }
