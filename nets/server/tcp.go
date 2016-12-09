@@ -1,11 +1,7 @@
 // The simple TCP/UDP server.
 package server
 
-import (
-	"net"
-
-	"github.com/xgfone/go-tools/pool"
-)
+import "net"
 
 type THandle interface {
 	Handle(conn *net.TCPConn)
@@ -41,7 +37,7 @@ func TCPWrapError(conn *net.TCPConn, handler THandle) {
 // handle is the handler to handle the connection came from the client.
 // handle is either a function whose type is func(*net.TCPConn), or a struct
 // which implements the interface, THandle. Of course, you may wrap it by THandleFunc.
-func TCPServerForever(network, addr string, size int, handle interface{}) error {
+func TCPServerForever(network, addr string, handle interface{}) error {
 	var handler THandle
 	if _handler, ok := handle.(THandle); !ok {
 		handler = _handler
@@ -62,12 +58,6 @@ func TCPServerForever(network, addr string, size int, handle interface{}) error 
 
 	defer ln.Close()
 
-	var gopool *pool.GoPool
-	if size > 0 {
-		gopool = pool.NewGoPool()
-		gopool.SetMaxLimit(uint(size))
-	}
-
 	_logger.Info("Listening on %v", addr)
 
 	for {
@@ -76,13 +66,7 @@ func TCPServerForever(network, addr string, size int, handle interface{}) error 
 			_logger.Error("Failed to AcceptTCP: %v", err)
 		} else {
 			_logger.Debug("Get a connection from %v", conn.RemoteAddr())
-			if gopool == nil {
-				go TCPWrapError(conn, handler)
-			} else {
-				if err := gopool.Go(TCPWrapError, conn, handler); err != nil {
-					_logger.Error("Failed to run goroutine: %v", err)
-				}
-			}
+			go TCPWrapError(conn, handler)
 		}
 	}
 
