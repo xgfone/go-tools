@@ -3,6 +3,10 @@ package values
 type Slice []interface{}
 
 func (s Slice) Byte(i int) (byte, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(byte); ok {
 		return v, true
 	} else {
@@ -26,6 +30,10 @@ func (s Slice) ByteWithDefault(i int, _default byte) byte {
 }
 
 func (s Slice) Rune(i int) (rune, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(rune); ok {
 		return v, true
 	} else {
@@ -49,6 +57,10 @@ func (s Slice) RuneWithDefault(i int, _default rune) rune {
 }
 
 func (s Slice) Int8(i int) (int8, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(int8); ok {
 		return v, true
 	} else {
@@ -72,6 +84,10 @@ func (s Slice) Int8WithDefault(i int, _default int8) int8 {
 }
 
 func (s Slice) Int16(i int) (int16, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(int16); ok {
 		return v, true
 	} else {
@@ -95,6 +111,10 @@ func (s Slice) Int16WithDefault(i int, _default int16) int16 {
 }
 
 func (s Slice) Int32(i int) (int32, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(int32); ok {
 		return v, true
 	} else {
@@ -118,6 +138,10 @@ func (s Slice) Int32WithDefault(i int, _default int32) int32 {
 }
 
 func (s Slice) Int64(i int) (int64, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(int64); ok {
 		return v, true
 	} else {
@@ -141,6 +165,10 @@ func (s Slice) Int64WithDefault(i int, _default int64) int64 {
 }
 
 func (s Slice) Int(i int) (int, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(int); ok {
 		return v, true
 	} else {
@@ -164,6 +192,10 @@ func (s Slice) IntWithDefault(i int, _default int) int {
 }
 
 func (s Slice) UInt8(i int) (uint8, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(uint8); ok {
 		return v, true
 	} else {
@@ -187,6 +219,10 @@ func (s Slice) UInt8WithDefault(i int, _default uint8) uint8 {
 }
 
 func (s Slice) UInt16(i int) (uint16, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(uint16); ok {
 		return v, true
 	} else {
@@ -210,6 +246,10 @@ func (s Slice) UInt16WithDefault(i int, _default uint16) uint16 {
 }
 
 func (s Slice) UInt32(i int) (uint32, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(uint32); ok {
 		return v, true
 	} else {
@@ -233,6 +273,10 @@ func (s Slice) UInt32WithDefault(i int, _default uint32) uint32 {
 }
 
 func (s Slice) UInt64(i int) (uint64, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(uint64); ok {
 		return v, true
 	} else {
@@ -256,6 +300,10 @@ func (s Slice) UInt64WithDefault(i int, _default uint64) uint64 {
 }
 
 func (s Slice) UInt(i int) (uint, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(uint); ok {
 		return v, true
 	} else {
@@ -279,6 +327,10 @@ func (s Slice) UIntWithDefault(i int, _default uint) uint {
 }
 
 func (s Slice) String(i int) (string, bool) {
+	if len(s) <= i {
+		return "", false
+	}
+
 	if v, ok := s[i].(string); ok {
 		return v, true
 	} else {
@@ -302,6 +354,10 @@ func (s Slice) StringWithDefault(i int, _default string) string {
 }
 
 func (s Slice) Bool(i int) (bool, bool) {
+	if len(s) <= i {
+		return false, false
+	}
+
 	if v, ok := s[i].(bool); ok {
 		return v, true
 	} else {
@@ -325,6 +381,10 @@ func (s Slice) BoolWithDefault(i int, _default bool) bool {
 }
 
 func (s Slice) Float32(i int) (float32, bool) {
+	if len(s) <= i {
+		return FZERO32, false
+	}
+
 	if v, ok := s[i].(float32); ok {
 		return v, true
 	} else {
@@ -348,6 +408,10 @@ func (s Slice) Float32WithDefault(i int, _default float32) float64 {
 }
 
 func (s Slice) Float64(i int) (float64, bool) {
+	if len(s) <= i {
+		return FZERO64, false
+	}
+
 	if v, ok := s[i].(float64); ok {
 		return v, true
 	} else {
@@ -371,6 +435,10 @@ func (s Slice) Float64WithDefault(i int, _default float64) float64 {
 }
 
 func (s Slice) Complex64(i int) (complex64, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(complex64); ok {
 		return v, true
 	} else {
@@ -394,6 +462,10 @@ func (s Slice) Complex64WithDefault(i int, _default complex64) complex64 {
 }
 
 func (s Slice) Complex128(i int) (complex128, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(complex128); ok {
 		return v, true
 	} else {
@@ -417,6 +489,10 @@ func (s Slice) Complex128WithDefault(i int, _default complex128) complex128 {
 }
 
 func (s Slice) Uintptr(i int) (uintptr, bool) {
+	if len(s) <= i {
+		return 0, false
+	}
+
 	if v, ok := s[i].(uintptr); ok {
 		return v, true
 	} else {
@@ -439,8 +515,11 @@ func (s Slice) UintptrWithDefault(i int, _default uintptr) uintptr {
 	return _default
 }
 
-// Interface always return true.
 func (s Slice) Interface(i int) (interface{}, bool) {
+	if len(s) <= i {
+		return nil, false
+	}
+
 	return s[i], true
 }
 
@@ -452,7 +531,6 @@ func (s Slice) MustInterface(i int) interface{} {
 	}
 }
 
-// InterfaceWithDefault doesn't always use the last parameter of _default.
 func (s Slice) InterfaceWithDefault(i int, _default interface{}) interface{} {
 	if v, ok := s.Interface(i); ok {
 		return v
@@ -461,6 +539,10 @@ func (s Slice) InterfaceWithDefault(i int, _default interface{}) interface{} {
 }
 
 func (s Slice) Slice(i int) (Slice, bool) {
+	if len(s) <= i {
+		return nil, false
+	}
+
 	if v, ok := s[i].(Slice); ok {
 		return v, true
 	} else if v, ok := s[i].([]interface{}); ok {
@@ -486,6 +568,10 @@ func (s Slice) SliceWithDefault(i int, _default Slice) Slice {
 }
 
 func (s Slice) SMap(i int) (SMap, bool) {
+	if len(s) <= i {
+		return nil, false
+	}
+
 	if v, ok := s[i].(SMap); ok {
 		return v, true
 	} else if v, ok := s[i].(map[string]interface{}); ok {
