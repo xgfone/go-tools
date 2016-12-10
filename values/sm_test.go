@@ -1,6 +1,7 @@
 package values_test
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/xgfone/go-tools/values"
@@ -41,5 +42,14 @@ func TestSlice(t *testing.T) {
 
 	if _, ok := s.Bool(3); !ok {
 		t.Fail()
+	}
+
+	if sm, ok := s.SMap(2); !ok {
+		t.Fail()
+	} else {
+		ks := sm.Keys()
+		if sort.StringSlice(ks).Sort(); ks[2] != "slice" {
+			t.Fail()
+		}
 	}
 }
