@@ -11,6 +11,14 @@ func (m SMap) Bool(k string) (bool, bool) {
 	return false, false
 }
 
+func (m SMap) MustBool(k string) bool {
+	if v, ok := m.Bool(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
+}
+
 func (m SMap) Byte(k string) (byte, bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(byte); ok {
@@ -18,6 +26,14 @@ func (m SMap) Byte(k string) (byte, bool) {
 		}
 	}
 	return 0, false
+}
+
+func (m SMap) MustByte(k string) byte {
+	if v, ok := m.Byte(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
 }
 
 func (m SMap) Complex64(k string) (complex64, bool) {
@@ -29,6 +45,14 @@ func (m SMap) Complex64(k string) (complex64, bool) {
 	return complex(FZERO32, FZERO32), false
 }
 
+func (m SMap) MustComplex64(k string) complex64 {
+	if v, ok := m.Complex64(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
+}
+
 func (m SMap) Complex128(k string) (complex128, bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(complex128); ok {
@@ -36,6 +60,14 @@ func (m SMap) Complex128(k string) (complex128, bool) {
 		}
 	}
 	return complex(FZERO64, FZERO64), false
+}
+
+func (m SMap) MustComplex128(k string) complex128 {
+	if v, ok := m.Complex128(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
 }
 
 func (m SMap) Float32(k string) (float32, bool) {
@@ -47,6 +79,14 @@ func (m SMap) Float32(k string) (float32, bool) {
 	return FZERO32, false
 }
 
+func (m SMap) MustFloat32(k string) float32 {
+	if v, ok := m.Float32(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
+}
+
 func (m SMap) Float64(k string) (float64, bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(float64); ok {
@@ -54,6 +94,14 @@ func (m SMap) Float64(k string) (float64, bool) {
 		}
 	}
 	return FZERO64, false
+}
+
+func (m SMap) MustFloat64(k string) float64 {
+	if v, ok := m.Float64(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
 }
 
 func (m SMap) Rune(k string) (rune, bool) {
@@ -65,6 +113,14 @@ func (m SMap) Rune(k string) (rune, bool) {
 	return 0, false
 }
 
+func (m SMap) MustRune(k string) rune {
+	if v, ok := m.Rune(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
+}
+
 func (m SMap) String(k string) (string, bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(string); ok {
@@ -72,6 +128,14 @@ func (m SMap) String(k string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+func (m SMap) MustString(k string) string {
+	if v, ok := m.String(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
 }
 
 func (m SMap) Uintptr(k string) (uintptr, bool) {
@@ -83,6 +147,14 @@ func (m SMap) Uintptr(k string) (uintptr, bool) {
 	return 0, false
 }
 
+func (m SMap) MustUintptr(k string) uintptr {
+	if v, ok := m.Uintptr(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
+}
+
 func (m SMap) Int(k string) (int, bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(int); ok {
@@ -90,6 +162,14 @@ func (m SMap) Int(k string) (int, bool) {
 		}
 	}
 	return 0, false
+}
+
+func (m SMap) MustInt(k string) int {
+	if v, ok := m.Int(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
 }
 
 func (m SMap) UInt(k string) (uint, bool) {
@@ -101,6 +181,14 @@ func (m SMap) UInt(k string) (uint, bool) {
 	return 0, false
 }
 
+func (m SMap) MustUInt(k string) uint {
+	if v, ok := m.UInt(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
+}
+
 func (m SMap) Int8(k string) (int8, bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(int8); ok {
@@ -108,6 +196,14 @@ func (m SMap) Int8(k string) (int8, bool) {
 		}
 	}
 	return 0, false
+}
+
+func (m SMap) MustInt8(k string) int8 {
+	if v, ok := m.Int8(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
 }
 
 func (m SMap) Int16(k string) (int16, bool) {
@@ -119,6 +215,14 @@ func (m SMap) Int16(k string) (int16, bool) {
 	return 0, false
 }
 
+func (m SMap) MustInt16(k string) int16 {
+	if v, ok := m.Int16(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
+}
+
 func (m SMap) Int32(k string) (int32, bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(int32); ok {
@@ -126,6 +230,14 @@ func (m SMap) Int32(k string) (int32, bool) {
 		}
 	}
 	return 0, false
+}
+
+func (m SMap) MustInt32(k string) int32 {
+	if v, ok := m.Int32(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
 }
 
 func (m SMap) Int64(k string) (int64, bool) {
@@ -137,6 +249,14 @@ func (m SMap) Int64(k string) (int64, bool) {
 	return 0, false
 }
 
+func (m SMap) MustInt64(k string) int64 {
+	if v, ok := m.Int64(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
+}
+
 func (m SMap) UInt8(k string) (uint8, bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(uint8); ok {
@@ -144,6 +264,14 @@ func (m SMap) UInt8(k string) (uint8, bool) {
 		}
 	}
 	return 0, false
+}
+
+func (m SMap) MustUInt8(k string) uint8 {
+	if v, ok := m.UInt8(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
 }
 
 func (m SMap) UInt16(k string) (uint16, bool) {
@@ -155,6 +283,14 @@ func (m SMap) UInt16(k string) (uint16, bool) {
 	return 0, false
 }
 
+func (m SMap) MustUInt16(k string) uint16 {
+	if v, ok := m.UInt16(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
+}
+
 func (m SMap) UInt32(k string) (uint32, bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(uint32); ok {
@@ -162,6 +298,14 @@ func (m SMap) UInt32(k string) (uint32, bool) {
 		}
 	}
 	return 0, false
+}
+
+func (m SMap) MustUInt32(k string) uint32 {
+	if v, ok := m.UInt32(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
 }
 
 func (m SMap) UInt64(k string) (uint64, bool) {
@@ -173,11 +317,27 @@ func (m SMap) UInt64(k string) (uint64, bool) {
 	return 0, false
 }
 
+func (m SMap) MustUInt64(k string) uint64 {
+	if v, ok := m.UInt64(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
+}
+
 func (m SMap) Interface(k string) (interface{}, bool) {
 	if v1, ok := m[k]; ok {
 		return v1, true
 	}
 	return nil, false
+}
+
+func (m SMap) MustInterface(k string) interface{} {
+	if v, ok := m.Interface(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
 }
 
 func (m SMap) Slice(k string) (Slice, bool) {
@@ -191,6 +351,14 @@ func (m SMap) Slice(k string) (Slice, bool) {
 	return nil, false
 }
 
+func (m SMap) MustSlice(k string) Slice {
+	if v, ok := m.Slice(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
+}
+
 func (m SMap) SMap(k string) (SMap, bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(SMap); ok {
@@ -200,6 +368,14 @@ func (m SMap) SMap(k string) (SMap, bool) {
 		}
 	}
 	return nil, false
+}
+
+func (m SMap) MustSMap(k string) SMap {
+	if v, ok := m.SMap(k); !ok {
+		panic(ErrType)
+	} else {
+		return v
+	}
 }
 
 func (m SMap) Keys() []string {
