@@ -3,6 +3,8 @@ package server
 import (
 	"errors"
 	"net"
+
+	"github.com/xgfone/go-tools/nets"
 )
 
 type UHandle interface {
@@ -101,4 +103,27 @@ func UDPServerForever(network, addr string, size int, handle interface{}) error 
 
 	// Never execute forever.
 	return nil
+}
+
+// DialUDP is the same as DialUDPWithAddr, but it joins host and port firstly.
+func DialUDP(host, port interface{}) (*net.UDPConn, error) {
+	addr := nets.JoinHostPort(host, port)
+	return DialUDPWithAddr(addr)
+}
+
+// DialUDPWithAddr dials a tcp connection to addr.
+func DialUDPWithAddr(addr string) (*net.UDPConn, error) {
+	var err error
+	_conn, err := net.Dial("udp", addr)
+	if err != nil {
+		return nil, err
+	}
+
+	conn, ok := _conn.(*net.UDPConn)
+	if !ok {
+		_conn.Close()
+		return nil, errors.New("not the udp connection")
+	}
+
+	return conn, nil
 }

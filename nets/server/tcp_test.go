@@ -5,7 +5,7 @@ import (
 	"io"
 	"net"
 
-	"github.com/xgfone/go-tools/net/server"
+	"github.com/xgfone/go-tools/nets/server"
 )
 
 func ExampleTCPServerForever() {
@@ -27,4 +27,28 @@ func ExampleTCPServerForever() {
 		}
 	})
 	fmt.Println(err1)
+}
+
+func ExampleDialTCP() {
+	if conn, err := server.DialTCP("www.baidu.com", 80); err != nil {
+		fmt.Printf("ERR\n")
+	} else {
+		fmt.Printf("OK\n")
+		conn.Close()
+	}
+
+	// Output:
+	// OK
+}
+
+func ExampleDialTCPWithAddr() {
+	if conn, err := server.DialTCPWithAddr("www.baidu.com:80"); err != nil {
+		fmt.Printf("ERR\n")
+	} else {
+		fmt.Printf("OK\n")
+		conn.Close()
+	}
+
+	// Output:
+	// OK
 }
