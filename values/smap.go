@@ -440,8 +440,8 @@ func (m SMap) UInt64(k string) (uint64, bool) {
 	return 0, false
 }
 
-func (m SMap) UInt64WithDefault(k string, _default uint16) uint64 {
-	if v, ok := m.uint64(k); ok {
+func (m SMap) UInt64WithDefault(k string, _default uint64) uint64 {
+	if v, ok := m.UInt64(k); ok {
 		return v
 	}
 	return _default

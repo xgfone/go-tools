@@ -400,7 +400,7 @@ func (s Slice) MustFloat32(i int) float32 {
 	}
 }
 
-func (s Slice) Float32WithDefault(i int, _default float32) float64 {
+func (s Slice) Float32WithDefault(i int, _default float32) float32 {
 	if v, ok := s.Float32(i); ok {
 		return v
 	}
