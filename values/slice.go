@@ -12,10 +12,17 @@ func (s Slice) Byte(i int) (byte, bool) {
 
 func (s Slice) MustByte(i int) byte {
 	if v, ok := s.Byte(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) ByteWithDefault(i int, _default byte) byte {
+	if v, ok := s.Byte(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Rune(i int) (rune, bool) {
@@ -28,10 +35,17 @@ func (s Slice) Rune(i int) (rune, bool) {
 
 func (s Slice) MustRune(i int) rune {
 	if v, ok := s.Rune(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) RuneWithDefault(i int, _default rune) rune {
+	if v, ok := s.Rune(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Int8(i int) (int8, bool) {
@@ -44,10 +58,17 @@ func (s Slice) Int8(i int) (int8, bool) {
 
 func (s Slice) MustInt8(i int) int8 {
 	if v, ok := s.Int8(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) Int8WithDefault(i int, _default int8) int8 {
+	if v, ok := s.Int8(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Int16(i int) (int16, bool) {
@@ -60,10 +81,17 @@ func (s Slice) Int16(i int) (int16, bool) {
 
 func (s Slice) MustInt16(i int) int16 {
 	if v, ok := s.Int16(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) Int16WithDefault(i int, _default int16) int16 {
+	if v, ok := s.Int16(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Int32(i int) (int32, bool) {
@@ -76,10 +104,17 @@ func (s Slice) Int32(i int) (int32, bool) {
 
 func (s Slice) MustInt32(i int) int32 {
 	if v, ok := s.Int32(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) Int32WithDefault(i int, _default int32) int32 {
+	if v, ok := s.Int32(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Int64(i int) (int64, bool) {
@@ -92,10 +127,17 @@ func (s Slice) Int64(i int) (int64, bool) {
 
 func (s Slice) MustInt64(i int) int64 {
 	if v, ok := s.Int64(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) Int64WithDefault(i int, _default int64) int64 {
+	if v, ok := s.Int64(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Int(i int) (int, bool) {
@@ -108,10 +150,17 @@ func (s Slice) Int(i int) (int, bool) {
 
 func (s Slice) MustInt(i int) int {
 	if v, ok := s.Int(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) IntWithDefault(i int, _default int) int {
+	if v, ok := s.Int(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) UInt8(i int) (uint8, bool) {
@@ -124,10 +173,17 @@ func (s Slice) UInt8(i int) (uint8, bool) {
 
 func (s Slice) MustUInt8(i int) uint8 {
 	if v, ok := s.UInt8(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) UInt8WithDefault(i int, _default uint8) uint8 {
+	if v, ok := s.UInt8(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) UInt16(i int) (uint16, bool) {
@@ -140,10 +196,17 @@ func (s Slice) UInt16(i int) (uint16, bool) {
 
 func (s Slice) MustUInt16(i int) uint16 {
 	if v, ok := s.UInt16(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) UInt16WithDefault(i int, _default uint16) uint16 {
+	if v, ok := s.UInt16(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) UInt32(i int) (uint32, bool) {
@@ -156,10 +219,17 @@ func (s Slice) UInt32(i int) (uint32, bool) {
 
 func (s Slice) MustUInt32(i int) uint32 {
 	if v, ok := s.UInt32(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) UInt32WithDefault(i int, _default uint32) uint32 {
+	if v, ok := s.UInt32(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) UInt64(i int) (uint64, bool) {
@@ -172,10 +242,17 @@ func (s Slice) UInt64(i int) (uint64, bool) {
 
 func (s Slice) MustUInt64(i int) uint64 {
 	if v, ok := s.UInt64(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) UInt64WithDefault(i int, _default uint64) uint64 {
+	if v, ok := s.UInt64(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) UInt(i int) (uint, bool) {
@@ -188,10 +265,17 @@ func (s Slice) UInt(i int) (uint, bool) {
 
 func (s Slice) MustUInt(i int) uint {
 	if v, ok := s.UInt(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) UIntWithDefault(i int, _default uint) uint {
+	if v, ok := s.UInt(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) String(i int) (string, bool) {
@@ -204,10 +288,17 @@ func (s Slice) String(i int) (string, bool) {
 
 func (s Slice) MustString(i int) string {
 	if v, ok := s.String(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) StringWithDefault(i int, _default string) string {
+	if v, ok := s.String(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Bool(i int) (bool, bool) {
@@ -220,10 +311,17 @@ func (s Slice) Bool(i int) (bool, bool) {
 
 func (s Slice) MustBool(i int) bool {
 	if v, ok := s.Bool(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) BoolWithDefault(i int, _default bool) bool {
+	if v, ok := s.Bool(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Float32(i int) (float32, bool) {
@@ -236,10 +334,17 @@ func (s Slice) Float32(i int) (float32, bool) {
 
 func (s Slice) MustFloat32(i int) float32 {
 	if v, ok := s.Float32(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) Float32WithDefault(i int, _default float32) float64 {
+	if v, ok := s.Float32(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Float64(i int) (float64, bool) {
@@ -252,10 +357,17 @@ func (s Slice) Float64(i int) (float64, bool) {
 
 func (s Slice) MustFloat64(i int) float64 {
 	if v, ok := s.Float64(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) Float64WithDefault(i int, _default float64) float64 {
+	if v, ok := s.Float64(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Complex64(i int) (complex64, bool) {
@@ -268,10 +380,17 @@ func (s Slice) Complex64(i int) (complex64, bool) {
 
 func (s Slice) MustComplex64(i int) complex64 {
 	if v, ok := s.Complex64(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) Complex64WithDefault(i int, _default complex64) complex64 {
+	if v, ok := s.Complex64(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Complex128(i int) (complex128, bool) {
@@ -284,10 +403,17 @@ func (s Slice) Complex128(i int) (complex128, bool) {
 
 func (s Slice) MustComplex128(i int) complex128 {
 	if v, ok := s.Complex128(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) Complex128WithDefault(i int, _default complex128) complex128 {
+	if v, ok := s.Complex128(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Uintptr(i int) (uintptr, bool) {
@@ -300,22 +426,38 @@ func (s Slice) Uintptr(i int) (uintptr, bool) {
 
 func (s Slice) MustUintptr(i int) uintptr {
 	if v, ok := s.Uintptr(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
 }
 
+func (s Slice) UintptrWithDefault(i int, _default uintptr) uintptr {
+	if v, ok := s.Uintptr(i); ok {
+		return v
+	}
+	return _default
+}
+
+// Interface always return true.
 func (s Slice) Interface(i int) (interface{}, bool) {
 	return s[i], true
 }
 
 func (s Slice) MustInterface(i int) interface{} {
 	if v, ok := s.Interface(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+// InterfaceWithDefault doesn't always use the last parameter of _default.
+func (s Slice) InterfaceWithDefault(i int, _default interface{}) interface{} {
+	if v, ok := s.Interface(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) Slice(i int) (Slice, bool) {
@@ -330,10 +472,17 @@ func (s Slice) Slice(i int) (Slice, bool) {
 
 func (s Slice) MustSlice(i int) Slice {
 	if v, ok := s.Slice(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) SliceWithDefault(i int, _default Slice) Slice {
+	if v, ok := s.Slice(i); ok {
+		return v
+	}
+	return _default
 }
 
 func (s Slice) SMap(i int) (SMap, bool) {
@@ -348,8 +497,15 @@ func (s Slice) SMap(i int) (SMap, bool) {
 
 func (s Slice) MustSMap(i int) SMap {
 	if v, ok := s.SMap(i); !ok {
-		panic(ErrType)
+		panic(ErrTypeOrIndex)
 	} else {
 		return v
 	}
+}
+
+func (s Slice) SMapWithDefault(i int, _default SMap) SMap {
+	if v, ok := s.SMap(i); ok {
+		return v
+	}
+	return _default
 }

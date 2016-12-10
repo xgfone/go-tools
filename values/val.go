@@ -13,7 +13,7 @@ var (
 	FZERO32 float32
 	FZERO64 float64
 
-	ErrType = errors.New("The type is error")
+	ErrTypeOrIndex = errors.New("The type or index is wrong")
 )
 
 // IsZero return true if the value is the ZERO value, or false.
