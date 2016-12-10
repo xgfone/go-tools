@@ -20,6 +20,7 @@ compare      | Compare whether the first is greater than, less than, or equal to
 daemon       | Make the current process to the daemon process.
 datetime     | Some convenient functions about datetime.
 exception    | Exception handler like `"parent.child.sub-child...sub-child"`.
+execution    | execution executes a command line program in a new process and returns an output.
 extremum     | Get the maximal or the minimal of both the values.
 file         | Some convenient functions about the file operation.
 function     | Call a function dynamically.
