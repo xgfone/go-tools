@@ -10,9 +10,9 @@ import (
 var lock = new(sync.Mutex)
 
 func ExampleExecution_Execute() {
-	e := execution.Execution{Count: 1, Interval: 1000, IsLock: true}
-	e.SetMutex(lock)
-	err := e.Execute([]string{"ls", "."})
+	Retry := execution.Execution{Count: 1, Interval: 1000, IsLock: true}
+	Retry.SetMutex(lock)
+	err := Retry.Execute([]string{"ls", "."})
 	if err != nil {
 		fmt.Println("ERROR", err)
 	} else {
@@ -24,9 +24,9 @@ func ExampleExecution_Execute() {
 }
 
 func ExampleExecution_Output() {
-	e := execution.Execution{Count: -1, Interval: 1000, IsLock: true}
-	e.SetMutex(lock)
-	_, err := e.Output([]string{"ls", "."})
+	Redo := execution.Execution{Count: -1, Interval: 1000, IsLock: true}
+	Redo.SetMutex(lock)
+	_, err := Redo.Output([]string{"ls", "."})
 	if err == nil { // Notice: we run it until failed
 		fmt.Println("ERROR")
 	} else {
@@ -38,9 +38,9 @@ func ExampleExecution_Output() {
 }
 
 func ExampleExecution_ErrOutput() {
-	e := execution.Execution{Count: 1, Interval: 1000, IsLock: true}
-	e.SetMutex(lock)
-	_, err := e.ErrOutput([]string{"ls", "."})
+	Retry := execution.Execution{Count: 1, Interval: 1000, IsLock: true}
+	Retry.SetMutex(lock)
+	_, err := Retry.ErrOutput([]string{"ls", "."})
 	if err != nil {
 		fmt.Println("ERROR")
 	} else {
