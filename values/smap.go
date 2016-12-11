@@ -1,14 +1,15 @@
 package values
 
+import "reflect"
+
 type SMap map[string]interface{}
 
-func (m SMap) Bool(k string) (bool, bool) {
-	if v1, ok := m[k]; ok {
-		if v2, ok := v1.(bool); ok {
-			return v2, true
-		}
+func (m SMap) Bool(k string) (v bool, ok bool) {
+	_v, ok := m[k]
+	if !ok {
+		return
 	}
-	return false, false
+	return !IsZero(_v), true
 }
 
 func (m SMap) BoolWithDefault(k string, _default bool) bool {
@@ -26,13 +27,13 @@ func (m SMap) MustBool(k string) bool {
 	}
 }
 
-func (m SMap) Byte(k string) (byte, bool) {
-	if v1, ok := m[k]; ok {
-		if v2, ok := v1.(byte); ok {
-			return v2, true
-		}
+func (m SMap) Byte(k string) (v byte, ok bool) {
+	_v, ok := m[k]
+	if !ok {
+		return
 	}
-	return 0, false
+	v, ok = _v.(byte)
+	return
 }
 
 func (m SMap) ByteWithDefault(k string, _default byte) byte {
@@ -50,13 +51,27 @@ func (m SMap) MustByte(k string) byte {
 	}
 }
 
-func (m SMap) Complex64(k string) (complex64, bool) {
-	if v1, ok := m[k]; ok {
-		if v2, ok := v1.(complex64); ok {
-			return v2, true
-		}
+func (m SMap) Complex64(k string) (v complex64, ok bool) {
+	_v, ok := m[k]
+	if !ok {
+		return
 	}
-	return complex(FZERO32, FZERO32), false
+	ok = true
+	switch _v.(type) {
+	case complex64, complex128:
+		v = complex64(reflect.ValueOf(_v).Complex())
+	case bool:
+		v = complex64(Bool2Int(v1.(bool)))
+	case int, int8, int16, int32, int64:
+		v = complex64(reflect.ValueOf(_v).Int())
+	case uint, uint8, uint16, uint32, uint64:
+		v = complex64(reflect.ValueOf(_v).Uint())
+	case float32, float64:
+		v = complex64(reflect.ValueOf(_v).Float32())
+	default:
+		ok = false
+	}
+	return
 }
 
 func (m SMap) Complex64WithDefault(k string, _default complex64) complex64 {

@@ -2,16 +2,12 @@ package values
 
 type Slice []interface{}
 
-func (s Slice) Byte(i int) (byte, bool) {
+func (s Slice) Byte(i int) (v byte, ok bool) {
 	if len(s) <= i {
 		return 0, false
 	}
 
-	if v, ok := s[i].(byte); ok {
-		return v, true
-	} else {
-		return 0, false
-	}
+	return !IsZero(s[i]), true
 }
 
 func (s Slice) MustByte(i int) byte {

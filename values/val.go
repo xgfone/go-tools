@@ -58,3 +58,19 @@ func IsZero(v interface{}) bool {
 	// }
 	// return false
 }
+
+func Bool2Int(b bool) int64 {
+	if b {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+func Bool2Uint(b bool) uint64 {
+	if b {
+		return 1
+	} else {
+		return 0
+	}
+}
