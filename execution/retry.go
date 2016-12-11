@@ -11,12 +11,13 @@ import (
 var ErrArguments = errors.New("The arguments are too few")
 
 type Execution struct {
-	*sync.Mutex
+	sync.Mutex
 
 	// 0 stands for executing once only, and no retry if failed.
 	Retry int
 
 	// When retring, the it will be paused for that time.Millisecond.
+	// If it's 0, don't pause.
 	Interval int
 
 	// Whether acquire the lock firstly when executing.
@@ -84,7 +85,7 @@ func (e *Execution) execute(args []string, eout bool, executor func(string, []st
 		}
 
 		retry--
-		if retry >= 0 {
+		if retry >= 0 && sleep > 0 {
 			time.Sleep(sleep)
 		}
 	}
