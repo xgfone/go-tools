@@ -11,10 +11,18 @@ import (
 var ErrArguments = errors.New("The arguments are too few")
 
 type Execution struct {
-	sync.Mutex
+	*sync.Mutex
 
-	// 0 stands for executing once only, and no retry if failed.
-	Retry int
+	// Count stands for the times to be executed.
+	//
+	// The command will only be executed once whether or not success if it's 0.
+	//
+	// If it's a positive integer, the command will be executed repeatedly
+	// until success or it has been executed by Count times.
+	//
+	// If it's a negative integer, the command will be executed repeatedly
+	// until an error occurs or it has been executed by Count times.
+	Count int
 
 	// When retring, the it will be paused for that time.Millisecond.
 	// If it's 0, don't pause.
@@ -65,12 +73,20 @@ func (e *Execution) execute(args []string, eout bool, executor func(string, []st
 		sleep = 0
 	}
 
-	retry := e.Retry
-	ok := false
+	var count int
+	var positive bool
+	if e.Count < 0 {
+		count = -e.Count
+		positive = false
+	} else {
+		count = e.Count
+		positive = true
+	}
+
 	var err error
 	var out string
 
-	for retry >= 0 {
+	for count >= 0 {
 		func() {
 			if e.IsLock {
 				e.Lock()
@@ -79,20 +95,21 @@ func (e *Execution) execute(args []string, eout bool, executor func(string, []st
 			out, err = executor(name, args, eout)
 		}()
 
-		if err == nil {
-			ok = true
-			break
+		if positive {
+			if err == nil { // End until success
+				break
+			}
+		} else {
+			if err != nil { // End until failure
+				break
+			}
 		}
 
-		retry--
-		if retry >= 0 && sleep > 0 {
+		count--
+		if count >= 0 && sleep > 0 {
 			time.Sleep(sleep)
 		}
 	}
 
-	if ok {
-		return out, nil
-	} else {
-		return "", err
-	}
+	return out, nil
 }
