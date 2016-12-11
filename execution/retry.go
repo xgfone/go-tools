@@ -10,6 +10,7 @@ import (
 
 var ErrArguments = errors.New("The arguments are too few")
 
+// Execution executes a command line program.
 type Execution struct {
 	*sync.Mutex
 
@@ -32,6 +33,15 @@ type Execution struct {
 	IsLock bool
 }
 
+// SetMutex replaces the sync.Mutex to a new one.
+//
+// Notice: It's not thread-safe. Before replacing the mutex, ensave that the old
+// one hasn't been locked.
+func (e *Execution) SetMutex(m *sync.Mutex) {
+	e.Mutex = m
+}
+
+// Execute is the proxy of exec.Command(name, args...).Run(), but args[0] is name.
 func (e *Execution) Execute(args []string) error {
 	_, err := e.execute(args, false, func(name string, args []string, eout bool) (string, error) {
 		err := exec.Command(name, args...).Run()
@@ -40,10 +50,14 @@ func (e *Execution) Execute(args []string) error {
 	return err
 }
 
+// Output is the proxy of exec.Command(name, args...).Output(),
+// but args[0] is name.
 func (e *Execution) Output(args []string) (string, error) {
 	return e.output(args, false)
 }
 
+// ErrOutput is the proxy of exec.Command(name, args...).CombinedOutput(),
+// but args[0] is name.
 func (e *Execution) ErrOutput(args []string) (string, error) {
 	return e.output(args, true)
 }
@@ -111,5 +125,5 @@ func (e *Execution) execute(args []string, eout bool, executor func(string, []st
 		}
 	}
 
-	return out, nil
+	return out, err
 }
