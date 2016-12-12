@@ -44,7 +44,7 @@ func TCPWrapError(conn *net.TCPConn, handler THandle) {
 // which implements the interface, THandle. Of course, you may wrap it by THandleFunc.
 func TCPServerForever(network, addr string, handle interface{}) error {
 	var handler THandle
-	if _handler, ok := handle.(THandle); !ok {
+	if _handler, ok := handle.(THandle); ok {
 		handler = _handler
 	} else if _handler, ok := handle.(func(*net.TCPConn)); ok {
 		handler = THandleFunc(_handler)
