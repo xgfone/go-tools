@@ -10,7 +10,7 @@ import (
 func ExampleUDPServerForever() {
 	// Here use a function as the handler. You also use a struct which implements
 	// the interface UHandle.
-	err1 := server.UDPServerForever("udp", ":9000", 9120, func(buf []byte, addr *net.UDPAddr) []byte {
+	err1 := server.UDPServerForever(":9000", 9120, func(buf []byte, addr *net.UDPAddr) []byte {
 		fmt.Printf("Receive the data from %v: %v\n", addr, buf)
 		return buf
 	})

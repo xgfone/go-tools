@@ -43,9 +43,7 @@ func UDPWithError(conn *net.UDPConn, handler UHandle, buf []byte, addr *net.UDPA
 // But there is one exception: if wrap exists and returns true, it returns nil.
 // Or continue to execute and never return.
 //
-// network MUST be "udp", "udp4", "udp6".
-// addr is like "host:port", such as "127.0.0.1:8000", and host or port
-// may be omitted.
+// addr is like "host:port", such as "127.0.0.1:8000", and host or port may be omitted.
 // size is the size of the buffer.
 //
 // Example:
@@ -59,7 +57,7 @@ func UDPWithError(conn *net.UDPConn, handler UHandle, buf []byte, addr *net.UDPA
 //
 //    err1 := server.UDPServerForever("udp", ":8000", 8192, Handler{}, nil)
 //    fmt.Println(err1)
-func UDPServerForever(network, addr string, size int, handle interface{}) error {
+func UDPServerForever(addr string, size int, handle interface{}) error {
 	var handler UHandle
 	var wrap func(*net.UDPConn) error
 	if _handler, ok := handle.(UHandle); ok {
@@ -73,10 +71,10 @@ func UDPServerForever(network, addr string, size int, handle interface{}) error 
 	}
 
 	var conn *net.UDPConn
-	if _addr, err := net.ResolveUDPAddr(network, addr); err != nil {
+	if _addr, err := net.ResolveUDPAddr("udp", addr); err != nil {
 		return err
 	} else {
-		if conn, err = net.ListenUDP(network, _addr); err != nil {
+		if conn, err = net.ListenUDP("udp", _addr); err != nil {
 			return err
 		}
 	}

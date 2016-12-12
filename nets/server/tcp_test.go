@@ -11,7 +11,7 @@ import (
 func ExampleTCPServerForever() {
 	// Here use a function as the handler. You also use a struct which implements
 	// the interface THandle.
-	err1 := server.TCPServerForever("tcp", ":8000", func(conn *net.TCPConn) {
+	err1 := server.TCPServerForever(":8000", func(conn *net.TCPConn) {
 		buf := make([]byte, 1024)
 		for {
 			n, err := conn.Read(buf)

@@ -36,13 +36,12 @@ func TCPWrapError(conn *net.TCPConn, handler THandle) {
 
 // Start a TCP server and never return. Return an error if returns.
 //
-// network MUST be "tcp", "tcp4", "tcp6".
 // addr is like "host:port", such as "127.0.0.1:8000", and host or port may be omitted.
 // size is the number of the pool. If it's 0, it's infinite.
 // handle is the handler to handle the connection came from the client.
 // handle is either a function whose type is func(*net.TCPConn), or a struct
 // which implements the interface, THandle. Of course, you may wrap it by THandleFunc.
-func TCPServerForever(network, addr string, handle interface{}) error {
+func TCPServerForever(addr string, handle interface{}) error {
 	var handler THandle
 	if _handler, ok := handle.(THandle); ok {
 		handler = _handler
@@ -53,10 +52,10 @@ func TCPServerForever(network, addr string, handle interface{}) error {
 	}
 
 	var ln *net.TCPListener
-	if _addr, err := net.ResolveTCPAddr(network, addr); err != nil {
+	if _addr, err := net.ResolveTCPAddr("tcp", addr); err != nil {
 		return err
 	} else {
-		if ln, err = net.ListenTCP(network, _addr); err != nil {
+		if ln, err = net.ListenTCP("tcp", _addr); err != nil {
 			return err
 		}
 	}
