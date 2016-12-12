@@ -1,5 +1,7 @@
 package values
 
+import "reflect"
+
 type Slice []interface{}
 
 // ToSlice converts the type of []interface{} or Slice to Slice.
@@ -14,4 +16,21 @@ func ToSlice(v interface{}) Slice {
 	default:
 		return nil
 	}
+}
+
+// ConvertToSlice converts any slices to Slice.
+//
+// Return nil if it's not a slice, or it's nil or has no elements.
+func ConvertToSlice(v interface{}) Slice {
+	_v := reflect.ValueOf(v)
+	if !_v.IsValid() || _v.Kind() != reflect.Slice {
+		return nil
+	}
+
+	_len := _v.Len()
+	results := make(Slice, _len)
+	for i := 0; i < _len; i++ {
+		results[i] = _v.Index(i).Interface()
+	}
+	return results
 }

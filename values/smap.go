@@ -1,5 +1,7 @@
 package values
 
+import "reflect"
+
 type SMap map[string]interface{}
 
 // ToSMap converts the type of map[string]interface{} or SMap to SMap.
@@ -14,4 +16,23 @@ func ToSMap(v interface{}) SMap {
 	default:
 		return nil
 	}
+}
+
+// ConvertToSMap converts any map, whose key is the type of string, to SMap.
+//
+// Return nil if it's not a map, or it's nil or has no elements.
+func ConvertToSMap(v interface{}) SMap {
+	_v := reflect.ValueOf(v)
+	if !_v.IsValid() || _v.Kind() != reflect.Map {
+		return nil
+	}
+
+	results := make(SMap, _v.Len())
+	for _, key := range _v.MapKeys() {
+		if key.Kind() != reflect.String {
+			return nil
+		}
+		results[key.String()] = _v.MapIndex(key).Interface()
+	}
+	return results
 }
