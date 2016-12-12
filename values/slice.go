@@ -2,9 +2,9 @@ package values
 
 type Slice []interface{}
 
-// ToSlice converts v to the type of Slice.
+// ToSlice converts the type of []interface{} or Slice to Slice.
 //
-// Return nil if failed.
+// Return nil if the type is not either.
 func ToSlice(v interface{}) Slice {
 	switch v.(type) {
 	case []interface{}:

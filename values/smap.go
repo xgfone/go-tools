@@ -2,9 +2,9 @@ package values
 
 type SMap map[string]interface{}
 
-// ToSMap converts v to the type of SMap.
+// ToSMap converts the type of map[string]interface{} or SMap to SMap.
 //
-// Return nil if failed.
+// Return nil if the type is not either.
 func ToSMap(v interface{}) SMap {
 	switch v.(type) {
 	case map[string]interface{}:
