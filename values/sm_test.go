@@ -52,4 +52,15 @@ func TestSlice(t *testing.T) {
 			t.Fail()
 		}
 	}
+
+	mi := map[string]int{"aa": 11, "bb": 22}
+	sm := values.ConvertToSMap(mi)
+	if sm["aa"].(int) != 11 || sm["bb"].(int) != 22 {
+		t.Fail()
+	}
+
+	si := []int{11, 22}
+	if ss := values.ConvertToSlice(si); ss[0].(int) != 11 || ss[1].(int) != 22 {
+		t.Fail()
+	}
 }
