@@ -1,4 +1,15 @@
 // Make the current process to the daemon process.
+//
+// NOTICE: DON NOT USE THIS FUNCTION.
+//
+// When using the daemon in Go, if your program has some goroutines, they won't
+// work. One explanation is that the daemon only fork the main goroutine, not
+// other goroutines. Furthermore, once the go program is started, all the
+// goroutines about GC will run to work; and when forking the current process,
+// all those will go away.
+//
+// Notice: The above only is the guess, but it's in fact that the goroutines
+// except the main goroutine don't work when turn the go program into a daemon.
 package daemon
 
 import (
