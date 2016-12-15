@@ -37,7 +37,7 @@ pool         | Some simple convenient pools, such as `BufPool`, `GoPool`, etc.
 slice        | Get a value from a slice and check whether a value exists in a slice.
 str          | str is the supplement of the standard library of strings.
 tags         | Manage the tags in a struct.
-tbucket      | The Simple Token Bucket like `HTB` in Linux `TC`.
+tbucket      | [Deprecated!] The Simple Token Bucket like `HTB` in Linux `TC`. Please use `golang.org/x/time/rate`.
 utils        | Some utility functions, which are classified to a certain package.
 validation   | Some validations, such as email, url, etc.
 values       | Get a value from a `slice` or `map`.
