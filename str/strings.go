@@ -1,4 +1,4 @@
-// str is the supplement of the standard library of strings.
+// Package str is the supplement of the standard library of strings.
 package str
 
 import (
@@ -14,7 +14,21 @@ func SplitSpace(s string) []string {
 	return Split(s, unicode.IsSpace)
 }
 
-// Splite splits the string of s by the filter. Split will pass each rune to the
+// SplitString splits the string of s by sep, but is not the same as
+// strings.Split(), which the rune in sep arbitrary combination. For example,
+// SplitString("abcdefg-12345", "3-edc") == []string{"ab", "fg", "12", "45"}.
+func SplitString(s string, sep string) []string {
+	return Split(s, func(c rune) bool {
+		for _, r := range sep {
+			if r == c {
+				return true
+			}
+		}
+		return false
+	})
+}
+
+// Split splits the string of s by the filter. Split will pass each rune to the
 // filter to determine whether it is the separator.
 func Split(s string, filter func(c rune) bool) []string {
 	for i, c := range s {
