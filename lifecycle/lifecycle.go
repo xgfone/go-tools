@@ -1,16 +1,16 @@
-// The manager of the lifecycle of some apps in a program.
+// Package lifecycle offers a manager of the lifecycle of some apps in a program.
 package lifecycle
 
 import "errors"
 
-// LifeCycleManager manage the lifecycle of some apps in a program.
-type LifeCycleManager struct {
+// Manager manage the lifecycle of some apps in a program.
+type Manager struct {
 	callbacks []func()
 }
 
-// NewLifeCycleManager returns a new LifeCycleManager.
-func NewLifeCycleManager() *LifeCycleManager {
-	return &LifeCycleManager{
+// NewManager returns a new LifeCycleManager.
+func NewManager() *Manager {
+	return &Manager{
 		callbacks: make([]func(), 0, 8),
 	}
 }
@@ -22,12 +22,12 @@ func NewLifeCycleManager() *LifeCycleManager {
 //
 // NOTICE: The capacity of in and out must all be ZERO, that's, the two channels
 // must be synchronized.
-func (self *LifeCycleManager) RegisterChannel(in chan<- interface{}, out <-chan interface{}) *LifeCycleManager {
+func (m *Manager) RegisterChannel(in chan<- interface{}, out <-chan interface{}) *Manager {
 	if cap(in) != 0 || cap(out) != 0 {
 		panic(errors.New("The capacity of the channel is not 0"))
 	}
 
-	return self.Register(func() {
+	return m.Register(func() {
 		in <- true
 		<-out
 	})
@@ -37,9 +37,9 @@ func (self *LifeCycleManager) RegisterChannel(in chan<- interface{}, out <-chan 
 //
 // When calling Stop(), the callback function will be called in turn
 // by the order that they are registered.
-func (self *LifeCycleManager) Register(f func()) *LifeCycleManager {
-	self.callbacks = append(self.callbacks, f)
-	return self
+func (m *Manager) Register(f func()) *Manager {
+	m.callbacks = append(m.callbacks, f)
+	return m
 }
 
 // Stop terminates and cleans all the apps.
@@ -47,8 +47,8 @@ func (self *LifeCycleManager) Register(f func()) *LifeCycleManager {
 // This method will be blocked until all the apps finish the clean.
 // If the cleaning function of a certain app panics, ignore it and continue to
 // call the cleaning function of the next app.
-func (self LifeCycleManager) Stop() {
-	for _, f := range self.callbacks {
+func (m Manager) Stop() {
+	for _, f := range m.callbacks {
 		// f()
 		callFuncAndIgnorePanic(f)
 	}

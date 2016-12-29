@@ -1,18 +1,18 @@
 package lifecycle
 
-var defaultManager *LifeCycleManager
+var defaultManager *Manager
 
 func init() {
-	defaultManager = NewLifeCycleManager()
+	defaultManager = NewManager()
 }
 
 // Register registers the argument to the global default one.
-func Register(f func()) *LifeCycleManager {
+func Register(f func()) *Manager {
 	return defaultManager.Register(f)
 }
 
 // RegisterChannel registers the argument to the global default one.
-func RegisterChannel(in chan<- interface{}, out <-chan interface{}) *LifeCycleManager {
+func RegisterChannel(in chan<- interface{}, out <-chan interface{}) *Manager {
 	return defaultManager.RegisterChannel(in, out)
 }
 

@@ -6,8 +6,8 @@ import (
 	"github.com/xgfone/go-tools/lifecycle"
 )
 
-func ExampleLifeCycleManager() {
-	lcm := lifecycle.NewLifeCycleManager()
+func ExampleManager() {
+	lcm := lifecycle.NewManager()
 
 	in := make(chan interface{})
 	out := make(chan interface{})
