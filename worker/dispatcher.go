@@ -1,15 +1,12 @@
 package worker
 
+// Dispatcher dispatches the task to the workers.
 type Dispatcher struct {
 	// The number of the worker.
 	WorkerNum int
 
-	// A buffered channel that we can send work requests on.
-	JobQueue chan interface{}
-
-	// The job handler, either which implements the interface Task,
-	// or whose type is func(interface{}). This is mainly passed on to Worker.
-	Handler interface{}
+	// The job handler.
+	Handler Task
 
 	// A pool of workers channels that are registered with the dispatcher
 	workerPool chan chan interface{}
@@ -20,18 +17,27 @@ type Dispatcher struct {
 }
 
 // NewDispatcher creates a new Dispatcher.
-func NewDispatcher(maxWorkers int, jobQueue chan interface{}, handler interface{}) *Dispatcher {
+func NewDispatcher(maxWorkers int, handler Task) *Dispatcher {
+	if maxWorkers < 1 {
+		panic("The worker number must be greater than 0")
+	}
+
 	return &Dispatcher{
 		WorkerNum:  maxWorkers,
-		JobQueue:   jobQueue,
 		Handler:    handler,
 		workerPool: make(chan chan interface{}, maxWorkers),
 		quit:       make(chan bool),
 	}
 }
 
-// Start the dispatcher and let the workers to handle the job.
-func (d *Dispatcher) Run() {
+// Dispatch starts the dispatcher and let the workers to handle the job.
+//
+// Notice: this method is not thread-safe.
+func (d *Dispatcher) Dispatch(jobQueue chan interface{}) {
+	if d.running {
+		panic("This dispatcher has been running")
+	}
+
 	d.workers = make([]*worker, d.WorkerNum)
 
 	// starting n number of workers
@@ -41,11 +47,13 @@ func (d *Dispatcher) Run() {
 		worker.Start()
 	}
 
-	go d.dispatch()
+	go d.dispatch(jobQueue)
 	d.running = true
 }
 
 // Stop the dispatcher and all the workers.
+//
+// Notice: this method is not thread-safe.
 func (d *Dispatcher) Stop() {
 	d.quit <- true
 	for _, worker := range d.workers {
@@ -53,17 +61,17 @@ func (d *Dispatcher) Stop() {
 	}
 }
 
-func (d *Dispatcher) dispatch() {
+func (d *Dispatcher) dispatch(jobQueue chan interface{}) {
 	for {
 		select {
-		case job := <-d.JobQueue:
+		case job := <-jobQueue:
 			// a job request has been received
 			go func(job interface{}) {
 				// try to obtain a worker job channel that is available.
-				// this will block until a worker is idle
+				// this will block until a worker is idle.
 				jobChannel := <-d.workerPool
 
-				// dispatch the job to the worker job channel
+				// dispatch the job to the worker job channel.
 				jobChannel <- job
 			}(job)
 		case <-d.quit:

@@ -1,26 +1,35 @@
-// A worker pool with the dispatcher based on channel.
+// Package worker is a worker pool with the dispatcher based on channel.
+//
+// Refer to http://marcio.io/2015/07/handling-1-million-requests-per-minute-with-golang.
 package worker
 
-// The task interface to handle the job.
+// Task is an interface to handle the job.
 type Task interface {
 	// The argument is the job object.
 	Handle(interface{})
 }
 
-// Worker represents the worker that executes the job
+// FuncTask converts a function to Task.
+type FuncTask func(interface{})
+
+// Handle implements the interface Task.
+func (f FuncTask) Handle(job interface{}) {
+	f(job)
+}
+
+// worker represents the worker that executes the job
 type worker struct {
 	workerPool chan chan interface{}
 	jobChannel chan interface{}
 	quit       chan bool
-	handler    interface{}
+	handler    Task
 }
 
-// NewWorker creates a new worker.
+// newWorker creates a new worker.
 //
 // The worker registers its job channel into workPool to get the job,
-// then handle it by handler, either which implements the interface Task,
-// or whose type is func(Job).
-func newWorker(workerPool chan chan interface{}, handler interface{}) *worker {
+// then handle it by handler.
+func newWorker(workerPool chan chan interface{}, handler Task) *worker {
 	return &worker{
 		workerPool: workerPool,
 		jobChannel: make(chan interface{}),
@@ -29,7 +38,7 @@ func newWorker(workerPool chan chan interface{}, handler interface{}) *worker {
 	}
 }
 
-// Start method starts the run loop for the worker, listening for a quit channel in
+// Start starts the run loop for the worker, listening for a quit channel in
 // case we need to stop it
 func (w *worker) Start() {
 	go func() {
@@ -50,22 +59,8 @@ func (w *worker) Start() {
 }
 
 func (w *worker) handle(job interface{}) {
-	recovered := true
-
-	defer func() {
-		if recovered {
-			recover()
-		}
-	}()
-
-	if h, ok := w.handler.(Task); ok {
-		h.Handle(job)
-	} else if h, ok := w.handler.(func(interface{})); ok {
-		h(job)
-	} else {
-		recovered = false
-		panic("The handler type is wrong")
-	}
+	defer recover()
+	w.handler.Handle(job)
 }
 
 // Stop signals the worker to stop listening for work requests.
