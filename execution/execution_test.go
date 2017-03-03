@@ -10,7 +10,7 @@ import (
 var lock = new(sync.Mutex)
 
 func ExampleExecution_Execute() {
-	Retry := execution.Execution{Count: 1, Interval: 1000, IsLock: true}
+	Retry := execution.Execution{Count: 1, Interval: 1000}
 	Retry.SetMutex(lock)
 	err := Retry.Execute([]string{"ls", "."})
 	if err != nil {
@@ -24,7 +24,7 @@ func ExampleExecution_Execute() {
 }
 
 func ExampleExecution_Output() {
-	Redo := execution.Execution{Count: -1, Interval: 1000, IsLock: true}
+	Redo := execution.Execution{Count: -1, Interval: 1000}
 	Redo.SetMutex(lock)
 	_, err := Redo.Output([]string{"ls", "."})
 	if err == nil { // Notice: we run it until failed
@@ -38,7 +38,7 @@ func ExampleExecution_Output() {
 }
 
 func ExampleExecution_ErrOutput() {
-	Retry := execution.Execution{Count: 1, Interval: 1000, IsLock: true}
+	Retry := execution.Execution{Count: 1, Interval: 1000}
 	Retry.SetMutex(lock)
 	_, err := Retry.ErrOutput([]string{"ls", "."})
 	if err != nil {
