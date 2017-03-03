@@ -29,12 +29,11 @@ type Execution struct {
 	// When retring, the it will be paused for that time.Millisecond.
 	// If it's 0, don't pause.
 	Interval int
-
-	// Whether acquire the lock firstly when executing.
-	IsLock bool
 }
 
-// SetMutex replaces the sync.Mutex to a new one.
+// SetMutex replaces the sync.Mutex to a new one. The default is nil.
+// When setting a mutex to non-nil, the execution will acquire the lock first
+// before being executed.
 //
 // Notice: It's not thread-safe. Before replacing the mutex, ensave that the old
 // one hasn't been locked.
@@ -103,7 +102,7 @@ func (e *Execution) execute(args []string, eout bool, executor func(string, []st
 
 	for count >= 0 {
 		func() {
-			if e.IsLock {
+			if e.Mutex != nil {
 				e.Lock()
 				defer e.Unlock()
 			}
