@@ -2,6 +2,7 @@ package values
 
 import "reflect"
 
+// SMap is a type based on the string key.
 type SMap map[string]interface{}
 
 // ToSMap converts the type of map[string]interface{} or SMap to SMap.

@@ -1,5 +1,6 @@
 package values
 
+// Int64 converts the value whose key is k to int64.
 func (s Slice) Int64(i int) (int64, bool) {
 	if len(s) <= i {
 		return 0, false
@@ -7,6 +8,7 @@ func (s Slice) Int64(i int) (int64, bool) {
 	return ToInt64(s[i])
 }
 
+// MustInt64 is the same as Int64, but panic when failed.
 func (s Slice) MustInt64(i int) int64 {
 	if v, ok := s.Int64(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -15,6 +17,8 @@ func (s Slice) MustInt64(i int) int64 {
 	}
 }
 
+// Int64WithDefault is the same as Int64, but return the default value,
+// not ZERO, when failed.
 func (s Slice) Int64WithDefault(i int, _default int64) int64 {
 	if v, ok := s.Int64(i); ok {
 		return v
@@ -22,6 +26,7 @@ func (s Slice) Int64WithDefault(i int, _default int64) int64 {
 	return _default
 }
 
+// Int is the same as Int64, but int.
 func (s Slice) Int(i int) (int, bool) {
 	if len(s) <= i {
 		return 0, false
@@ -29,11 +34,11 @@ func (s Slice) Int(i int) (int, bool) {
 
 	if v, ok := s[i].(int); ok {
 		return v, true
-	} else {
-		return 0, false
 	}
+	return 0, false
 }
 
+// MustInt is the same as MustInt64, but int.
 func (s Slice) MustInt(i int) int {
 	if v, ok := s.Int(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -42,6 +47,7 @@ func (s Slice) MustInt(i int) int {
 	}
 }
 
+// IntWithDefault is the Int64WithDefault, but int.
 func (s Slice) IntWithDefault(i int, _default int) int {
 	if v, ok := s.Int(i); ok {
 		return v
@@ -49,6 +55,7 @@ func (s Slice) IntWithDefault(i int, _default int) int {
 	return _default
 }
 
+// Rune is the same as Int64, but rune.
 func (s Slice) Rune(i int) (rune, bool) {
 	if len(s) <= i {
 		return 0, false
@@ -56,11 +63,11 @@ func (s Slice) Rune(i int) (rune, bool) {
 
 	if v, ok := s[i].(rune); ok {
 		return v, true
-	} else {
-		return 0, false
 	}
+	return 0, false
 }
 
+// MustRune is the same as MustInt64, but rune.
 func (s Slice) MustRune(i int) rune {
 	if v, ok := s.Rune(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -69,6 +76,7 @@ func (s Slice) MustRune(i int) rune {
 	}
 }
 
+// RuneWithDefault is the same as Int64WithDefault, but rune.
 func (s Slice) RuneWithDefault(i int, _default rune) rune {
 	if v, ok := s.Rune(i); ok {
 		return v
@@ -76,6 +84,7 @@ func (s Slice) RuneWithDefault(i int, _default rune) rune {
 	return _default
 }
 
+// Int8 is the same as Int64, but int8.
 func (s Slice) Int8(i int) (int8, bool) {
 	if len(s) <= i {
 		return 0, false
@@ -83,11 +92,11 @@ func (s Slice) Int8(i int) (int8, bool) {
 
 	if v, ok := s[i].(int8); ok {
 		return v, true
-	} else {
-		return 0, false
 	}
+	return 0, false
 }
 
+// MustInt8 is the same as MustInt64, but int8.
 func (s Slice) MustInt8(i int) int8 {
 	if v, ok := s.Int8(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -96,6 +105,7 @@ func (s Slice) MustInt8(i int) int8 {
 	}
 }
 
+// Int8WithDefault is the same as Int64WithDefault, but int8.
 func (s Slice) Int8WithDefault(i int, _default int8) int8 {
 	if v, ok := s.Int8(i); ok {
 		return v
@@ -103,6 +113,7 @@ func (s Slice) Int8WithDefault(i int, _default int8) int8 {
 	return _default
 }
 
+// Int16 is the same as Int64, but int16.
 func (s Slice) Int16(i int) (int16, bool) {
 	if len(s) <= i {
 		return 0, false
@@ -110,11 +121,11 @@ func (s Slice) Int16(i int) (int16, bool) {
 
 	if v, ok := s[i].(int16); ok {
 		return v, true
-	} else {
-		return 0, false
 	}
+	return 0, false
 }
 
+// MustInt16 is the same as MustInt64, but int16.
 func (s Slice) MustInt16(i int) int16 {
 	if v, ok := s.Int16(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -123,6 +134,7 @@ func (s Slice) MustInt16(i int) int16 {
 	}
 }
 
+// Int16WithDefault is the same as Int64WithDefault, but int16.
 func (s Slice) Int16WithDefault(i int, _default int16) int16 {
 	if v, ok := s.Int16(i); ok {
 		return v
@@ -130,6 +142,7 @@ func (s Slice) Int16WithDefault(i int, _default int16) int16 {
 	return _default
 }
 
+// Int32 is the same as Int64, but int32.
 func (s Slice) Int32(i int) (int32, bool) {
 	if len(s) <= i {
 		return 0, false
@@ -137,11 +150,11 @@ func (s Slice) Int32(i int) (int32, bool) {
 
 	if v, ok := s[i].(int32); ok {
 		return v, true
-	} else {
-		return 0, false
 	}
+	return 0, false
 }
 
+// MustInt32 is the same as MustInt64, but int32.
 func (s Slice) MustInt32(i int) int32 {
 	if v, ok := s.Int32(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -150,6 +163,7 @@ func (s Slice) MustInt32(i int) int32 {
 	}
 }
 
+// Int32WithDefault is the same as Int64WithDefault, but int32.
 func (s Slice) Int32WithDefault(i int, _default int32) int32 {
 	if v, ok := s.Int32(i); ok {
 		return v

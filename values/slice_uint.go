@@ -1,5 +1,6 @@
 package values
 
+// UInt64 is the same as Int64, but uint64.
 func (s Slice) UInt64(i int) (uint64, bool) {
 	if len(s) <= i {
 		return 0, false
@@ -7,6 +8,7 @@ func (s Slice) UInt64(i int) (uint64, bool) {
 	return ToUInt64(s[i])
 }
 
+// MustUInt64 is the same as MustInt64, but uint64.
 func (s Slice) MustUInt64(i int) uint64 {
 	if v, ok := s.UInt64(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -15,6 +17,7 @@ func (s Slice) MustUInt64(i int) uint64 {
 	}
 }
 
+// UInt64WithDefault is the same as Int64WithDefault, but uint64.
 func (s Slice) UInt64WithDefault(i int, _default uint64) uint64 {
 	if v, ok := s.UInt64(i); ok {
 		return v
@@ -22,6 +25,7 @@ func (s Slice) UInt64WithDefault(i int, _default uint64) uint64 {
 	return _default
 }
 
+// UInt is the same as Int64, but uint.
 func (s Slice) UInt(i int) (uint, bool) {
 	if len(s) <= i {
 		return 0, false
@@ -29,11 +33,11 @@ func (s Slice) UInt(i int) (uint, bool) {
 
 	if v, ok := s[i].(uint); ok {
 		return v, true
-	} else {
-		return 0, false
 	}
+	return 0, false
 }
 
+// MustUInt is the same as MustInt64, but uint.
 func (s Slice) MustUInt(i int) uint {
 	if v, ok := s.UInt(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -42,6 +46,7 @@ func (s Slice) MustUInt(i int) uint {
 	}
 }
 
+// UIntWithDefault is the same as Int64WithDefault, but uint.
 func (s Slice) UIntWithDefault(i int, _default uint) uint {
 	if v, ok := s.UInt(i); ok {
 		return v
@@ -49,10 +54,12 @@ func (s Slice) UIntWithDefault(i int, _default uint) uint {
 	return _default
 }
 
+// Byte is the same as Int64, but bool.
 func (s Slice) Byte(i int) (v byte, ok bool) {
 	return
 }
 
+// MustByte is the same as MustInt64, but byte.
 func (s Slice) MustByte(i int) byte {
 	if v, ok := s.Byte(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -61,6 +68,7 @@ func (s Slice) MustByte(i int) byte {
 	}
 }
 
+// ByteWithDefault is the same as Int64WithDefault, but byte.
 func (s Slice) ByteWithDefault(i int, _default byte) byte {
 	if v, ok := s.Byte(i); ok {
 		return v
@@ -68,6 +76,7 @@ func (s Slice) ByteWithDefault(i int, _default byte) byte {
 	return _default
 }
 
+// UInt8 is same as Int64, but uint8.
 func (s Slice) UInt8(i int) (uint8, bool) {
 	if len(s) <= i {
 		return 0, false
@@ -75,11 +84,11 @@ func (s Slice) UInt8(i int) (uint8, bool) {
 
 	if v, ok := s[i].(uint8); ok {
 		return v, true
-	} else {
-		return 0, false
 	}
+	return 0, false
 }
 
+// MustUInt8 is the same as MustInt64, but uint8.
 func (s Slice) MustUInt8(i int) uint8 {
 	if v, ok := s.UInt8(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -88,6 +97,7 @@ func (s Slice) MustUInt8(i int) uint8 {
 	}
 }
 
+// UInt8WithDefault is the same as Int64WithDefault, but uint8.
 func (s Slice) UInt8WithDefault(i int, _default uint8) uint8 {
 	if v, ok := s.UInt8(i); ok {
 		return v
@@ -95,6 +105,7 @@ func (s Slice) UInt8WithDefault(i int, _default uint8) uint8 {
 	return _default
 }
 
+// UInt16 is the same as Int64, but uint16.
 func (s Slice) UInt16(i int) (uint16, bool) {
 	if len(s) <= i {
 		return 0, false
@@ -102,11 +113,11 @@ func (s Slice) UInt16(i int) (uint16, bool) {
 
 	if v, ok := s[i].(uint16); ok {
 		return v, true
-	} else {
-		return 0, false
 	}
+	return 0, false
 }
 
+// MustUInt16 is the same as MustInt64, but uint16.
 func (s Slice) MustUInt16(i int) uint16 {
 	if v, ok := s.UInt16(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -115,6 +126,7 @@ func (s Slice) MustUInt16(i int) uint16 {
 	}
 }
 
+// UInt16WithDefault is the same as Int64WithDefault, but uint16.
 func (s Slice) UInt16WithDefault(i int, _default uint16) uint16 {
 	if v, ok := s.UInt16(i); ok {
 		return v
@@ -122,6 +134,7 @@ func (s Slice) UInt16WithDefault(i int, _default uint16) uint16 {
 	return _default
 }
 
+// UInt32 is the same as Int64, but uint32.
 func (s Slice) UInt32(i int) (uint32, bool) {
 	if len(s) <= i {
 		return 0, false
@@ -129,11 +142,11 @@ func (s Slice) UInt32(i int) (uint32, bool) {
 
 	if v, ok := s[i].(uint32); ok {
 		return v, true
-	} else {
-		return 0, false
 	}
+	return 0, false
 }
 
+// MustUInt32 is the same as MustInt64, but uint32.
 func (s Slice) MustUInt32(i int) uint32 {
 	if v, ok := s.UInt32(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -142,6 +155,7 @@ func (s Slice) MustUInt32(i int) uint32 {
 	}
 }
 
+// UInt32WithDefault is the same as Int64WithDefault, but uint32.
 func (s Slice) UInt32WithDefault(i int, _default uint32) uint32 {
 	if v, ok := s.UInt32(i); ok {
 		return v
@@ -149,6 +163,7 @@ func (s Slice) UInt32WithDefault(i int, _default uint32) uint32 {
 	return _default
 }
 
+// Uintptr is the same as Int64, but uintptr.
 func (s Slice) Uintptr(i int) (uintptr, bool) {
 	if len(s) <= i {
 		return 0, false
@@ -156,11 +171,11 @@ func (s Slice) Uintptr(i int) (uintptr, bool) {
 
 	if v, ok := s[i].(uintptr); ok {
 		return v, true
-	} else {
-		return 0, false
 	}
+	return 0, false
 }
 
+// MustUintptr is the same as MustInt64, but uintptr.
 func (s Slice) MustUintptr(i int) uintptr {
 	if v, ok := s.Uintptr(i); !ok {
 		panic(ErrTypeOrIndex)
@@ -169,6 +184,7 @@ func (s Slice) MustUintptr(i int) uintptr {
 	}
 }
 
+// UintptrWithDefault is the same as Int64WithDefault, but uintptr.
 func (s Slice) UintptrWithDefault(i int, _default uintptr) uintptr {
 	if v, ok := s.Uintptr(i); ok {
 		return v

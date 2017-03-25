@@ -2,6 +2,7 @@ package values
 
 import "reflect"
 
+// Slice is a type alias of []interface{}.
 type Slice []interface{}
 
 // ToSlice converts the type of []interface{} or Slice to Slice.

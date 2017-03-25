@@ -1,4 +1,4 @@
-// Get a value from the slice or the map.
+// Package values gets a value from the slice or the map.
 //
 // If failed, return (ZERO, false).
 //
@@ -10,9 +10,13 @@ import (
 )
 
 var (
+	// FZERO32 is the ZERO value of float32.
 	FZERO32 float32
+
+	// FZERO64 is the ZERO value of float64.
 	FZERO64 float64
 
+	// ErrTypeOrIndex is the type or index error.
 	ErrTypeOrIndex = errors.New("The type or index is wrong")
 )
 
@@ -59,18 +63,18 @@ func IsZero(v interface{}) bool {
 	// return false
 }
 
+// Bool2Int converts bool to int64.
 func Bool2Int(b bool) int64 {
 	if b {
 		return 1
-	} else {
-		return 0
 	}
+	return 0
 }
 
+// Bool2Uint converts bool to uint64.
 func Bool2Uint(b bool) uint64 {
 	if b {
 		return 1
-	} else {
-		return 0
 	}
+	return 0
 }

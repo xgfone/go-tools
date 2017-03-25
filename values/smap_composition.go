@@ -1,5 +1,6 @@
 package values
 
+// Interface returns the interface of the value based on the key k.
 func (m SMap) Interface(k string) (v interface{}, ok bool) {
 	if v1, ok := m[k]; ok {
 		return v1, true
@@ -7,6 +8,8 @@ func (m SMap) Interface(k string) (v interface{}, ok bool) {
 	return nil, false
 }
 
+// InterfaceWithDefault is the same as Interface, but return the default value,
+// not ZERO, when failed.
 func (m SMap) InterfaceWithDefault(k string, _default interface{}) interface{} {
 	if v, ok := m.Interface(k); ok {
 		return v
@@ -14,6 +17,7 @@ func (m SMap) InterfaceWithDefault(k string, _default interface{}) interface{} {
 	return _default
 }
 
+// MustInterface is the same as Interface, but panic when failed.
 func (m SMap) MustInterface(k string) interface{} {
 	if v, ok := m.Interface(k); !ok {
 		panic(ErrTypeOrIndex)
@@ -22,6 +26,7 @@ func (m SMap) MustInterface(k string) interface{} {
 	}
 }
 
+// Slice is the same as UInt64, but Slice.
 func (m SMap) Slice(k string) (v Slice, ok bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(Slice); ok {
@@ -33,6 +38,7 @@ func (m SMap) Slice(k string) (v Slice, ok bool) {
 	return nil, false
 }
 
+// SliceWithDefault is the same as UInt64WithDefault, but Slice.
 func (m SMap) SliceWithDefault(k string, _default Slice) Slice {
 	if v, ok := m.Slice(k); ok {
 		return v
@@ -40,6 +46,7 @@ func (m SMap) SliceWithDefault(k string, _default Slice) Slice {
 	return _default
 }
 
+// MustSlice is the same as MustUInt64, but Slice.
 func (m SMap) MustSlice(k string) Slice {
 	if v, ok := m.Slice(k); !ok {
 		panic(ErrTypeOrIndex)
@@ -48,6 +55,7 @@ func (m SMap) MustSlice(k string) Slice {
 	}
 }
 
+// SMap is the same as UInt64, but SMap.
 func (m SMap) SMap(k string) (v SMap, ok bool) {
 	if v1, ok := m[k]; ok {
 		if v2, ok := v1.(SMap); ok {
@@ -59,6 +67,7 @@ func (m SMap) SMap(k string) (v SMap, ok bool) {
 	return nil, false
 }
 
+// SMapWithDefault is the same as UInt64WithDefault, but SMap.
 func (m SMap) SMapWithDefault(k string, _default SMap) SMap {
 	if v, ok := m.SMap(k); ok {
 		return v
@@ -66,6 +75,7 @@ func (m SMap) SMapWithDefault(k string, _default SMap) SMap {
 	return _default
 }
 
+// MustSMap is the same as MustUInt64, but SMap.
 func (m SMap) MustSMap(k string) SMap {
 	if v, ok := m.SMap(k); !ok {
 		panic(ErrTypeOrIndex)
