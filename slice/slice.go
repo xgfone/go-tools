@@ -1,4 +1,4 @@
-// Get a value from a slice and check whether a value exists in a slice.
+// Package slice gets a value from a slice and check whether a value exists in a slice.
 //
 // If the index is out-of-bounds, return the default value.
 //
@@ -36,13 +36,13 @@ func setValue(out interface{}, slice interface{}, index int, _default interface{
 	return true
 }
 
-// Same as SetValue, but if index >= len(slice), set the value of out to _default,
-// and return true always.
+// SetValueWithDefault is same as SetValue, but if index >= len(slice),
+// set the value of out to _default, and return true always.
 func SetValueWithDefault(out interface{}, slice interface{}, index int, _default interface{}) bool {
 	return setValue(out, slice, index, _default, true)
 }
 
-// Set the value of 'out' to 'slice[index]' and return true.
+// SetValue sets the value of 'out' to 'slice[index]' and return true.
 //
 // Return false if the value of out can't be changed, that's, out need to be a pointer.
 // Return false if slice is not a slice type or index >= len(slice).
@@ -51,7 +51,7 @@ func SetValue(out interface{}, slice interface{}, index int) bool {
 	return setValue(out, slice, index, nil, false)
 }
 
-// Return true if value is in slice. Or false. Also reutrn false if value or
+// In returns true if value is in slice. Or false. Also reutrn false if value or
 // slice is nil, or the length of slice is 0.
 //
 // The type of value must be consistent with the type of the element of slice.
