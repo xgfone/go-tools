@@ -1,4 +1,4 @@
-// Some simple convenient pools, such as BufPool, GoPool, etc.
+// Package pool supplys some simple convenient pools, such as BufPool, GoPool, etc.
 package pool
 
 import (
@@ -12,12 +12,13 @@ import (
 )
 
 var (
-	MaxGoroutineError = errors.New("More than the goroutine")
+	// ErrMaxGoroutine is returned when the goroutines is more than the max.
+	ErrMaxGoroutine = errors.New("More than the goroutine")
 
 	total gonum
 )
 
-// Get the number of all the goroutines that are managered by this package.
+// GetTotalNum returns the number of all the goroutines that are managered by this package.
 //
 // If you want to known the total number of all the goroutines in the current
 // process, please use runtime.NumGoroutine().
@@ -39,7 +40,7 @@ func (g gonum) del() {
 	atomic.AddUint32((*uint32)(&g), ^uint32(0))
 }
 
-// Goroutine pool, the wrapper of the keyword, go.
+// GoPool is a goroutine pool, the wrapper of the keyword, go.
 //
 // If the number of the running goroutine exceeds the maximal, it refuses to
 // execute the goroutine.
@@ -49,7 +50,7 @@ type GoPool struct {
 	total uint
 }
 
-// Get a goroutine pool, also get it by &GoPool{} directly.
+// NewGoPool creates a goroutine pool, also get it by &GoPool{} directly.
 //
 // The default doesn't limit the number of goroutine. If it's not what you want,
 // you can set up the limit by GoPool.SetMaxLimit(n).
@@ -57,7 +58,7 @@ func NewGoPool() *GoPool {
 	return &GoPool{}
 }
 
-// Set the maximal limit num of goroutine, and return the old.
+// SetMaxLimit sets the maximal limit num of goroutine, and return the old.
 //
 // If the num is 0, it won't limit the number of goroutine.
 //
@@ -75,7 +76,7 @@ func (p *GoPool) SetMaxLimit(num uint) (old uint) {
 	return
 }
 
-// Get the number of all the current running goroutines.
+// GetNum gets the number of all the current running goroutines.
 func (p *GoPool) GetNum() uint {
 	p.Lock()
 	defer p.Unlock()
@@ -85,11 +86,11 @@ func (p *GoPool) GetNum() uint {
 func (p *GoPool) reduce() {
 	p.Lock()
 	defer p.Unlock()
-	p.num -= 1
+	p.num--
 	total.del()
 }
 
-func (p GoPool) test() bool {
+func (p *GoPool) test() bool {
 	if p.total == 0 {
 		return true
 	} else if p.num < p.total {
@@ -99,7 +100,7 @@ func (p GoPool) test() bool {
 	}
 }
 
-// Call the function with the arguments in a new goroutine.
+// Go calls the function with the arguments in a new goroutine.
 //
 // Return an error when the first argument f is not a function, the arguments
 // is incorrect, or it can not start a new goroutine. Return nil when starting
@@ -114,9 +115,9 @@ func (p *GoPool) Go(f interface{}, args ...interface{}) error {
 	defer p.Unlock()
 
 	if !p.test() {
-		return MaxGoroutineError
+		return ErrMaxGoroutine
 	}
-	p.num += 1
+	p.num++
 	total.add()
 
 	vf, vargs, err := function.Valid(f, args...)
@@ -132,7 +133,7 @@ func (p *GoPool) Go(f interface{}, args ...interface{}) error {
 func (p *GoPool) run(f reflect.Value, args []reflect.Value) {
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Printf("[Goroutine] Failed to call the %v(%v): %v\n", f.Type().Name(), err)
+			fmt.Printf("[Goroutine] Failed to call the %v: %v\n", f.Type().Name(), err)
 		}
 	}()
 

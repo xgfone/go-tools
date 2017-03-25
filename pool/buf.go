@@ -2,13 +2,13 @@ package pool
 
 import "sync"
 
-// The []byte wrapper of sync.Pool
+// BufPool is the []byte wrapper of sync.Pool
 type BufPool struct {
 	size int
 	pool *sync.Pool
 }
 
-// New a buffer pool.
+// NewBufPool returns a new buffer pool.
 //
 // size is the size of the buffer.
 func NewBufPool(size int) *BufPool {
@@ -18,7 +18,7 @@ func NewBufPool(size int) *BufPool {
 	return &BufPool{pool: _pool, size: size}
 }
 
-// Get a buffer.
+// Get returns a buffer.
 func (p *BufPool) Get() []byte {
 	x := p.pool.Get()
 	if x == nil {
@@ -27,7 +27,7 @@ func (p *BufPool) Get() []byte {
 	return x.([]byte)
 }
 
-// Put a buffer to the pool.
+// Put places a buffer to the pool.
 func (p *BufPool) Put(buf []byte) {
 	p.pool.Put(buf)
 }
