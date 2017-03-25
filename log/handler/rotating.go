@@ -22,7 +22,7 @@ const (
 	FILE_MODE = os.O_APPEND | os.O_CREATE | os.O_WRONLY
 
 	// FILE_PERM is the default permission to open the log file.
-	FILE_PERM os.FileMode = 0666
+	FILE_PERM os.FileMode = 0644
 )
 
 var (
