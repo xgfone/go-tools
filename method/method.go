@@ -1,4 +1,4 @@
-// Call the method of a type dynamically.
+// Package method calls the method of a type dynamically.
 //
 // The constraint will be checked at the runtime.
 //
@@ -12,25 +12,26 @@ import (
 )
 
 var (
-	NotHaveMethod = errors.New("Don't have the method")
+	// ErrNotHaveMethod is returned when a certain type doesn't have the method.
+	ErrNotHaveMethod = errors.New("Don't have the method")
 )
 
-// The short for HasMethod
+// Has is the short for HasMethod.
 func Has(t interface{}, method string) bool {
 	return HasMethod(t, method)
 }
 
-// The short for GetMethod
+// Get is the short for GetMethod.
 func Get(t interface{}, method string) interface{} {
 	return GetMethod(t, method)
 }
 
-// The short for CallMethod
+// Call is the short for CallMethod.
 func Call(t interface{}, method string, args ...interface{}) ([]interface{}, error) {
 	return CallMethod(t, method, args...)
 }
 
-// Return true if `t` has the method of `method`.
+// HasMethod returns true if `t` has the method of `method`.
 func HasMethod(t interface{}, method string) bool {
 	_, b := reflect.TypeOf(t).MethodByName(method)
 	if b {
@@ -47,7 +48,7 @@ func getMethod(t interface{}, method string) reflect.Value {
 	return m.Func
 }
 
-// Return the method, `method`, of `t`. If not, return nil.
+// GetMethod returns the method, `method`, of `t`. If not, return nil.
 //
 // Notice: The first argument of the returned function is the receiver. That's,
 // when calling the function, you must pass the receiver as the first argument
@@ -60,12 +61,12 @@ func GetMethod(t interface{}, method string) interface{} {
 	return m.Interface()
 }
 
-// Call the method 'method' of 't', and return (ReturnedValue, nil) if calling
-// successfully, which ReturnedValue is the result which that method returned.
-// Or return (nil, Error).
+// CallMethod calls the method 'method' of 't', and return (ReturnedValue, nil)
+// if calling successfully, which ReturnedValue is the result which that method
+// returned. Or return (nil, Error).
 func CallMethod(t interface{}, method string, args ...interface{}) ([]interface{}, error) {
 	if m := GetMethod(t, method); m == nil {
-		return nil, NotHaveMethod
+		return nil, ErrNotHaveMethod
 	} else {
 		_args := make([]interface{}, len(args)+1)
 		_args[0] = t
