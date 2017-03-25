@@ -14,46 +14,46 @@
 //
 // This package is from https://github.com/Unknwon/com/regex.go
 
-// Some validations, such as email, url, etc.
+// Package validation supplys some validations, such as email, url, etc.
 package validation
 
 import "regexp"
 
 const (
-	regex_email_pattern        = `(?i)[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,6}`
-	regex_strict_email_pattern = `(?i)[A-Z0-9!#$%&'*+/=?^_{|}~-]+` +
+	regexEmailPattern       = `(?i)[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,6}`
+	regexStrictEmailPattern = `(?i)[A-Z0-9!#$%&'*+/=?^_{|}~-]+` +
 		`(?:\.[A-Z0-9!#$%&'*+/=?^_{|}~-]+)*` +
 		`@(?:[A-Z0-9](?:[A-Z0-9-]*[A-Z0-9])?\.)+` +
 		`[A-Z0-9](?:[A-Z0-9-]*[A-Z0-9])?`
-	regex_url_pattern = `(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?`
+	regexURLPattern = `(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?`
 )
 
 var (
-	regex_email        *regexp.Regexp
-	regex_strict_email *regexp.Regexp
-	regex_url          *regexp.Regexp
+	regexEmail       *regexp.Regexp
+	regexStrictEmail *regexp.Regexp
+	regexURL         *regexp.Regexp
 )
 
 func init() {
-	regex_email = regexp.MustCompile(regex_email_pattern)
-	regex_strict_email = regexp.MustCompile(regex_strict_email_pattern)
-	regex_url = regexp.MustCompile(regex_url_pattern)
+	regexEmail = regexp.MustCompile(regexEmailPattern)
+	regexStrictEmail = regexp.MustCompile(regexStrictEmailPattern)
+	regexURL = regexp.MustCompile(regexURLPattern)
 }
 
-// validate string is an email address, if not return false
+// IsEmail validates string is an email address, if not return false
 // basically validation can match 99% cases
 func IsEmail(email string) bool {
-	return regex_email.MatchString(email)
+	return regexEmail.MatchString(email)
 }
 
-// validate string is an email address, if not return false
+// IsEmailRFC validates string is an email address, if not return false
 // this validation omits RFC 2822
 func IsEmailRFC(email string) bool {
-	return regex_strict_email.MatchString(email)
+	return regexStrictEmail.MatchString(email)
 }
 
-// validate string is a url link, if not return false
+// IsURL validates string is a url link, if not return false
 // simple validation can match 99% cases
-func IsUrl(url string) bool {
-	return regex_url.MatchString(url)
+func IsURL(url string) bool {
+	return regexURL.MatchString(url)
 }
