@@ -55,9 +55,19 @@ func (e Exception) IsChildByString(parent string) bool {
 	return IsChildByString(e._type, parent)
 }
 
-// IsChild is equal to IsChildByString(e.GetType(), parent.GetType()).
+// IsChild is equal to IsChildByExc(e, parent).
 func (e Exception) IsChild(parent Exception) bool {
 	return IsChildByString(e._type, parent._type)
+}
+
+// IsParentByString is equal to IsChildByString(child, e.GetType()).
+func (e Exception) IsParentByString(child string) bool {
+	return IsChildByString(child, e._type)
+}
+
+// IsParent is equal to IsChildByExc(child, e).
+func (e Exception) IsParent(child Exception) bool {
+	return IsChildByString(child._type, e._type)
 }
 
 // IsSame is equal to IsSame(e.GetType(), other.GetType()).
