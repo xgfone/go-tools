@@ -1,12 +1,12 @@
-// Calculate the checksum.
+// Package checksum supplies some ways to calculate the checksum.
 package checksum
 
-// Calculate the checksum of ICMP package.
+// ICMP calculates the checksum of ICMP package.
 func ICMP(data []byte) uint16 {
 	var (
 		sum    uint32
-		length int = len(data)
 		index  int
+		length = len(data)
 	)
 	for length > 1 {
 		sum += uint32(data[index])<<8 + uint32(data[index+1])
