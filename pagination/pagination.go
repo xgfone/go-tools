@@ -1,8 +1,9 @@
-// It is usually used to compute the web pagination.
+// Package pagination is usually used to compute the web pagination.
 package pagination
 
 import "math"
 
+// Pagination is a struct used to get a pagination result.
 type Pagination struct {
 	// The number of the current page
 	Current int
@@ -37,6 +38,7 @@ type Pagination struct {
 	Pages []Page
 }
 
+// Page stands for a page.
 type Page struct {
 	// Whether this page is the current page.
 	Active bool
@@ -45,7 +47,7 @@ type Page struct {
 	Number int
 }
 
-// Create a new pagination.
+// NewPagination creates a new pagination.
 //
 // total is the total number of all the elements. currentPage is the current
 // page number, that's, which page the current is. limit is the number of the
