@@ -1,4 +1,4 @@
-// The handler of the logger.
+// Package handler is the handler collection of the logger.
 package handler
 
 import (
@@ -15,9 +15,13 @@ import (
 )
 
 const (
+	// DAY_FMT is the date-rotaed format.
 	DAY_FMT = "2006-01-02"
 
-	FILE_MODE             = os.O_APPEND | os.O_CREATE | os.O_WRONLY
+	// FILE_MODE is the mode to open the log file.
+	FILE_MODE = os.O_APPEND | os.O_CREATE | os.O_WRONLY
+
+	// FILE_PERM is the default permission to open the log file.
 	FILE_PERM os.FileMode = 0666
 )
 
@@ -28,13 +32,21 @@ var (
 	time2fmt = map[int64]string{
 		day: DAY_FMT,
 	}
+
+	filePerm = FILE_PERM
 )
 
 var (
+	// ErrFileNotOpen is the error to open the log file.
 	ErrFileNotOpen = errors.New("The file is not opened")
 )
 
-// A file handler based on the timed rotating, like
+// ResetDefaultFilePerm resets the default permission to open the log file.
+func ResetDefaultFilePerm(perm int) {
+	filePerm = os.FileMode(perm)
+}
+
+// TimedRotatingFile is a file handler based on the timed rotating, like
 // `logging.handlers.TimedRotatingFileHandler` in Python.
 // Now only support the rotation by day.
 type TimedRotatingFile struct {
@@ -49,7 +61,7 @@ type TimedRotatingFile struct {
 	extRE       *regexp.Regexp
 }
 
-// Create a new TimedRotatingFile.
+// NewTimedRotatingFile creates a new TimedRotatingFile.
 //
 // If failed, it will panic.
 func NewTimedRotatingFile(filename string) *TimedRotatingFile {
@@ -62,98 +74,99 @@ func NewTimedRotatingFile(filename string) *TimedRotatingFile {
 	return &t
 }
 
-// Write the string data into the file, which may rotate the file if necessary.
-func (self *TimedRotatingFile) WriteString(data string) (n int, err error) {
-	return self.Write([]byte(data))
+// WriteString writes the string data into the file, which may rotate the file if necessary.
+func (t *TimedRotatingFile) WriteString(data string) (n int, err error) {
+	return t.Write([]byte(data))
 }
 
-// Write the byte slice data into the file, which may rotate the file if necessary.
-func (self *TimedRotatingFile) Write(data []byte) (n int, err error) {
-	self.Lock()
-	defer self.Unlock()
+// Write writes the byte slice data into the file, which may rotate the file if necessary.
+func (t *TimedRotatingFile) Write(data []byte) (n int, err error) {
+	t.Lock()
+	defer t.Unlock()
 
-	if self.w == nil {
+	if t.w == nil {
 		err = ErrFileNotOpen
 		return
 	}
 
-	if self.shouldRollover() {
-		if err = self.doRollover(); err != nil {
+	if t.shouldRollover() {
+		if err = t.doRollover(); err != nil {
 			return
 		}
 	}
 
-	return self.w.Write(data)
+	return t.w.Write(data)
 }
 
-// Set the number of the backup file. The default is 31.
-func (self *TimedRotatingFile) SetBackupCount(num int) *TimedRotatingFile {
-	self.backupCount = num
-	return self
+// SetBackupCount sets the number of the backup file. The default is 31.
+func (t *TimedRotatingFile) SetBackupCount(num int) *TimedRotatingFile {
+	t.backupCount = num
+	return t
 }
 
-// Set the interval day number to rotate. The default is 1.
-func (self *TimedRotatingFile) SetInterval(interval int) *TimedRotatingFile {
-	self.interval = int64(interval) * self.when
-	self.reComputeRollover()
-	return self
+// SetInterval sets the interval day number to rotate. The default is 1.
+func (t *TimedRotatingFile) SetInterval(interval int) *TimedRotatingFile {
+	t.interval = int64(interval) * t.when
+	t.reComputeRollover()
+	return t
 }
 
-func (self TimedRotatingFile) shouldRollover() bool {
-	if time.Now().Unix() >= self.rotatorAt {
+func (t *TimedRotatingFile) shouldRollover() bool {
+	if time.Now().Unix() >= t.rotatorAt {
 		return true
 	}
 	return false
 }
 
-func (self *TimedRotatingFile) Close() (err error) {
-	if err = self.w.Close(); err != nil {
+// Close closes the handler.
+// Return ErrFileNotOpen when to write the data to the handler after closed.
+func (t *TimedRotatingFile) Close() (err error) {
+	if err = t.w.Close(); err != nil {
 		return
 	}
-	self.w = nil
+	t.w = nil
 	return
 }
 
-func (self *TimedRotatingFile) open() error {
-	file, err := os.OpenFile(self.filename, FILE_MODE, FILE_PERM)
+func (t *TimedRotatingFile) open() error {
+	file, err := os.OpenFile(t.filename, FILE_MODE, FILE_PERM)
 	if err != nil {
 		return err
-	} else {
-		self.w = file
-		return nil
 	}
+	t.w = file
+	return nil
 }
 
-func (self *TimedRotatingFile) doRollover() (err error) {
-	if err = self.Close(); err != nil {
+func (t *TimedRotatingFile) doRollover() (err error) {
+	if err = t.Close(); err != nil {
 		return
 	}
 
-	dstTime := self.rotatorAt - self.interval
-	dstPath := self.filename + "." + time.Unix(dstTime, 0).Format(time2fmt[self.when])
+	dstTime := t.rotatorAt - t.interval
+	dstPath := t.filename + "." + time.Unix(dstTime, 0).Format(time2fmt[t.when])
 	if file.IsExist(dstPath) {
 		os.Remove(dstPath)
 	}
 
-	if file.IsFile(self.filename) {
-		if err = os.Rename(self.filename, dstPath); err != nil {
+	if file.IsFile(t.filename) {
+		if err = os.Rename(t.filename, dstPath); err != nil {
 			return err
 		}
 	}
 
-	if self.backupCount > 0 {
-		for _, file := range self.getFilesToDelete() {
+	if t.backupCount > 0 {
+		for _, file := range t.getFilesToDelete() {
 			os.Remove(file)
 		}
 	}
 
-	self.reComputeRollover()
-	return self.open()
+	t.reComputeRollover()
+	return t.open()
 }
 
-func (self TimedRotatingFile) getFilesToDelete() []string {
+func (t *TimedRotatingFile) getFilesToDelete() []string {
 	result := make([]string, 0, 30)
-	dirName, baseName := filepath.Split(self.filename)
+	dirName, baseName := filepath.Split(t.filename)
 	fileNames, err := file.ListDir(dirName)
 	if err != nil {
 		return result
@@ -169,28 +182,27 @@ func (self TimedRotatingFile) getFilesToDelete() []string {
 		prefix = string(fileName[:plen])
 		if _prefix == prefix {
 			suffix = string(fileName[plen:])
-			if self.extRE.MatchString(suffix) {
+			if t.extRE.MatchString(suffix) {
 				result = append(result, filepath.Join(dirName, fileName))
 			}
 		}
 	}
 
-	if len(result) <= self.backupCount {
+	if len(result) <= t.backupCount {
 		return []string{}
-	} else {
-		sort.Strings(result)
-		return result[:len(result)-self.backupCount]
 	}
+	sort.Strings(result)
+	return result[:len(result)-t.backupCount]
 }
 
-func (self *TimedRotatingFile) reComputeRollover() {
-	current_time := time.Now().Unix()
+func (t *TimedRotatingFile) reComputeRollover() {
+	currentTime := time.Now().Unix()
 
-	t := time.Unix(current_time, 0)
-	current_hour := t.Hour()
-	current_minute := t.Minute()
-	current_second := t.Second()
+	_time := time.Unix(currentTime, 0)
+	currentHour := _time.Hour()
+	currentMinute := _time.Minute()
+	currentSecond := _time.Second()
 
-	r := self.interval - int64((current_hour*60+current_minute)*60+current_second)
-	self.rotatorAt = current_time + r
+	r := t.interval - int64((currentHour*60+currentMinute)*60+currentSecond)
+	t.rotatorAt = currentTime + r
 }
