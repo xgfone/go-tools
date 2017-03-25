@@ -7,6 +7,7 @@ import (
 	"github.com/xgfone/go-tools/nets"
 )
 
+// UHandle is the interface of UDP server handler.
 type UHandle interface {
 	// Handle the request from the client, and return the handled result.
 	//
@@ -15,13 +16,15 @@ type UHandle interface {
 	Handle(buf []byte, addr *net.UDPAddr) []byte
 }
 
-// Wrap the function handler to the interface THandle.
+// UHandleFunc is the type to wrap the function handler to the interface UHandle.
 type UHandleFunc (func([]byte, *net.UDPAddr) []byte)
 
+// Handle is the implementation of UHandle.
 func (h UHandleFunc) Handle(buf []byte, addr *net.UDPAddr) []byte {
 	return h(buf, addr)
 }
 
+// UDPWithError wraps a panic, only print it, but ignore it, when to handle a UDP connection.
 func UDPWithError(conn *net.UDPConn, handler UHandle, buf []byte, addr *net.UDPAddr) {
 	defer func() {
 		if err := recover(); err != nil {
@@ -39,7 +42,7 @@ func UDPWithError(conn *net.UDPConn, handler UHandle, buf []byte, addr *net.UDPA
 	}
 }
 
-// Start a UDP server and never return. Return an error if returns.
+// UDPServerForever starts a UDP server and never return. Return an error if returns.
 // But there is one exception: if wrap exists and returns true, it returns nil.
 // Or continue to execute and never return.
 //

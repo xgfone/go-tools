@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	// If true, output the verbose information.(deprecated)
+	// Debug is on/off. If true, output the verbose information.(deprecated)
 	Debug   bool
 	_logger *logger
 )
@@ -52,10 +52,12 @@ func (l logger) Error(format string, args ...interface{}) {
 	l.Output(40, format, args...)
 }
 
+// SetLogger replaces the default logger.
 func SetLogger(logger *log.Logger) {
 	_logger._logger = logger
 }
 
+// GetLogger returns the current logger.
 func GetLogger() *log.Logger {
 	return _logger._logger
 }

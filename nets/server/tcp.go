@@ -1,4 +1,4 @@
-// The simple TCP/UDP server.
+// Package server is a simple TCP/UDP server.
 package server
 
 import (
@@ -8,18 +8,20 @@ import (
 	"github.com/xgfone/go-tools/nets"
 )
 
+// THandle is the interface of TCP server handler.
 type THandle interface {
 	Handle(conn *net.TCPConn)
 }
 
-// Wrap the function handler to the interface THandle.
+// THandleFunc is the type to wrap the function handler to the interface THandle.
 type THandleFunc (func(*net.TCPConn))
 
+// Handle is the implementation of THandle.
 func (h THandleFunc) Handle(conn *net.TCPConn) {
 	h(conn)
 }
 
-// Wrap a panic, only print it, but ignore it.
+// TCPWrapError wraps a panic, only print it, but ignore it, when to handle a TCP connection.
 func TCPWrapError(conn *net.TCPConn, handler THandle) {
 	defer func() {
 		if err := recover(); err != nil {
@@ -34,7 +36,7 @@ func TCPWrapError(conn *net.TCPConn, handler THandle) {
 	handler.Handle(conn)
 }
 
-// Start a TCP server and never return. Return an error if returns.
+// TCPServerForever starts a TCP server and never return. Return an error if returns.
 //
 // addr is like "host:port", such as "127.0.0.1:8000", and host or port may be omitted.
 // size is the number of the pool. If it's 0, it's infinite.
