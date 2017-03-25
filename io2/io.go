@@ -1,4 +1,4 @@
-// The assistant functions of io.
+// Package io2 is the assistant functions of io.
 package io2
 
 import "io"
