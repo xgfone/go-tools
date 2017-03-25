@@ -1,4 +1,4 @@
-// Call a function dynamically.
+// Package function calls a function dynamically.
 //
 // The constraint will be checked at the runtime.
 //
@@ -11,38 +11,48 @@ import (
 )
 
 var (
-	NotFuncError  = errors.New("The first argument is not the function")
-	ArgsNumError  = errors.New("The number of the argument is incorrect")
-	ArgsTypeError = errors.New("The type of the argument is incorrect")
+	// ErrNotFunc is returned when the callee is not a function.
+	ErrNotFunc = errors.New("The first argument is not the function")
+
+	// ErrArgsNum is returned when the number of the arguments is incorrect
+	// when calling the callee.
+	ErrArgsNum = errors.New("The number of the argument is incorrect")
+
+	// ErrArgsType is returned when the type of the arguments is incorrect
+	// when calling the callee.
+	ErrArgsType = errors.New("The type of the argument is incorrect")
 )
 
+// Valid valids whether the callee is a function, and the number the type of the
+// arguments is correct.
 func Valid(f interface{}, args ...interface{}) (vf reflect.Value, vargs []reflect.Value, err error) {
 	vf = reflect.ValueOf(f)
 	if vf.Kind() != reflect.Func {
-		return reflect.ValueOf(nil), nil, NotFuncError
+		return reflect.ValueOf(nil), nil, ErrNotFunc
 	}
 
 	tf := vf.Type()
 	_len := len(args)
 	if tf.NumIn() != _len {
-		return reflect.ValueOf(nil), nil, ArgsNumError
+		return reflect.ValueOf(nil), nil, ErrArgsNum
 	}
 
 	vargs = make([]reflect.Value, _len)
 	for i := 0; i < _len; i++ {
 		typ := tf.In(i).Kind()
 		if (typ != reflect.Interface) && (typ != reflect.TypeOf(args[i]).Kind()) {
-			return reflect.ValueOf(nil), nil, ArgsTypeError
+			return reflect.ValueOf(nil), nil, ErrArgsType
 		}
 		vargs[i] = reflect.ValueOf(args[i])
 	}
 	return vf, vargs, nil
 }
 
+// Call calls a function dynamically.
 func Call(f interface{}, args ...interface{}) (results []interface{}, err error) {
 	defer func() {
 		if _err := recover(); _err != nil {
-			err = errors.New(fmt.Sprintf("%v", _err))
+			err = fmt.Errorf("%v", _err)
 			results = nil
 		}
 	}()
