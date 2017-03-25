@@ -1,4 +1,5 @@
 // The Simple Token Bucket like HTB in Linux TC.
+//
 // [Deprecated!] Please use golang.org/x/time/rate.
 package tbucket
 

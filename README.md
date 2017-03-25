@@ -24,7 +24,7 @@ execution    | execution executes a command line program in a new process and re
 extremum     | Get the maximal or the minimal of both the values.
 file         | Some convenient functions about the file operation.
 function     | Call a function dynamically.
-io2          | The assistant functions of io.
+io2          | **[Deprecated!!!]** The assistant functions of io.
 lifecycle    | The manager of the lifecycle of some apps in a program.
 log/handler  | The logger handler, such as `TimedRotatingFile` like `logging.handlers.TimedRotatingFileHandler` in Python.
 method       | Call the method of a type dynamically.
@@ -37,7 +37,7 @@ pool         | Some simple convenient pools, such as `BufPool`, `GoPool`, etc.
 slice        | Get a value from a slice and check whether a value exists in a slice.
 str          | str is the supplement of the standard library of strings.
 tags         | Manage the tags in a struct.
-tbucket      | **[Deprecated!]** The Simple Token Bucket like `HTB` in Linux `TC`. Please use `golang.org/x/time/rate`.
+tbucket      | **[Deprecated!!!]** The Simple Token Bucket like `HTB` in Linux `TC`. Please use `golang.org/x/time/rate`.
 utils        | Some utility functions, which are classified to a certain package.
 validation   | Some validations, such as email, url, etc.
 values       | Get a value from a `slice` or `map`.

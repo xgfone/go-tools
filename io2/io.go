@@ -1,4 +1,6 @@
 // Package io2 is the assistant functions of io.
+//
+// Deprecated!
 package io2
 
 import "io"
