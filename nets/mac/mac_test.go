@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/xgfone/go-tools/net/mac"
+	"github.com/xgfone/go-tools/nets/mac"
 )
 
 func TestValid(t *testing.T) {
