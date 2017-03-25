@@ -27,14 +27,8 @@ func (s Slice) UInt64WithDefault(i int, _default uint64) uint64 {
 
 // UInt is the same as Int64, but uint.
 func (s Slice) UInt(i int) (uint, bool) {
-	if len(s) <= i {
-		return 0, false
-	}
-
-	if v, ok := s[i].(uint); ok {
-		return v, true
-	}
-	return 0, false
+	v, ok := s.UInt64(i)
+	return uint(v), ok
 }
 
 // MustUInt is the same as MustInt64, but uint.
@@ -56,7 +50,7 @@ func (s Slice) UIntWithDefault(i int, _default uint) uint {
 
 // Byte is the same as Int64, but bool.
 func (s Slice) Byte(i int) (v byte, ok bool) {
-	return
+	return s.UInt8(i)
 }
 
 // MustByte is the same as MustInt64, but byte.
@@ -78,14 +72,8 @@ func (s Slice) ByteWithDefault(i int, _default byte) byte {
 
 // UInt8 is same as Int64, but uint8.
 func (s Slice) UInt8(i int) (uint8, bool) {
-	if len(s) <= i {
-		return 0, false
-	}
-
-	if v, ok := s[i].(uint8); ok {
-		return v, true
-	}
-	return 0, false
+	v, ok := s.UInt64(i)
+	return uint8(v), ok
 }
 
 // MustUInt8 is the same as MustInt64, but uint8.
@@ -107,14 +95,8 @@ func (s Slice) UInt8WithDefault(i int, _default uint8) uint8 {
 
 // UInt16 is the same as Int64, but uint16.
 func (s Slice) UInt16(i int) (uint16, bool) {
-	if len(s) <= i {
-		return 0, false
-	}
-
-	if v, ok := s[i].(uint16); ok {
-		return v, true
-	}
-	return 0, false
+	v, ok := s.UInt64(i)
+	return uint16(v), ok
 }
 
 // MustUInt16 is the same as MustInt64, but uint16.
@@ -136,14 +118,8 @@ func (s Slice) UInt16WithDefault(i int, _default uint16) uint16 {
 
 // UInt32 is the same as Int64, but uint32.
 func (s Slice) UInt32(i int) (uint32, bool) {
-	if len(s) <= i {
-		return 0, false
-	}
-
-	if v, ok := s[i].(uint32); ok {
-		return v, true
-	}
-	return 0, false
+	v, ok := s.UInt64(i)
+	return uint32(v), ok
 }
 
 // MustUInt32 is the same as MustInt64, but uint32.
@@ -165,14 +141,8 @@ func (s Slice) UInt32WithDefault(i int, _default uint32) uint32 {
 
 // Uintptr is the same as Int64, but uintptr.
 func (s Slice) Uintptr(i int) (uintptr, bool) {
-	if len(s) <= i {
-		return 0, false
-	}
-
-	if v, ok := s[i].(uintptr); ok {
-		return v, true
-	}
-	return 0, false
+	v, ok := s.UInt(i)
+	return uintptr(v), ok
 }
 
 // MustUintptr is the same as MustInt64, but uintptr.
