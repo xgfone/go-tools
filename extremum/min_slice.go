@@ -1,10 +1,9 @@
 package extremum
 
-// Return the minimum of both the slices.
+// MinInSlice returns the minimum of both the slices.
 // Return -1 if the type is not supported.
 //
 // The type of both the slices may be []int, []uint, []int64, []uint64.
-
 func MinInSlice(v interface{}) int {
 	switch _v := v.(type) {
 	case []int:
@@ -20,7 +19,7 @@ func MinInSlice(v interface{}) int {
 	}
 }
 
-// Return the minimum of both the slice of []int.
+// MinIntInSlice returns the minimum of both the slice of []int.
 func MinIntInSlice(v []int) int {
 	_len := len(v)
 	if _len == 0 {
@@ -36,7 +35,7 @@ func MinIntInSlice(v []int) int {
 	return result
 }
 
-// Return the minimum of both the slice of []uint.
+// MinUintInSlice returns the minimum of both the slice of []uint.
 func MinUintInSlice(v []uint) int {
 	_len := len(v)
 	if _len == 0 {
@@ -52,7 +51,7 @@ func MinUintInSlice(v []uint) int {
 	return result
 }
 
-// Return the minimum of both the slice of []int64.
+// MinInt64InSlice returns the minimum of both the slice of []int64.
 func MinInt64InSlice(v []int64) int {
 	_len := len(v)
 	if _len == 0 {
@@ -68,7 +67,7 @@ func MinInt64InSlice(v []int64) int {
 	return result
 }
 
-// Return the minimum of both the slice of []uint64.
+// MinUint64InSlice returns the minimum of both the slice of []uint64.
 func MinUint64InSlice(v []uint64) int {
 	_len := len(v)
 	if _len == 0 {
