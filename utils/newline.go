@@ -1,31 +1,35 @@
-// Some utility functions, which are classified to a certain package.
+// Package utils supplys some utility functions, which are classified to a certain package.
 package utils
 
 import "runtime"
 
 var (
-	Mac     = "\r"
-	Unix    = "\n"
-	Windows = "\r\n"
+	// MacNL is the newline in Mac.
+	MacNL = "\r"
+
+	// UnixNL is the newline in Unix/Linux.
+	UnixNL = "\n"
+
+	// WindowsNL is the newline in Windows.
+	WindowsNL = "\r\n"
 )
 
 var newlines map[string]string
 
 func init() {
 	newlines = map[string]string{
-		"windows": Windows,
-		"darwin":  Mac,
-		"linux":   Unix,
-		"freebsd": Unix,
+		"windows": WindowsNL,
+		"darwin":  MacNL,
+		"linux":   UnixNL,
+		"freebsd": UnixNL,
 	}
 }
 
-// Return the newline of the current os. For example, windows' is "\r\n",
+// NewLine returns the newline of the current os. For example, windows' is "\r\n",
 // linux's is "\n", Mac's is "\r", etc.
 func NewLine() string {
 	if v, ok := newlines[runtime.GOOS]; ok {
 		return v
-	} else {
-		return Unix
 	}
+	return UnixNL
 }
