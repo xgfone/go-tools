@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-// Copy from the method Get() from reflect.StructTag. But it returns all the
-// tags defined in the fields by the order that they appear, not the value of
-// the specific tag.
+// GetAllTags copys from the method Get() from reflect.StructTag.
+// But it returns all the tags defined in the fields by the order
+// that they appear, not the value of the specific tag.
 //
 // The type of the argument tag must be eithor string or reflect.StructTag.
 // Or panic.

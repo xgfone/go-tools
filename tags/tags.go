@@ -1,4 +1,4 @@
-// Manage the tags in a struct.
+// Package tags manages the tags in a struct.
 package tags
 
 import (
@@ -9,12 +9,12 @@ import (
 )
 
 var (
-	// If true, output the procedure building the tags.
+	// Debug is on/off. If true, output the procedure building the tags.
 	// If having a question about the building, you can set it to true.
 	Debug = false
 )
 
-// A struct to manage the tags of a struct.
+// Tag is a struct to manage the tags of a struct.
 type Tag struct {
 	name   string
 	fields []*ft
@@ -27,7 +27,7 @@ type ft struct {
 	Tag   reflect.StructTag
 }
 
-// It is used for the method GetToField().
+// FV is used for the method GetToField().
 type FV struct {
 	// The field name which the tag belongs to.
 	Field string
@@ -36,7 +36,7 @@ type FV struct {
 	Value string
 }
 
-// It is used for the method GetAllByField().
+// TV is used for the method GetAllByField().
 type TV struct {
 	// The name of the tag.
 	Tag string
@@ -45,7 +45,7 @@ type TV struct {
 	Value string
 }
 
-// It is used for the method GetAll().
+// FT is used for the method GetAll().
 type FT struct {
 	// The name of the field.
 	Field string
@@ -63,7 +63,7 @@ func debugf(format string, args ...interface{}) {
 	}
 }
 
-// Create a new Tag to manage the tags in a certain struct.
+// NewTag returns a new Tag to manage the tags in a certain struct.
 //
 // v is a struct variable or a pointer to a struct.
 func NewTag(v interface{}) *Tag {
@@ -94,8 +94,8 @@ func newTag(name string) *Tag {
 	}
 }
 
-// Build the tag upon the struct. That's, analyze and get the values of the
-// tag in all the fields of the struct. If the tag has been built, ignore it.
+// BuildTag builds the tag upon the struct. That's, analyze and get the values
+// of the tag in all the fields of the struct. If the tag has been built, ignore it.
 //
 // Notice: Building the tag is in turn according to the order of the field. You
 // can set Debug to true to see the building order. If a field defines the tag
@@ -120,8 +120,8 @@ func (t *Tag) BuildTag(tag string) *Tag {
 	return t
 }
 
-// Build a set of the tags, which is equivalent to calling BuildTag() more than
-// once. See BuildTag().
+// BuildTags builds a set of the tags, which is equivalent to calling BuildTag()
+// more than once. See BuildTag().
 func (t *Tag) BuildTags(tags []string) *Tag {
 	for _, tag := range tags {
 		t.BuildTag(tag)
@@ -129,12 +129,12 @@ func (t *Tag) BuildTags(tags []string) *Tag {
 	return t
 }
 
-// Return the name of Tag, which is the name of the struct.
+// Name returns the name of Tag, which is the name of the struct.
 func (t Tag) Name() string {
 	return t.name
 }
 
-// Get the value of the corresponding tag.
+// Get returns the value of the corresponding tag.
 //
 // If more than one field has the tag, return the value of the tag of the first
 // field according to the order defined in the struct. Return an empty string
@@ -144,8 +144,8 @@ func (t Tag) Get(tag string) string {
 	return v
 }
 
-// Same as Get(), but also return the field name except its value.
-// Return ("", "") if no field defines the tag.
+// GetWithField is the same as Get(), but also return the field name
+// except its value. Return ("", "") if no field defines the tag.
 func (t Tag) GetWithField(tag string) (field, value string) {
 	tag = strings.TrimSpace(tag)
 	if v, ok := t.t2f[tag]; !ok {
@@ -158,8 +158,8 @@ func (t Tag) GetWithField(tag string) (field, value string) {
 	}
 }
 
-// Return the value of the tag in a specified field. Return an empty string if
-// the field doesn't have the tag.
+// GetByField returns the value of the tag in a specified field.
+// Return an empty string if the field doesn't have the tag.
 func (t Tag) GetByField(tag, field string) string {
 	if v, ok := t.f2t[field]; !ok {
 		return ""
@@ -175,7 +175,7 @@ func (t Tag) GetByField(tag, field string) string {
 	}
 }
 
-// Get the information of all the tags defined in all the fields.
+// GetToField returns the information of all the tags defined in all the fields.
 // Return nil if no field defines the tag.
 func (t Tag) GetToField(tag string) (fv []FV) {
 	if v, ok := t.t2f[tag]; !ok {
@@ -193,7 +193,7 @@ func (t Tag) GetToField(tag string) (fv []FV) {
 	}
 }
 
-// Get all the tags of the field. Return nil if the field has no tags.
+// GetAllByField returns all the tags of the field. Return nil if the field has no tags.
 func (t Tag) GetAllByField(field string) (tv []TV) {
 	if v, ok := t.f2t[field]; !ok {
 		return nil
@@ -211,8 +211,9 @@ func (t Tag) GetAllByField(field string) (tv []TV) {
 	}
 }
 
-// Get all the information parsed by the tag manager. Return nil if no tag is
-// parsed. It's almost used to debug or traverse the tags in all the fields.
+// GetAll returns all the information parsed by the tag manager.
+// Return nil if no tag is parsed. It's almost used to debug or traverse the
+// tags in all the fields.
 //
 // The returned list is sorted on the basis of the order of the field which is
 // defined in the struct. And the tags is based on the order which they are
@@ -293,8 +294,8 @@ func (t Tag) Audit() string {
 	return buf.String()
 }
 
-// Travel the information of the tag, which is the funcational programming of
-// GetToField.
+// TravelByTag travels the information of the tag, which is the funcational
+// programming of GetToField.
 //
 // The type of the trvaeling function is func(string, string), which needs two
 // arguments and no return value. The first argument is the name of the tag,
@@ -307,8 +308,8 @@ func (t Tag) TravelByTag(tag string, f func(string, string)) {
 	}
 }
 
-// Travel the information of the field, which is the funcational programming of
-// GetAllByField.
+// TravelByField travels the information of the field, which is the funcational
+// programming of GetAllByField.
 //
 // The type of the trvaeling function is func(string, string), which needs two
 // arguments and no return value. The first argument is the name of the field,
@@ -321,7 +322,7 @@ func (t Tag) TravelByField(field string, f func(string, string)) {
 	}
 }
 
-// Build all the tags in the struct automatically.
+// Build builds all the tags in the struct automatically.
 //
 // The building procedure is:
 // 	(1) Travel all the exposed fields by the order which are defined in the struct.
