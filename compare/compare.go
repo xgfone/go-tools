@@ -1,7 +1,10 @@
-// Compare whether the first is greater than, less than, or equal to the second.
+// Package compare compares whether the first is greater than, less than,
+// or equal to the second.
 //
 // The values are either one of the builtin types or their slice, and their
 // types MUST be the same, or panic.
+//
+// You should use these functions: Compare, LT, GT, EQ, NE, LE, GE.
 //
 package compare
 
@@ -111,32 +114,32 @@ func Compare(v1, v2 interface{}) int {
 	}
 }
 
-// Same as Compare, but return true if v1 is less than v2, or return false.
+// LT is the same as Compare, but return true if v1 is less than v2, or return false.
 func LT(v1, v2 interface{}) bool {
 	return Compare(v1, v2) < 0
 }
 
-// Same as LT, but greater than.
+// GT is the same as LT, but greater than.
 func GT(v1, v2 interface{}) bool {
 	return Compare(v1, v2) > 0
 }
 
-// Same as LT, but equal to.
+// EQ is the same as LT, but equal to.
 func EQ(v1, v2 interface{}) bool {
 	return Compare(v1, v2) == 0
 }
 
-// Same as LT, but not equal to.
+// NE is the same as LT, but not equal to.
 func NE(v1, v2 interface{}) bool {
 	return !EQ(v1, v2)
 }
 
-// Same as LT, but greater than or equal to.
+// GE is the same as LT, but greater than or equal to.
 func GE(v1, v2 interface{}) bool {
 	return GT(v1, v2) || EQ(v1, v2)
 }
 
-// Same as LT, but less than or equal to.
+// LE is the same as LT, but less than or equal to.
 func LE(v1, v2 interface{}) bool {
 	return LT(v1, v2) || EQ(v1, v2)
 }
