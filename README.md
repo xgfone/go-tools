@@ -2,7 +2,7 @@
 A utility tool library of Golang.
 
 ## Announcement
-These packages only depend on the standard libraries, not any third packages.
+These packages only depend on the standard libraries, not any third-part packages.
 
 ## Installation
 ```shell
