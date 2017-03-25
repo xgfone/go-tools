@@ -1,4 +1,4 @@
-// Some convenient functions about datetime.
+// Package datetime supplies some convenient functions about datetime.
 package datetime
 
 import (
@@ -6,26 +6,32 @@ import (
 )
 
 const (
-	FMT_DATE     = "2006-01-02"
-	FMT_DATETIME = "2006-01-02 15:04:05"
-	FMT_TIME     = "15:04:05"
+	// DateFMT is the date format.
+	DateFMT = "2006-01-02"
+
+	// TimeFMT is the time format.
+	TimeFMT = "15:04:05"
+
+	// DateTimeFMT is the datetime format.
+	DateTimeFMT = "2006-01-02 15:04:05"
 )
 
+// Now return the current unixstamp.
 func Now() int64 {
 	return time.Now().Unix()
 }
 
-// Convert time.Time to "%H:%M:%S".
+// ToTime converts time.Time to "%H:%M:%S".
 func ToTime(t time.Time) string {
-	return t.Format(FMT_TIME)
+	return t.Format(TimeFMT)
 }
 
-// Convert time.Time to "%y-%m-%d".
+// ToDate converts time.Time to "%y-%m-%d".
 func ToDate(t time.Time) string {
-	return t.Format(FMT_DATE)
+	return t.Format(DateFMT)
 }
 
-// Convert time.Time to "%y-%m-%d %H:%M:%S".
+// ToDateTime converts time.Time to "%y-%m-%d %H:%M:%S".
 func ToDateTime(t time.Time) string {
-	return t.Format(FMT_DATETIME)
+	return t.Format(DateTimeFMT)
 }
