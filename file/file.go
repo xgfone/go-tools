@@ -1,4 +1,4 @@
-// Some convenient functions about the file operation.
+// Package file supplies some convenient functions about the file operation.
 package file
 
 import (
@@ -10,47 +10,52 @@ import (
 )
 
 const (
-	NOT_EXIST = iota // Represent that the file does not exist.
-	IS_FILE          // Represent a file.
-	IS_DIR           // Represent a directory.
+	// NotExist represents that the file does not exist.
+	NotExist = iota
+
+	// IsFileType represents a file.
+	IsFileType
+
+	// IsDirType represents a directory.
+	IsDirType
 )
 
-// Decide the type of a file.
+// Type decides the type of a file.
 //
-// It returns IS_FILE, IS_DIR, or NOT_EXIST.
-func FileType(name string) uint8 {
+// It returns IsFileType, IsDirType, or NotExist.
+func Type(name string) uint8 {
 	fi, err := os.Stat(name)
 	if err == nil {
 		if fi.IsDir() {
-			return IS_DIR
+			return IsDirType
 		}
-		return IS_FILE
+		return IsFileType
 	}
 	if os.IsNotExist(err) {
-		return NOT_EXIST
+		return NotExist
 	}
-	return IS_FILE
+	return IsFileType
 }
 
-// Return true if the file exists, or return false.
+// IsExist returns true if the file exists, or return false.
 func IsExist(filename string) bool {
-	if FileType(filename) == NOT_EXIST {
+	if Type(filename) == NotExist {
 		return false
 	}
 	return true
 }
 
-// Return true if it's a file, or return false.
+// IsFile returns true if it's a file, or return false.
 func IsFile(filename string) bool {
-	if FileType(filename) == IS_FILE {
+	if Type(filename) == IsFileType {
 		return true
 	}
 	return false
 }
 
-// Return true if it's a directory, or return false.
+// IsDir returns true if it's a directory, or return false.
 func IsDir(filename string) bool {
-	if FileType(filename) == IS_DIR {
+	if Type(filename) == IsDirType {
 		return true
 	}
 	return false
@@ -59,12 +64,11 @@ func IsDir(filename string) bool {
 func addFile(lists []string, fullPath, fileName string, isfull bool) []string {
 	if isfull {
 		return append(lists, fullPath)
-	} else {
-		return append(lists, fileName)
 	}
+	return append(lists, fileName)
 }
 
-// Get the filename in a directory.
+// WalkDirFull returns all the filenames in a directory.
 //
 // dirPth is the directory where the file is in.
 // If suffix is not empty, it only returns the files which have the suffix of 'suffix'.
@@ -113,35 +117,35 @@ func WalkDirFull(dirPth, suffix string, includeDir, recursion, fullPath, ignoreE
 	return files, nil
 }
 
-// The short for Walkdirfull, only recursion is false, fullpath is false,
+// ListDir2 is the short for Walkdirfull, only recursion is false, fullpath is false,
 // and ignoreerror is true.
 func ListDir2(dirPth, suffix string, includeDir bool) ([]string, error) {
 	return WalkDirFull(dirPth, suffix, includeDir, false, false, true)
 }
 
-// The short for Walkdirfull, only includedir is false, fullpath is true,
+// WalkDir2 is the short for Walkdirfull, only includedir is false, fullpath is true,
 // and ignoreerror is true.
 func WalkDir2(dirPth, suffix string, recursion bool) ([]string, error) {
 	return WalkDirFull(dirPth, suffix, false, recursion, true, true)
 }
 
-// The short for Listdir2, only suffix is empty, and includedir is false.
+// ListDir is the short for Listdir2, only suffix is empty, and includedir is false.
 func ListDir(dirPth string) ([]string, error) {
 	return ListDir2(dirPth, "", false)
 }
 
-// The short for Walkdir2, only suffix is empty, and recursion is true.
+// WalkDir is the short for Walkdir2, only suffix is empty, and recursion is true.
 func WalkDir(dirPth string) ([]string, error) {
 	return WalkDir2(dirPth, "", true)
 }
 
-// Get the absolute path where the compiled executable file is in.
+// SelfPath returns the absolute path where the compiled executable file is in.
 func SelfPath() string {
 	path, _ := filepath.Abs(os.Args[0])
 	return path
 }
 
-// Get the absolute filepath, based on built executable file.
+// RealPath returns the absolute filepath, based on built executable file.
 func RealPath(fp string) (string, error) {
 	if path.IsAbs(fp) {
 		return fp, nil
@@ -150,17 +154,17 @@ func RealPath(fp string) (string, error) {
 	return path.Join(wd, fp), err
 }
 
-// Get the directory where the compiled executable file is in.
+// SelfDir returns the directory where the compiled executable file is in.
 func SelfDir() string {
 	return filepath.Dir(SelfPath())
 }
 
-// Mkdir dir if not exist
+// EnsureDir make the directory if not exist
 func EnsureDir(fp string) error {
 	return os.MkdirAll(fp, os.ModePerm)
 }
 
-// Search a file in paths.
+// SearchFile searches a file in paths.
 // This is often used in search config file in /etc, ~/.
 func SearchFile(filename string, paths ...string) (fullPath string, err error) {
 	for _, path := range paths {
@@ -172,8 +176,8 @@ func SearchFile(filename string, paths ...string) (fullPath string, err error) {
 	return
 }
 
-// Get the modified time of the file
-func FileMTime(fp string) (int64, error) {
+// MTime returns the modified time of the file
+func MTime(fp string) (int64, error) {
 	f, e := os.Stat(fp)
 	if e != nil {
 		return 0, e
@@ -181,8 +185,8 @@ func FileMTime(fp string) (int64, error) {
 	return f.ModTime().Unix(), nil
 }
 
-// Get the size of the file as how many bytes
-func FileSize(fp string) (int64, error) {
+// Size returns the size of the file as how many bytes
+func Size(fp string) (int64, error) {
 	f, e := os.Stat(fp)
 	if e != nil {
 		return 0, e
