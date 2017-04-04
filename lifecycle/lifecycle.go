@@ -28,9 +28,6 @@ func NewManager() *Manager {
 // NOTICE: The capacity of in and out must all be ZERO, that's, the two channels
 // must be synchronized.
 func (m *Manager) RegisterChannel(in chan<- interface{}, out <-chan interface{}) *Manager {
-	m.Lock()
-	defer m.Unlock()
-
 	if cap(in) != 0 || cap(out) != 0 {
 		panic(errors.New("The capacity of the channel is not 0"))
 	}
@@ -49,6 +46,10 @@ func (m *Manager) Register(f func()) *Manager {
 	m.Lock()
 	defer m.Unlock()
 
+	if m.stoped {
+		panic("The manager has been stopped")
+	}
+
 	m.callbacks = append(m.callbacks, f)
 	return m
 }
@@ -61,6 +62,10 @@ func (m *Manager) Register(f func()) *Manager {
 func (m *Manager) Stop() {
 	m.Lock()
 	defer m.Unlock()
+
+	if m.stoped {
+		return
+	}
 
 	for _, f := range m.callbacks {
 		// f()
