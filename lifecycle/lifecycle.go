@@ -1,11 +1,16 @@
 // Package lifecycle offers a manager of the lifecycle of some apps in a program.
 package lifecycle
 
-import "errors"
+import (
+	"errors"
+	"sync"
+)
 
 // Manager manage the lifecycle of some apps in a program.
 type Manager struct {
+	sync.Mutex
 	callbacks []func()
+	stoped    bool
 }
 
 // NewManager returns a new LifeCycleManager.
@@ -23,6 +28,9 @@ func NewManager() *Manager {
 // NOTICE: The capacity of in and out must all be ZERO, that's, the two channels
 // must be synchronized.
 func (m *Manager) RegisterChannel(in chan<- interface{}, out <-chan interface{}) *Manager {
+	m.Lock()
+	defer m.Unlock()
+
 	if cap(in) != 0 || cap(out) != 0 {
 		panic(errors.New("The capacity of the channel is not 0"))
 	}
@@ -38,6 +46,9 @@ func (m *Manager) RegisterChannel(in chan<- interface{}, out <-chan interface{})
 // When calling Stop(), the callback function will be called in turn
 // by the order that they are registered.
 func (m *Manager) Register(f func()) *Manager {
+	m.Lock()
+	defer m.Unlock()
+
 	m.callbacks = append(m.callbacks, f)
 	return m
 }
@@ -47,7 +58,10 @@ func (m *Manager) Register(f func()) *Manager {
 // This method will be blocked until all the apps finish the clean.
 // If the cleaning function of a certain app panics, ignore it and continue to
 // call the cleaning function of the next app.
-func (m Manager) Stop() {
+func (m *Manager) Stop() {
+	m.Lock()
+	defer m.Unlock()
+
 	for _, f := range m.callbacks {
 		// f()
 		callFuncAndIgnorePanic(f)
