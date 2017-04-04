@@ -14,6 +14,7 @@ type Dispatcher struct {
 	workers []*worker
 	quit    chan bool
 	running bool
+	async   bool
 }
 
 // NewDispatcher creates a new Dispatcher.
@@ -28,6 +29,15 @@ func NewDispatcher(maxWorkers int, handler Task) *Dispatcher {
 		workerPool: make(chan chan interface{}, maxWorkers),
 		quit:       make(chan bool),
 	}
+}
+
+// SetAsync sets whether to dispatch the task asynchronously.
+//
+// When true, it's asynchronous, and don't block the Dispatcher when the job
+// queue is full. The default is synchronous.
+func (d *Dispatcher) SetAsync(b bool) *Dispatcher {
+	d.async = b
+	return d
 }
 
 // Dispatch starts the dispatcher and let the workers to handle the job.
@@ -62,18 +72,24 @@ func (d *Dispatcher) Stop() {
 }
 
 func (d *Dispatcher) dispatch(jobQueue chan interface{}) {
+	run := func(job interface{}) {
+		// try to obtain a worker job channel that is available.
+		// this will block until a worker is idle.
+		jobChannel := <-d.workerPool
+
+		// dispatch the job to the worker job channel.
+		jobChannel <- job
+	}
+
 	for {
 		select {
 		case job := <-jobQueue:
 			// a job request has been received
-			go func(job interface{}) {
-				// try to obtain a worker job channel that is available.
-				// this will block until a worker is idle.
-				jobChannel := <-d.workerPool
-
-				// dispatch the job to the worker job channel.
-				jobChannel <- job
-			}(job)
+			if d.async {
+				go run(job)
+			} else {
+				run(job)
+			}
 		case <-d.quit:
 			d.running = false
 			return
