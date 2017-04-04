@@ -1,38 +1,55 @@
 package server
 
 import (
-	"github.com/xgfone/go-tools/atomics"
+	"sync"
+
 	"github.com/xgfone/go-tools/lifecycle"
 )
 
 var (
 	manager        = lifecycle.GetDefaultManager()
-	shutdowned     = atomics.NewBool()
+	locked         = new(sync.Mutex)
+	shutdowned     = false
 	shouldShutdown = make(chan bool, 1)
 )
 
 // RunForever runs for ever.
 func RunForever() {
-	if shutdowned.Get() {
+	locked.Lock()
+	if shutdowned {
+		locked.Unlock()
 		panic("The server has been shutdowned")
 	}
+	locked.Unlock()
+
 	<-shouldShutdown
 	manager.Stop()
 }
 
 // Shutdown shutdowns the server gracefully.
 func Shutdown() {
-	shutdowned.SetTrue()
+	locked.Lock()
+	defer locked.Unlock()
+	if shutdowned {
+		return
+	}
+
+	shutdowned = true
 	shouldShutdown <- true
 }
 
 // IsShutdowned returns whether the server has been shutdowned.
-func IsShutdowned() bool {
-	return shutdowned.Get()
+func IsShutdowned() (yes bool) {
+	locked.Lock()
+	yes = shutdowned
+	locked.Unlock()
+	return
 }
 
 // RegisterManager replaces the default lifecycle manager.
 // The default manager is the default global manager in the package lifecycle.
 func RegisterManager(m *lifecycle.Manager) {
+	locked.Lock()
 	manager = m
+	locked.Unlock()
 }
