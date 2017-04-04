@@ -20,3 +20,8 @@ func RegisterChannel(in chan<- interface{}, out <-chan interface{}) *Manager {
 func Stop() {
 	defaultManager.Stop()
 }
+
+// GetDefaultManager returns the default global Manager.
+func GetDefaultManager() *Manager {
+	return defaultManager
+}
