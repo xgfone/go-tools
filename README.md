@@ -26,6 +26,7 @@ file         | Some convenient functions about the file operation.
 function     | Call a function dynamically.
 io2          | **Removed from `0.31`.** Please use the standard library of `io`.
 lifecycle    | The manager of the lifecycle of some apps in a program.
+lifecycle/server | Manage the lifecycle of the whole program, such as, `RunForever` and `Shutdown`.
 log/handler  | The logger handler, such as `TimedRotatingFile` like `logging.handlers.TimedRotatingFileHandler` in Python.
 method       | Call the method of a type dynamically.
 nets         | Some helper about net.
