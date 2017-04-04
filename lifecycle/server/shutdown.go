@@ -17,12 +17,12 @@ func RunForever() {
 		panic("The server has been shutdowned")
 	}
 	<-shouldShutdown
+	manager.Stop()
 }
 
 // Shutdown shutdowns the server gracefully.
 func Shutdown() {
 	shutdowned.SetTrue()
-	manager.Stop()
 	shouldShutdown <- true
 }
 
