@@ -1,4 +1,4 @@
-package lifecycle
+package server
 
 var shouldShutdown = make(chan bool, 1)
 
