@@ -42,6 +42,7 @@ tbucket      | **Removed from `0.31`.** Please use `golang.org/x/time/rate`.
 utils        | Some utility functions, which are classified to a certain package.
 validation   | Some validations, such as email, url, etc.
 values       | Get a value from a `slice` or `map`.
+wait         | Poll or listen for changes to a condition. It's copied from `k8s.io/apimachinery/pkg/util/wait`.
 worker       | A worker pool with the dispatcher based on channel.
 
 ## Example
