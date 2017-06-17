@@ -30,3 +30,13 @@ func GetDefaultManager() *Manager {
 func IsStop() bool {
 	return defaultManager.IsStop()
 }
+
+// RunForever calls the method RunForever of the default global manager.
+func RunForever() {
+	defaultManager.RunForever()
+}
+
+// Wait calls the method Wait of the default global manager.
+func Wait() {
+	defaultManager.Wait()
+}

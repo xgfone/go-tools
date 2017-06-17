@@ -6,17 +6,24 @@ import (
 	"sync"
 )
 
+var (
+	// ErrStopped is a stop error.
+	ErrStopped = errors.New("The manager has been stopped")
+)
+
 // Manager manage the lifecycle of some apps in a program.
 type Manager struct {
 	sync.Mutex
-	callbacks []func()
-	stoped    bool
+	stoped     bool
+	callbacks  []func()
+	shouldStop chan struct{}
 }
 
 // NewManager returns a new LifeCycleManager.
 func NewManager() *Manager {
 	return &Manager{
-		callbacks: make([]func(), 0, 8),
+		callbacks:  make([]func(), 0, 8),
+		shouldStop: make(chan struct{}, 1),
 	}
 }
 
@@ -47,7 +54,7 @@ func (m *Manager) Register(f func()) *Manager {
 	defer m.Unlock()
 
 	if m.stoped {
-		panic("The manager has been stopped")
+		panic(ErrStopped)
 	}
 
 	m.callbacks = append(m.callbacks, f)
@@ -71,6 +78,8 @@ func (m *Manager) Stop() {
 		// f()
 		callFuncAndIgnorePanic(f)
 	}
+
+	m.shouldStop <- struct{}{}
 }
 
 func callFuncAndIgnorePanic(f func()) {
@@ -86,4 +95,31 @@ func (m *Manager) IsStop() (yes bool) {
 	yes = m.stoped
 	m.Unlock()
 	return
+}
+
+// RunForever is the same as m.Wait(), but it should be called in main goroutine
+// to wait to exit the program.
+func (m *Manager) RunForever() {
+	if m.IsStop() {
+		panic(ErrStopped)
+	}
+
+	<-m.shouldStop
+}
+
+// Wait will wait that the manager stops.
+func (m *Manager) Wait() {
+	if IsStop() {
+		return
+	}
+
+	m.wait()
+}
+
+func (m *Manager) wait() {
+	in := make(chan interface{})
+	out := make(chan interface{})
+	m.RegisterChannel(in, out)
+	<-in
+	out <- struct{}{}
 }
