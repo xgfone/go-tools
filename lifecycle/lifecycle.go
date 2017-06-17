@@ -3,12 +3,16 @@ package lifecycle
 
 import (
 	"errors"
+	"reflect"
 	"sync"
 )
 
 var (
 	// ErrStopped is a stop error.
 	ErrStopped = errors.New("The manager has been stopped")
+
+	// ErrSameArgs is a arguments error.
+	ErrSameArgs = errors.New("The arguments is the same")
 )
 
 // Manager manage the lifecycle of some apps in a program.
@@ -29,19 +33,20 @@ func NewManager() *Manager {
 
 // RegisterChannel is same as Register, but using the channel, not the callback.
 //
-// The parameter in is used to notice the app to end. And out is used to notice
+// The parameter out is used to notice the app to end. And in is used to notice
 // the manager that the app has cleaned and ended successfully.
 //
-// NOTICE: The capacity of in and out must all be ZERO, that's, the two channels
-// must be synchronized.
-func (m *Manager) RegisterChannel(in chan<- interface{}, out <-chan interface{}) *Manager {
-	if cap(in) != 0 || cap(out) != 0 {
-		panic(errors.New("The capacity of the channel is not 0"))
+// NOTICE: the tow parameters must not be a same channel.
+//
+// Exmaple: See the wait method.
+func (m *Manager) RegisterChannel(out chan<- interface{}, in <-chan interface{}) *Manager {
+	if reflect.ValueOf(in).Pointer() == reflect.ValueOf(out).Pointer() {
+		panic(ErrSameArgs)
 	}
 
 	return m.Register(func() {
-		in <- true
-		<-out
+		out <- struct{}{}
+		<-in
 	})
 }
 
@@ -117,9 +122,11 @@ func (m *Manager) Wait() {
 }
 
 func (m *Manager) wait() {
-	in := make(chan interface{})
-	out := make(chan interface{})
-	m.RegisterChannel(in, out)
-	<-in
-	out <- struct{}{}
+	exit := make(chan interface{}, 1)
+	finished := make(chan interface{}, 1)
+	m.RegisterChannel(exit, finished)
+
+	<-exit // Wait that the manager stops.
+	// Here can do some cleanup works.
+	finished <- struct{}{} // Notify the manager that the task finished.
 }
