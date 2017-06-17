@@ -79,3 +79,11 @@ func callFuncAndIgnorePanic(f func()) {
 	}()
 	f()
 }
+
+// IsStop returns true if the manager has been stoped, or false.
+func (m *Manager) IsStop() (yes bool) {
+	m.Lock()
+	yes = m.stoped
+	m.Unlock()
+	return
+}
