@@ -11,16 +11,14 @@ var (
 	locked         = new(sync.Mutex)
 	shutdowned     = false
 	shouldShutdown = make(chan bool, 1)
+	wait           = lifecycle.NewManager()
 )
 
 // RunForever runs for ever.
 func RunForever() {
-	locked.Lock()
-	if shutdowned {
-		locked.Unlock()
+	if IsShutdowned() {
 		panic("The server has been shutdowned")
 	}
-	locked.Unlock()
 
 	<-shouldShutdown
 	manager.Stop()
@@ -35,6 +33,7 @@ func Shutdown() {
 	}
 
 	shutdowned = true
+	wait.Stop()
 	shouldShutdown <- true
 }
 
@@ -44,6 +43,24 @@ func IsShutdowned() (yes bool) {
 	yes = shutdowned
 	locked.Unlock()
 	return
+}
+
+func waitShutdown() {
+	in := make(chan interface{})
+	out := make(chan interface{})
+	wait.RegisterChannel(in, out)
+	<-in
+	out <- struct{}{}
+}
+
+// WaitShutdown will wait until it is shutdowned.
+// Return immediately if it has been shutdowned.
+func WaitShutdown() {
+	if IsShutdowned() {
+		return
+	}
+
+	waitShutdown()
 }
 
 // RegisterManager replaces the default lifecycle manager.
