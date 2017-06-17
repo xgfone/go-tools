@@ -26,6 +26,11 @@ func GetDefaultManager() *Manager {
 	return defaultManager
 }
 
+// ResetDefaultManager resets the default global manager.
+func ResetDefaultManager(m *Manager) {
+	defaultManager = m
+}
+
 // IsStop returns true if the default global manager, or false.
 func IsStop() bool {
 	return defaultManager.IsStop()
