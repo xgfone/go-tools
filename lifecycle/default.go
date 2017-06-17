@@ -25,3 +25,8 @@ func Stop() {
 func GetDefaultManager() *Manager {
 	return defaultManager
 }
+
+// IsStop returns true if the default global manager, or false.
+func IsStop() bool {
+	return defaultManager.IsStop()
+}
