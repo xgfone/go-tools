@@ -5,6 +5,11 @@ import "reflect"
 // Slice is a type alias of []interface{}.
 type Slice []interface{}
 
+// NewSlice returns a new Slice.
+func NewSlice(i int) Slice {
+	return make(Slice, i)
+}
+
 // ToSlice converts the type of []interface{} or Slice to Slice.
 //
 // Return nil if the type is not either.

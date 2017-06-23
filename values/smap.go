@@ -5,6 +5,11 @@ import "reflect"
 // SMap is a type based on the string key.
 type SMap map[string]interface{}
 
+// NewSMap returns a new SMap.
+func NewSMap() SMap {
+	return make(SMap)
+}
+
 // ToSMap converts the type of map[string]interface{} or SMap to SMap.
 //
 // Return nil if the type is not either.
