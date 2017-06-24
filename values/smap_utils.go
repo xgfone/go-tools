@@ -17,3 +17,9 @@ func (m SMap) Values() []interface{} {
 	}
 	return r
 }
+
+// In returns true if k is a key of SMap, or false.
+func (m SMap) In(k string) bool {
+	_, ok := m[k]
+	return ok
+}
