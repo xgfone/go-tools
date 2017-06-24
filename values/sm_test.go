@@ -62,4 +62,12 @@ func TestSlice(t *testing.T) {
 	if ss, ok := values.ConvertToSlice(si); !ok || ss[0].(int) != 11 || ss[1].(int) != 22 {
 		t.Fail()
 	}
+
+	if _, ok := values.ConvertToSMap(nil); ok {
+		t.Fail()
+	}
+
+	if _, ok := values.ConvertToSlice(nil); ok {
+		t.Fail()
+	}
 }

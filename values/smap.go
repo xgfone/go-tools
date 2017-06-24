@@ -28,6 +28,8 @@ func ToSMap(v interface{}) SMap {
 // ConvertToSMap converts any map, whose key is the type of string, to SMap.
 //
 // Return nil if it's not a map, or it's nil or has no elements.
+//
+// Notice: SMap(nil) is not a valid SMap.
 func ConvertToSMap(v interface{}) (SMap, bool) {
 	_v := reflect.ValueOf(v)
 	if !_v.IsValid() || _v.Kind() != reflect.Map {

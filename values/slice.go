@@ -28,6 +28,8 @@ func ToSlice(v interface{}) Slice {
 // ConvertToSlice converts any slices to Slice.
 //
 // Return nil if it's not a slice, or it's nil or has no elements.
+//
+// Notice: Slice(nil) is not a valid Slice.
 func ConvertToSlice(v interface{}) (Slice, bool) {
 	_v := reflect.ValueOf(v)
 	if !_v.IsValid() || _v.Kind() != reflect.Slice {
