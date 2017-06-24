@@ -20,17 +20,18 @@ func ToSlice(v interface{}) Slice {
 	case Slice:
 		return v.(Slice)
 	default:
-		return nil
+		_v, _ := ConvertToSlice(v)
+		return _v
 	}
 }
 
 // ConvertToSlice converts any slices to Slice.
 //
 // Return nil if it's not a slice, or it's nil or has no elements.
-func ConvertToSlice(v interface{}) Slice {
+func ConvertToSlice(v interface{}) (Slice, bool) {
 	_v := reflect.ValueOf(v)
 	if !_v.IsValid() || _v.Kind() != reflect.Slice {
-		return nil
+		return nil, false
 	}
 
 	_len := _v.Len()
@@ -38,5 +39,5 @@ func ConvertToSlice(v interface{}) Slice {
 	for i := 0; i < _len; i++ {
 		results[i] = _v.Index(i).Interface()
 	}
-	return results
+	return results, true
 }

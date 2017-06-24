@@ -20,25 +20,26 @@ func ToSMap(v interface{}) SMap {
 	case SMap:
 		return v.(SMap)
 	default:
-		return nil
+		_v, _ := ConvertToSMap(v)
+		return _v
 	}
 }
 
 // ConvertToSMap converts any map, whose key is the type of string, to SMap.
 //
 // Return nil if it's not a map, or it's nil or has no elements.
-func ConvertToSMap(v interface{}) SMap {
+func ConvertToSMap(v interface{}) (SMap, bool) {
 	_v := reflect.ValueOf(v)
 	if !_v.IsValid() || _v.Kind() != reflect.Map {
-		return nil
+		return nil, false
 	}
 
 	results := make(SMap, _v.Len())
 	for _, key := range _v.MapKeys() {
 		if key.Kind() != reflect.String {
-			return nil
+			return nil, false
 		}
 		results[key.String()] = _v.MapIndex(key).Interface()
 	}
-	return results
+	return results, true
 }

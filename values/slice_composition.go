@@ -33,12 +33,13 @@ func (s Slice) Slice(i int) (v Slice, ok bool) {
 		return nil, false
 	}
 
-	if v, ok := s[i].(Slice); ok {
-		return v, true
-	} else if v, ok := s[i].([]interface{}); ok {
-		return Slice(v), true
+	_v := s[i]
+	if v1, ok := _v.(Slice); ok {
+		return v1, true
+	} else if v2, ok := _v.([]interface{}); ok {
+		return Slice(v2), true
 	} else {
-		return nil, false
+		return ConvertToSlice(_v)
 	}
 }
 
@@ -65,12 +66,13 @@ func (s Slice) SMap(i int) (v SMap, ok bool) {
 		return nil, false
 	}
 
-	if v, ok := s[i].(SMap); ok {
+	_v := s[i]
+	if v, ok := _v.(SMap); ok {
 		return v, true
-	} else if v, ok := s[i].(map[string]interface{}); ok {
+	} else if v, ok := _v.(map[string]interface{}); ok {
 		return SMap(v), true
 	} else {
-		return nil, false
+		return ConvertToSMap(_v)
 	}
 }
 

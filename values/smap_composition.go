@@ -33,6 +33,8 @@ func (m SMap) Slice(k string) (v Slice, ok bool) {
 			return v2, true
 		} else if v3, ok := v1.([]interface{}); ok {
 			return Slice(v3), true
+		} else {
+			return ConvertToSlice(v1)
 		}
 	}
 	return nil, false
@@ -62,6 +64,8 @@ func (m SMap) SMap(k string) (v SMap, ok bool) {
 			return v2, true
 		} else if v3, ok := v1.(map[string]interface{}); ok {
 			return SMap(v3), true
+		} else {
+			return ConvertToSMap(v1)
 		}
 	}
 	return nil, false
