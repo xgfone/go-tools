@@ -25,7 +25,7 @@ func (h THandleFunc) Handle(conn *net.TCPConn) {
 func TCPWrapError(conn *net.TCPConn, handler THandle) {
 	defer func() {
 		if err := recover(); err != nil {
-			_logger.Error("Get a error: %v", err)
+			_logger.Printf("[ERROR] Get a error: %v", err)
 		}
 
 		if conn != nil {
@@ -54,24 +54,24 @@ func TCPServerForever(addr string, handle interface{}) error {
 	}
 
 	var ln *net.TCPListener
-	if _addr, err := net.ResolveTCPAddr("tcp", addr); err != nil {
+	_addr, err := net.ResolveTCPAddr("tcp", addr)
+	if err != nil {
 		return err
-	} else {
-		if ln, err = net.ListenTCP("tcp", _addr); err != nil {
-			return err
-		}
+	}
+	if ln, err = net.ListenTCP("tcp", _addr); err != nil {
+		return err
 	}
 
 	defer ln.Close()
 
-	_logger.Info("Listening on %v", addr)
+	_logger.Printf("[INFO] Listening on %v", addr)
 
 	for {
 		conn, err := ln.AcceptTCP()
 		if err != nil {
-			_logger.Error("Failed to AcceptTCP: %v", err)
+			_logger.Printf("[ERROR] Failed to AcceptTCP: %v", err)
 		} else {
-			_logger.Debug("Get a connection from %v", conn.RemoteAddr())
+			_logger.Printf("[DEBUG] Get a connection from %v", conn.RemoteAddr())
 			go TCPWrapError(conn, handler)
 		}
 	}

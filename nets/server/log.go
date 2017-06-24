@@ -7,57 +7,43 @@ import (
 )
 
 var (
-	// Debug is on/off. If true, output the verbose information.(deprecated)
-	Debug   bool
-	_logger *logger
+	// NotOutputLog is on/off. If true, don't output the any log.
+	NotOutputLog bool
+
+	// NotOutputNewLine is on/off. If true, don't append a new line to the log.
+	NotOutputNewLine bool
+
+	_logger logger
 )
 
 func init() {
-	_logger = &logger{_logger: log.New(os.Stderr, "[TCP Server] ", log.LstdFlags)}
+	_logger = logger{_logger: log.New(os.Stderr, "[TCP Server] ", log.LstdFlags)}
+}
+
+// Logger is a interface to implement a logger.
+type Logger interface {
+	Printf(format string, v ...interface{})
 }
 
 type logger struct {
-	_logger *log.Logger
+	_logger Logger
 }
 
-func (l logger) Debug(format string, args ...interface{}) {
-	l.Output(10, format, args...)
-}
-
-func (l logger) Output(level int, format string, args ...interface{}) {
-	var prefix string
-	if level <= 10 {
-		prefix = "Debug"
-	} else if level <= 20 {
-		prefix = "Info"
-	} else if level <= 30 {
-		prefix = "Warning"
-	} else if level <= 40 {
-		prefix = "Error"
+func (l logger) Printf(format string, v ...interface{}) {
+	if !NotOutputLog {
+		if !NotOutputNewLine {
+			format = fmt.Sprintln(format)
+		}
+		l._logger.Printf(format, v...)
 	}
-
-	f := fmt.Sprintf("[%v] %v\n", prefix, format)
-	l._logger.Printf(f, args...)
-}
-
-func (l logger) Info(format string, args ...interface{}) {
-	l.Output(20, format, args...)
-}
-
-func (l logger) Warn(format string, args ...interface{}) {
-	l.Output(30, format, args...)
-}
-
-func (l logger) Error(format string, args ...interface{}) {
-	l.Output(40, format, args...)
 }
 
 // SetLogger replaces the default logger.
-func SetLogger(logger *log.Logger) {
+func SetLogger(logger Logger) {
 	_logger._logger = logger
 }
 
 // GetLogger returns the current logger.
-func GetLogger() *log.Logger {
+func GetLogger() Logger {
 	return _logger._logger
 }

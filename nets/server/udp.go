@@ -28,16 +28,16 @@ func (h UHandleFunc) Handle(buf []byte, addr *net.UDPAddr) []byte {
 func UDPWithError(conn *net.UDPConn, handler UHandle, buf []byte, addr *net.UDPAddr) {
 	defer func() {
 		if err := recover(); err != nil {
-			_logger.Error("Get a error: %v", err)
+			_logger.Printf("[ERROR] Get a error: %v", err)
 		}
 	}()
 
 	// If returning nil, don't send the response to the client.
 	if result := handler.Handle(buf, addr); result != nil {
 		if n, err := conn.WriteToUDP(result, addr); err != nil {
-			_logger.Error("Failed to send the data to %s: %v", addr, err)
+			_logger.Printf("[ERROR] Failed to send the data to %s: %v", addr, err)
 		} else {
-			_logger.Debug("Send %v bytes successfully", n)
+			_logger.Printf("[DEBUG] Send %v bytes successfully", n)
 		}
 	}
 }
@@ -74,15 +74,16 @@ func UDPServerForever(addr string, size int, handle interface{}) error {
 	}
 
 	var conn *net.UDPConn
-	if _addr, err := net.ResolveUDPAddr("udp", addr); err != nil {
+	_addr, err := net.ResolveUDPAddr("udp", addr)
+	if err != nil {
 		return err
-	} else {
-		if conn, err = net.ListenUDP("udp", _addr); err != nil {
-			return err
-		}
 	}
+	if conn, err = net.ListenUDP("udp", _addr); err != nil {
+		return err
+	}
+
 	defer conn.Close()
-	_logger.Info("Listening on %v", addr)
+	_logger.Printf("[INFO] Listening on %v", addr)
 
 	if wrap != nil {
 		return wrap(conn)
@@ -96,7 +97,7 @@ func UDPServerForever(addr string, size int, handle interface{}) error {
 	for {
 		num, caddr, err := conn.ReadFromUDP(buf)
 		if err != nil {
-			_logger.Error("Failed to read the UDP data: %v", err)
+			_logger.Printf("[ERROR] Failed to read the UDP data: %v", err)
 		} else {
 			UDPWithError(conn, handler, buf[:num], caddr)
 		}
