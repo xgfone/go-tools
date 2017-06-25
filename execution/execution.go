@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+var defaultGlobalMutex = new(sync.Mutex)
+
 // ErrArguments is returned when the command failed to be executed.
 var ErrArguments = errors.New("The arguments are too few")
 
@@ -35,10 +37,17 @@ type Execution struct {
 // When setting a mutex to non-nil, the execution will acquire the lock first
 // before being executed.
 //
-// Notice: It's not thread-safe. Before replacing the mutex, ensave that the old
-// one hasn't been locked.
+// Set nil to clear the locker.
+//
+// Notice: This method is not thread-safe. Before replacing the mutex,
+// ensave that the old one hasn't been locked.
 func (e *Execution) SetMutex(m *sync.Mutex) {
 	e.Mutex = m
+}
+
+// SetDefaultGlobalMutex is the same as e.SetMutex(defaultGlobalMutex).
+func (e *Execution) SetDefaultGlobalMutex() {
+	e.SetMutex(defaultGlobalMutex)
 }
 
 // Execute is the proxy of exec.Command(name, args...).Run(), but args[0] is name.
