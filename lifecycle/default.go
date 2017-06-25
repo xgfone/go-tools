@@ -28,6 +28,9 @@ func GetDefaultManager() *Manager {
 
 // ResetDefaultManager resets the default global manager.
 func ResetDefaultManager(m *Manager) {
+	if m == nil {
+		panic("The argument is nil")
+	}
 	defaultManager = m
 }
 
