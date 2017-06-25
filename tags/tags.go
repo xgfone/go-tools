@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
-	"strings"
 )
 
 var (
@@ -14,47 +13,25 @@ var (
 	Debug = false
 )
 
-// Tag is a struct to manage the tags of a struct.
+// Tag represents a tag of a field in a struct.
 type Tag struct {
-	name   string
-	fields []*ft
-	f2t    map[string][]*FT
-	t2f    map[string][]*FT
-}
-
-type ft struct {
-	Field string
-	Tag   reflect.StructTag
-}
-
-// FV is used for the method GetToField().
-type FV struct {
 	// The field name which the tag belongs to.
 	Field string
 
-	// The value of the tag.
-	Value string
-}
-
-// TV is used for the method GetAllByField().
-type TV struct {
 	// The name of the tag.
-	Tag string
-
-	// The value of the tag.
-	Value string
-}
-
-// FT is used for the method GetAll().
-type FT struct {
-	// The name of the field.
-	Field string
-
-	// The name of the tag which defined in Field.
-	Tag string
+	Name string
 
 	// The value of the tag which defined in Field.
 	Value string
+}
+
+// Tags is a struct to manage the tags of a struct.
+type Tags struct {
+	name   string
+	caches []*Tag
+
+	f2t map[string]map[string]string
+	t2f map[string]map[string]string
 }
 
 func debugf(format string, args ...interface{}) {
@@ -63,10 +40,10 @@ func debugf(format string, args ...interface{}) {
 	}
 }
 
-// NewTag returns a new Tag to manage the tags in a certain struct.
+// New returns a new Tag to manage the tags in a certain struct.
 //
 // v is a struct variable or a pointer to a struct.
-func NewTag(v interface{}) *Tag {
+func New(v interface{}) *Tags {
 	typ := reflect.TypeOf(v)
 	if typ.Kind() == reflect.Ptr {
 		typ = typ.Elem()
@@ -74,141 +51,115 @@ func NewTag(v interface{}) *Tag {
 	if typ.Kind() != reflect.Struct {
 		return nil
 	}
-	t := newTag(typ.Name())
+
+	sname := typ.Name()
+	tags := newTag(sname)
 	nf := typ.NumField()
+	var tag *Tag
 	for i := 0; i < nf; i++ {
 		field := typ.Field(i)
-		t.fields = append(t.fields, &ft{Field: field.Name, Tag: field.Tag})
-		t.f2t[field.Name] = make([]*FT, 0)
-	}
+		fname := field.Name
 
-	return t
-}
+		tags.f2t[fname] = make(map[string]string)
+		for k, v := range GetAllTags(field.Tag) {
+			debugf("Struct=%s, Field=%s, TagName=%s, TagValue=%s", sname, fname, k, v)
 
-func newTag(name string) *Tag {
-	return &Tag{
-		name:   name,
-		fields: make([]*ft, 0),
-		f2t:    make(map[string][]*FT),
-		t2f:    make(map[string][]*FT),
-	}
-}
+			tag = &Tag{Field: fname, Name: k, Value: v}
+			tags.caches = append(tags.caches, tag)
+			tags.f2t[fname][k] = v
 
-// BuildTag builds the tag upon the struct. That's, analyze and get the values
-// of the tag in all the fields of the struct. If the tag has been built, ignore it.
-//
-// Notice: Building the tag is in turn according to the order of the field. You
-// can set Debug to true to see the building order. If a field defines the tag
-// and its value is empty or only whitespaces, it's treated that it doesn't exist.
-func (t *Tag) BuildTag(tag string) *Tag {
-	tag = strings.TrimSpace(tag)
-	if _, ok := t.t2f[tag]; ok {
-		debugf("Has parsed the tag[%v]", tag)
-		return t
-	}
-	t.t2f[tag] = make([]*FT, 0)
-	for _, field := range t.fields {
-		stag := (*field).Tag
-		_field := (*field).Field
-		if v := strings.TrimSpace(stag.Get(tag)); v != "" {
-			debugf("Building: Field[%v] Tag[%v] Value[%v]", _field, tag, v)
-			value := &FT{Field: _field, Tag: tag, Value: v}
-			t.t2f[tag] = append(t.t2f[tag], value)
-			t.f2t[_field] = append(t.f2t[_field], value)
+			if tf, ok := tags.t2f[k]; ok {
+				tf[fname] = v
+			} else {
+				tags.t2f[k] = map[string]string{
+					fname: v,
+				}
+			}
 		}
 	}
-	return t
+
+	return tags
 }
 
-// BuildTags builds a set of the tags, which is equivalent to calling BuildTag()
-// more than once. See BuildTag().
-func (t *Tag) BuildTags(tags []string) *Tag {
-	for _, tag := range tags {
-		t.BuildTag(tag)
+func newTag(name string) *Tags {
+	return &Tags{
+		name:   name,
+		caches: make([]*Tag, 0),
+
+		f2t: make(map[string]map[string]string),
+		t2f: make(map[string]map[string]string),
 	}
-	return t
 }
 
 // Name returns the name of Tag, which is the name of the struct.
-func (t Tag) Name() string {
+func (t Tags) Name() string {
 	return t.name
 }
 
-// Get returns the value of the corresponding tag.
+// GetAllValuesByTag returns the values of the corresponding tag.
 //
-// If more than one field has the tag, return the value of the tag of the first
-// field according to the order defined in the struct. Return an empty string
-// if no field defines the tag.
-func (t Tag) Get(tag string) string {
-	_, v := t.GetWithField(tag)
-	return v
-}
-
-// GetWithField is the same as Get(), but also return the field name
-// except its value. Return ("", "") if no field defines the tag.
-func (t Tag) GetWithField(tag string) (field, value string) {
-	tag = strings.TrimSpace(tag)
-	if v, ok := t.t2f[tag]; !ok {
-		return "", ""
-	} else if len(v) == 0 {
-		return "", ""
-	} else {
-		value := *v[0]
-		return value.Field, value.Value
+// Notice: There are more than one fields that has this tag.
+func (t Tags) GetAllValuesByTag(tag string) []string {
+	if fv := t.t2f[tag]; fv != nil {
+		_len := len(fv)
+		i := 0
+		vs := make([]string, _len)
+		for _, v := range fv {
+			vs[i] = v
+			i++
+		}
+		return vs
 	}
+	return nil
 }
 
-// GetByField returns the value of the tag in a specified field.
+// GetAllFieldsAndValuesByTag is the same as GetValuesByTags(),
+// but also return the field name as the key.
+func (t Tags) GetAllFieldsAndValuesByTag(tag string) map[string]string {
+	if v, ok := t.t2f[tag]; ok {
+		return v
+	}
+	return nil
+}
+
+// GetValueByFieldAndTag returns the value of the tag in a specified field.
 // Return an empty string if the field doesn't have the tag.
-func (t Tag) GetByField(tag, field string) string {
-	if v, ok := t.f2t[field]; !ok {
-		return ""
-	} else if len(v) == 0 {
-		return ""
-	} else {
-		for _, value := range v {
-			if tag == (*value).Tag {
-				return (*value).Value
+func (t Tags) GetValueByFieldAndTag(field, tag string) string {
+	if tv, ok := t.f2t[field]; ok {
+		for t, v := range tv {
+			if tag == t {
+				return v
 			}
 		}
-		return ""
 	}
+
+	return ""
 }
 
-// GetToField returns the information of all the tags defined in all the fields.
+// GetAllFieldsByTag returns the names of all the field where defined this tag.
 // Return nil if no field defines the tag.
-func (t Tag) GetToField(tag string) (fv []FV) {
-	if v, ok := t.t2f[tag]; !ok {
-		return nil
-	} else if len(v) == 0 {
-		return nil
-	} else {
-		fv = make([]FV, len(v))
+func (t Tags) GetAllFieldsByTag(tag string) []string {
+	if fv, ok := t.t2f[tag]; ok {
+		_len := len(fv)
 		i := 0
-		for _, value := range v {
-			fv[i] = FV{Field: (*value).Field, Value: (*value).Value}
+		fs := make([]string, _len)
+		for f := range fv {
+			fs[i] = f
 			i++
 		}
-		return
+		return fs
 	}
+
+	return nil
 }
 
-// GetAllByField returns all the tags of the field. Return nil if the field has no tags.
-func (t Tag) GetAllByField(field string) (tv []TV) {
-	if v, ok := t.f2t[field]; !ok {
-		return nil
-	} else if len(v) == 0 {
-		return nil
-	} else {
-		tv = make([]TV, len(v))
-		i := 0
-		for _, value := range v {
-			_v := *value
-			tv[i] = TV{Tag: _v.Tag, Value: _v.Value}
-			i++
-		}
-		return
+// GetAllTagsAndValuesByField returns all the tags of the field.
+// Return nil if the field has no tags.
+func (t Tags) GetAllTagsAndValuesByField(field string) map[string]string {
+	if v, ok := t.f2t[field]; ok {
+		return v
 	}
+	return nil
 }
 
 // GetAll returns all the information parsed by the tag manager.
@@ -216,17 +167,9 @@ func (t Tag) GetAllByField(field string) (tv []TV) {
 // tags in all the fields.
 //
 // The returned list is sorted on the basis of the order of the field which is
-// defined in the struct. And the tags is based on the order which they are
-// building.
-func (t Tag) GetAll() []FT {
-	ft := make([]FT, 0)
-	for _, _ft := range t.fields {
-		field := (*_ft).Field
-		for _, tv := range t.f2t[field] {
-			ft = append(ft, FT{Field: field, Tag: (*tv).Tag, Value: (*tv).Value})
-		}
-	}
-	return ft
+// defined in the struct.
+func (t Tags) GetAll() []*Tag {
+	return t.caches
 }
 
 // Audit the result that the manager parses the tags upon the struct.
@@ -235,106 +178,43 @@ func (t Tag) GetAll() []FT {
 //
 // For the example above, the returned format is like:
 // 	Name: TagTest
-//
-// 	Fields:
-// 	{Field:F1 Tag:[tag1:"123" tag2:"456" tag3:"789" tag4:"000"]}
-// 	{Field:F2 Tag:[tag1:"aaa" tag2:"bbb" tag3:"ccc" tag5:"zzz"]}
-// 	{Field:F3 Tag:[tag1:"ddd" tag2:"eee" tag3:"fff" tag6:"yyy"]}
-//
-// 	Field To Tag:
-// 	Field: F1, Value: [{F1 tag1 123}, {F1 tag2 456}]
-// 	Field: F2, Value: [{F2 tag1 aaa}, {F2 tag2 bbb}, {F2 tag5 zzz}]
-// 	Field: F3, Value: [{F3 tag1 ddd}, {F3 tag2 eee}, {F3 tag6 yyy}]
-//
-// 	Tag To Field:
-// 	Tag: tag1, Value: [{F1 tag1 123}, {F2 tag1 aaa}, {F3 tag1 ddd}]
-// 	Tag: tag2, Value: [{F1 tag2 456}, {F2 tag2 bbb}, {F3 tag2 eee}]
-// 	Tag: tag5, Value: [{F2 tag5 zzz}]
-// 	Tag: tag6, Value: [{F3 tag6 yyy}]
-func (t Tag) Audit() string {
-	buf := bytes.NewBufferString("")
+// 	FieldName=field1, TagName=tag1, TagValue=value1
+// 	FieldName=field2, TagName=tag2, TagValue=value2
+// 	FieldName=field3, TagName=tag3, TagValue=value3
+// 	......
+func (t Tags) Audit() string {
+	buf := bytes.NewBufferString(fmt.Sprintf("Name: %v\n", t.name))
 
-	buf.WriteString(fmt.Sprintf("Name: %v\n", t.name))
-
-	buf.WriteString("\nFields:\n")
-	for _, ft := range t.fields {
-		//buf.WriteString(fmt.Sprintf("%+v\n", *ft))
-		s := fmt.Sprintf("{Field:%v Tag:[%v]}\n", (*ft).Field, (*ft).Tag)
-		buf.WriteString(s)
-	}
-
-	buf.WriteString("\nField To Tag:\n")
-	for field, values := range t.f2t {
-		buf.WriteString(fmt.Sprintf("Field: %v, Value: [", field))
-		first := true
-		for _, ft := range values {
-			if !first {
-				buf.WriteString(", ")
-			}
-			buf.WriteString(fmt.Sprintf("%v", *ft))
-			first = false
-		}
-		buf.WriteString("]\n")
-	}
-
-	buf.WriteString("\nTag To Field:\n")
-	for tag, values := range t.t2f {
-		buf.WriteString(fmt.Sprintf("Tag: %v, Value: [", tag))
-		first := true
-		for _, ft := range values {
-			if !first {
-				buf.WriteString(", ")
-			}
-			buf.WriteString(fmt.Sprintf("%v", *ft))
-			first = false
-		}
-		buf.WriteString("]\n")
+	for _, tag := range t.caches {
+		buf.WriteString(fmt.Sprintf("FieldName=%s, TagName=%s, TagValue=%s\n",
+			tag.Field, tag.Name, tag.Value))
 	}
 
 	return buf.String()
 }
 
-// TravelByTag travels the information of the tag, which is the funcational
-// programming of GetToField.
+// TravelByTag travels the information of the tag.
+//
+// The type of the trvaeling function is func(string, string), which needs two
+// arguments and no return value. The first argument is the name of the field
+// where defined the tag, and the second is the value of the tag.
+func (t Tags) TravelByTag(tag string, f func(string, string)) {
+	if fs, ok := t.t2f[tag]; ok {
+		for field, value := range fs {
+			f(field, value)
+		}
+	}
+}
+
+// TravelByField travels the information of the field.
 //
 // The type of the trvaeling function is func(string, string), which needs two
 // arguments and no return value. The first argument is the name of the tag,
 // and the second is the value of the tag.
-func (t Tag) TravelByTag(tag string, f func(string, string)) {
-	if fts, ok := t.t2f[tag]; ok {
-		for _, ft := range fts {
-			f((*ft).Field, (*ft).Value)
-		}
-	}
-}
-
-// TravelByField travels the information of the field, which is the funcational
-// programming of GetAllByField.
-//
-// The type of the trvaeling function is func(string, string), which needs two
-// arguments and no return value. The first argument is the name of the field,
-// and the second is the value of the tag.
-func (t Tag) TravelByField(field string, f func(string, string)) {
-	if fts, ok := t.f2t[field]; ok {
-		for _, ft := range fts {
-			f((*ft).Tag, (*ft).Value)
-		}
-	}
-}
-
-// Build builds all the tags in the struct automatically.
-//
-// The building procedure is:
-// 	(1) Travel all the exposed fields by the order which are defined in the struct.
-// 	(2) For each field, parse out its tags according to the order that they appear,
-// 	    and in turn build them.
-//
-// Suggest to use this method firstly, unless you want to build the specific tags.
-func (t *Tag) Build() {
-	for _, ft := range t.fields {
-		for _, tv := range GetAllTags((*ft).Tag) {
-			debugf("Parsed the field[%v]: [%v]:[%v]", (*ft).Field, tv.Tag, tv.Value)
-			t.BuildTag(tv.Tag)
+func (t Tags) TravelByField(field string, f func(string, string)) {
+	if ts, ok := t.f2t[field]; ok {
+		for tag, value := range ts {
+			f(tag, value)
 		}
 	}
 }

@@ -7,42 +7,35 @@ import (
 )
 
 // GetAllTags copys from the method Get() from reflect.StructTag.
-// But it returns all the tags defined in the fields by the order
-// that they appear, not the value of the specific tag.
+// But it returns a map of Tag-Value.
 //
 // The type of the argument tag must be eithor string or reflect.StructTag.
 // Or panic.
-func GetAllTags(t interface{}) []TV {
-	var tag reflect.StructTag
+func GetAllTags(t interface{}) map[string]string {
+	var tag string
 	if _tag, ok := t.(reflect.StructTag); ok {
-		tag = _tag
+		tag = string(_tag)
 	} else if _tag, ok := t.(string); ok {
-		tag = reflect.StructTag(_tag)
+		tag = _tag
 	} else {
 		panic("The type of the argument must be eithor string or reflect.StructTag")
 	}
 
-	_tags := make([]TV, 0)
+	tags := make(map[string]string)
 	for tag != "" {
-		// Skip leading space.
-		i := 0
-		for i < len(tag) && tag[i] == ' ' {
-			i++
-		}
-		tag = tag[i:]
-		if tag == "" {
-			break
-		}
+		// Strip the two-side whitespaces.
+		tag = strings.Trim(tag, " \t\n")
 
 		// Scan to colon. A space, a quote or a control character is a syntax error.
 		// Strictly speaking, control chars include the range [0x7f, 0x9f], not just
 		// [0x00, 0x1f], but in practice, we ignore the multi-byte control characters
 		// as it is simpler to inspect the tag's bytes than the tag's runes.
-		i = 0
-		for i < len(tag) && tag[i] > ' ' && tag[i] != ':' && tag[i] != '"' && tag[i] != 0x7f {
+		i := 0
+		_len := len(tag)
+		for i < _len && tag[i] > ' ' && tag[i] != ':' && tag[i] != '"' && tag[i] < 0x7f {
 			i++
 		}
-		if i == 0 || i+1 >= len(tag) || tag[i] != ':' || tag[i+1] != '"' {
+		if i == 0 || i+1 >= _len || tag[i] != ':' || tag[i+1] != '"' {
 			break
 		}
 		name := string(tag[:i])
@@ -50,13 +43,14 @@ func GetAllTags(t interface{}) []TV {
 
 		// Scan quoted string to find value.
 		i = 1
-		for i < len(tag) && tag[i] != '"' {
+		_len = len(tag)
+		for i < _len && tag[i] != '"' {
 			if tag[i] == '\\' {
 				i++
 			}
 			i++
 		}
-		if i >= len(tag) {
+		if i >= _len {
 			break
 		}
 		qvalue := string(tag[:i+1])
@@ -64,9 +58,9 @@ func GetAllTags(t interface{}) []TV {
 
 		if value, err := strconv.Unquote(qvalue); err == nil {
 			if strings.TrimSpace(value) != "" {
-				_tags = append(_tags, TV{Tag: name, Value: value})
+				tags[name] = value
 			}
 		}
 	}
-	return _tags
+	return tags
 }
