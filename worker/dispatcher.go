@@ -1,6 +1,9 @@
 package worker
 
 // Dispatcher dispatches the task to the workers.
+//
+// Notice: The dispatcher is not thread-safe, so you should call its method only
+// in a same goroutine.
 type Dispatcher struct {
 	// The number of the worker.
 	WorkerNum int
