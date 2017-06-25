@@ -5,22 +5,29 @@
 package slice
 
 import (
+	"errors"
 	"reflect"
 
 	"github.com/xgfone/go-tools/compare"
 )
 
-func setValue(out interface{}, slice interface{}, index int, _default interface{}, yes bool) bool {
+var (
+	errCannotSet    = errors.New("Can not be set")
+	errNotSliceType = errors.New("The type is not slice or array")
+	errInvalidIndex = errors.New("The invalid index")
+)
+
+func setValue(out interface{}, slice interface{}, index int, _default interface{}, yes bool) error {
 	_out := reflect.Indirect(reflect.ValueOf(out))
 	if !_out.CanSet() {
-		return false
+		return errCannotSet
 	}
 
 	_slice := reflect.ValueOf(slice)
 	kind := _slice.Type().Kind()
 
 	if kind != reflect.Slice && kind != reflect.Array {
-		return false
+		return errNotSliceType
 	}
 
 	var value interface{}
@@ -29,25 +36,25 @@ func setValue(out interface{}, slice interface{}, index int, _default interface{
 	} else if yes {
 		value = _default
 	} else {
-		return false
+		return errInvalidIndex
 	}
 
 	_out.Set(reflect.ValueOf(value))
-	return true
+	return nil
 }
 
 // SetValueWithDefault is same as SetValue, but if index >= len(slice),
-// set the value of out to _default, and return true always.
-func SetValueWithDefault(out interface{}, slice interface{}, index int, _default interface{}) bool {
+// set the value of out to _default.
+func SetValueWithDefault(out interface{}, slice interface{}, index int, _default interface{}) error {
 	return setValue(out, slice, index, _default, true)
 }
 
-// SetValue sets the value of 'out' to 'slice[index]' and return true.
+// SetValue sets the value of 'out' to 'slice[index]' and return nil.
 //
-// Return false if the value of out can't be changed, that's, out need to be a pointer.
-// Return false if slice is not a slice type or index >= len(slice).
-// Panic for other cases.
-func SetValue(out interface{}, slice interface{}, index int) bool {
+// Return an error if the value of out can't be changed, that's, out need to be a pointer.
+// Return an error if slice is not a slice type or index >= len(slice).
+// Panic if when setting the value but the type is not matching.
+func SetValue(out interface{}, slice interface{}, index int) error {
 	return setValue(out, slice, index, nil, false)
 }
 
