@@ -14,14 +14,18 @@ func NewSMap() SMap {
 //
 // Return nil if the type is not either.
 func ToSMap(v interface{}) SMap {
+	_v, _ := toSMap(v)
+	return _v
+}
+
+func toSMap(v interface{}) (SMap, bool) {
 	switch v.(type) {
 	case map[string]interface{}:
-		return SMap(v.(map[string]interface{}))
+		return SMap(v.(map[string]interface{})), true
 	case SMap:
-		return v.(SMap)
+		return v.(SMap), true
 	default:
-		_v, _ := ConvertToSMap(v)
-		return _v
+		return ConvertToSMap(v)
 	}
 }
 

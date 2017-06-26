@@ -29,13 +29,7 @@ func (m SMap) MustInterface(k string) interface{} {
 // Slice is the same as UInt64, but Slice.
 func (m SMap) Slice(k string) (v Slice, ok bool) {
 	if v1, ok := m[k]; ok {
-		if v2, ok := v1.(Slice); ok {
-			return v2, true
-		} else if v3, ok := v1.([]interface{}); ok {
-			return Slice(v3), true
-		} else {
-			return ConvertToSlice(v1)
-		}
+		return toSlice(v1)
 	}
 	return nil, false
 }
@@ -60,13 +54,7 @@ func (m SMap) MustSlice(k string) Slice {
 // SMap is the same as UInt64, but SMap.
 func (m SMap) SMap(k string) (v SMap, ok bool) {
 	if v1, ok := m[k]; ok {
-		if v2, ok := v1.(SMap); ok {
-			return v2, true
-		} else if v3, ok := v1.(map[string]interface{}); ok {
-			return SMap(v3), true
-		} else {
-			return ConvertToSMap(v1)
-		}
+		return toSMap(v1)
 	}
 	return nil, false
 }

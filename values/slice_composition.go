@@ -32,15 +32,7 @@ func (s Slice) Slice(i int) (v Slice, ok bool) {
 	if len(s) <= i {
 		return nil, false
 	}
-
-	_v := s[i]
-	if v1, ok := _v.(Slice); ok {
-		return v1, true
-	} else if v2, ok := _v.([]interface{}); ok {
-		return Slice(v2), true
-	} else {
-		return ConvertToSlice(_v)
-	}
+	return toSlice(s[i])
 }
 
 // MustSlice is the same as MustInt64, but Slice.
@@ -65,15 +57,7 @@ func (s Slice) SMap(i int) (v SMap, ok bool) {
 	if len(s) <= i {
 		return nil, false
 	}
-
-	_v := s[i]
-	if v, ok := _v.(SMap); ok {
-		return v, true
-	} else if v, ok := _v.(map[string]interface{}); ok {
-		return SMap(v), true
-	} else {
-		return ConvertToSMap(_v)
-	}
+	return toSMap(s[i])
 }
 
 // MustSMap is the same as MustInt64, but SMap.

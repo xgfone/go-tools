@@ -14,14 +14,18 @@ func NewSlice(i int) Slice {
 //
 // Return nil if the type is not either.
 func ToSlice(v interface{}) Slice {
+	_v, _ := toSlice(v)
+	return _v
+}
+
+func toSlice(v interface{}) (Slice, bool) {
 	switch v.(type) {
 	case []interface{}:
-		return Slice(v.([]interface{}))
+		return Slice(v.([]interface{})), true
 	case Slice:
-		return v.(Slice)
+		return v.(Slice), true
 	default:
-		_v, _ := ConvertToSlice(v)
-		return _v
+		return ConvertToSlice(v)
 	}
 }
 
