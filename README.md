@@ -13,7 +13,7 @@ $ go get -u github.com/xgfone/go-tools
 
 subpackage   |   notice
 -------------|-----------
-atomics      | Some atomic types, such as Bool, Count, etc.
+atomics      | Some atomic types, such as `AtomicInt32`, `AtomicInt64`, `AtomicDuration`, `AtomicBool`, `AtomicString`, `Semaphore`, `Count`, etc. Notice: Some types are copied from `github.com/youtube/vitess/go/sync2`.
 caller       | Get the filename and the line number where to call these functions.
 checksum     | Calculate the checksum, such as `ICMP`.
 compare      | Compare whether the first is greater than, less than, or equal to the second.
@@ -34,7 +34,7 @@ nets/mac     | Standardize the mac address.
 nets/server  | The simple `TCP` / `UDP` server.
 pagination   | It is usually used to compute the web pagination.
 parse        | Convert something from a string to `bool`, `int`, `uint`, `float`, or from a certain type to string, etc.
-pool         | Some simple convenient pools, such as `BufPool`, `GoPool`, etc.
+pools        | Some simple convenient pools, such as `BufPool`, `GoPool`, `ResourcePool`, etc. Notice: **Rename to `pools` from `v0.40`**.
 slice        | Get a value from a slice and check whether a value exists in a slice.
 str          | str is the supplement of the standard library of strings.
 tags         | Manage the tags in a struct.
