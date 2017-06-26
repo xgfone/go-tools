@@ -8,9 +8,9 @@ import (
 )
 
 func ExampleGoPool_Go() {
-	gopool := pool.NewGoPool()
+	gopool := pools.NewGoPool()
 
-	f1 := func(p *pool.GoPool) {
+	f1 := func(p *pools.GoPool) {
 		fmt.Println("IN", p.GetNum()) // print: IN 1
 	}
 	if err := gopool.Go(f1, gopool); err != nil {
