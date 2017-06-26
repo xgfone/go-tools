@@ -1,10 +1,10 @@
-package pool_test
+package pools_test
 
 import (
 	"fmt"
 	"time"
 
-	"github.com/xgfone/go-tools/pool"
+	"github.com/xgfone/go-tools/pools"
 )
 
 func ExampleGoPool_Go() {

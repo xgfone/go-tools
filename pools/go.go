@@ -1,5 +1,6 @@
-// Package pool supplys some simple convenient pools, such as BufPool, GoPool, etc.
-package pool
+// Package pools supplys some simple convenient pools, such as BufPool, GoPool,
+// ResourcePool, etc.
+package pools
 
 import (
 	"errors"
