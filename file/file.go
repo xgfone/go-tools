@@ -20,6 +20,9 @@ const (
 	IsDirType
 )
 
+// HomeDir is the home directory of the current user.
+var HomeDir = GetHomeDir()
+
 // Type decides the type of a file.
 //
 // It returns IsFileType, IsDirType, or NotExist.
@@ -137,6 +140,31 @@ func ListDir(dirPth string) ([]string, error) {
 // WalkDir is the short for Walkdir2, only suffix is empty, and recursion is true.
 func WalkDir(dirPth string) ([]string, error) {
 	return WalkDir2(dirPth, "", true)
+}
+
+// GetHomeDir returns the home directory. Return "" if the home direcotry is empty.
+func GetHomeDir() string {
+	if v := os.Getenv("HOME"); v != "" { // For Unix/Linux
+		return v
+	} else if v := os.Getenv("HOMEPATH"); v != "" { // For Windows
+		return v
+	}
+	return ""
+}
+
+// Abs is similar to Abs in the std library "path/filepath", but firstly convert
+// "~"" and "$HOME" to the home directory. Return the origin path if there is an
+// error.
+func Abs(p string) string {
+	if HomeDir != "" {
+		p = strings.Replace(p, "~", HomeDir, 1)
+		p = strings.Replace(p, "$HOME", HomeDir, 1)
+	}
+
+	if _p, err := filepath.Abs(p); err == nil {
+		return _p
+	}
+	return p
 }
 
 // SelfPath returns the absolute path where the compiled executable file is in.
