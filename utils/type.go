@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"reflect"
 )
 
 // VerifyFunc is a function to verifty whether the type of a value is the given
@@ -176,4 +177,24 @@ func VerifyType(v interface{}, t string) bool {
 		return f(v, t)
 	}
 	panic(fmt.Errorf("Not support to verify the type of %s", t))
+}
+
+//VerifyMapValueType verifies whether the type of the value of the key in the map
+// is the given type.
+//
+// Return false if m is not the map type or the map does not have the key.
+//
+// Notice: the type of the key of the map type must be string.
+func VerifyMapValueType(m interface{}, k, t string) (ok bool) {
+	v := reflect.ValueOf(m)
+	if v.Kind() != reflect.Map || v.Type().Key().Kind() != reflect.String {
+		return
+	}
+
+	for _, _v := range v.MapKeys() {
+		if _v.String() == k {
+			return VerifyType(v.MapIndex(_v).Interface(), t)
+		}
+	}
+	return
 }

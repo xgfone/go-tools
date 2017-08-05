@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func ExmapleVerifyType() {
+func ExampleVerifyType() {
 	fmt.Println(VerifyType(int64(1), "int64"))
 	fmt.Println(VerifyType(int64(1), "int32"))
 	fmt.Println(VerifyType(byte(1), "uint8"))
@@ -27,5 +27,29 @@ func ExmapleVerifyType() {
 	// true
 	// false
 	// true
+	// false
+}
+
+func ExampleVerifyMapValueType() {
+	v1 := map[string]interface{}{
+		"a": 11,
+		"b": "22",
+	}
+	v2 := map[int]interface{}{
+		1: "a",
+		2: "b",
+	}
+
+	fmt.Println(VerifyMapValueType(v1, "a", "int"))
+	fmt.Println(VerifyMapValueType(v1, "b", "string"))
+	fmt.Println(VerifyMapValueType(v1, "b", "int"))
+	fmt.Println(VerifyMapValueType(v1, "c", "string"))
+	fmt.Println(VerifyMapValueType(v2, "1", "string"))
+
+	// Output:
+	// true
+	// true
+	// false
+	// false
 	// false
 }
