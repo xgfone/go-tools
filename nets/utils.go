@@ -32,22 +32,17 @@ func GetIP(iname string) (ips []string, err error) {
 		return []string{iname}, nil
 	}
 
-	interfaces, err := net.Interfaces()
-	if err != nil {
+	var _interface *net.Interface
+	if _interface, err = net.InterfaceByName(iname); err != nil {
 		return
 	}
 
 	var addrs []net.Addr
-	for _, i := range interfaces {
-		if i.Name == iname {
-			if addrs, err = i.Addrs(); err != nil {
-				return
-			}
-			for _, addr := range addrs {
-
-				ips = append(ips, strings.Split(addr.String(), "/")[0])
-			}
-		}
+	if addrs, err = _interface.Addrs(); err != nil {
+		return
+	}
+	for _, addr := range addrs {
+		ips = append(ips, strings.Split(addr.String(), "/")[0])
 	}
 
 	if len(ips) == 0 {
