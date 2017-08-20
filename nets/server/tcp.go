@@ -77,7 +77,7 @@ func TCPServerForever(addr string, handle interface{}) error {
 	}
 
 	// Never execute forever.
-	return nil
+	// return nil
 }
 
 // DialTCP is the same as DialTCPWithAddr, but it joins host and port firstly.

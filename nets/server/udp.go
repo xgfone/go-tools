@@ -104,7 +104,7 @@ func UDPServerForever(addr string, size int, handle interface{}) error {
 	}
 
 	// Never execute forever.
-	return nil
+	// return nil
 }
 
 // DialUDP is the same as DialUDPWithAddr, but it joins host and port firstly.
