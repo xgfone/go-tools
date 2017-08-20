@@ -1,27 +1,33 @@
-package nets_test
+package nets
 
-import (
-	"testing"
-
-	"github.com/xgfone/go-tools/nets"
-)
+import "testing"
 
 func TestJoinHostPort(t *testing.T) {
 	result := "127.0.0.1:8000"
 
-	if nets.JoinHostPort("127.0.0.1", "8000") != result {
+	if JoinHostPort("127.0.0.1", "8000") != result {
 		t.Fail()
 	}
 
-	if nets.JoinHostPort("127.0.0.1", 8000) != result {
+	if JoinHostPort("127.0.0.1", 8000) != result {
 		t.Fail()
 	}
 
-	if nets.JoinHostPort([]byte("127.0.0.1"), 8000) != result {
+	if JoinHostPort([]byte("127.0.0.1"), 8000) != result {
 		t.Fail()
 	}
 
-	if nets.JoinHostPort([]byte("127.0.0.1"), "8000") != result {
+	if JoinHostPort([]byte("127.0.0.1"), "8000") != result {
+		t.Fail()
+	}
+}
+
+func TestGetIP(t *testing.T) {
+	if ips, err := GetIP("127.0.0.1"); err != nil || len(ips) != 1 || ips[0] != "127.0.0.1" {
+		t.Fail()
+	}
+
+	if ips, err := GetIP("lo0"); err != nil || ips[0] != "127.0.0.1" {
 		t.Fail()
 	}
 }
