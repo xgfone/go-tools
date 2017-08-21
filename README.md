@@ -41,7 +41,7 @@ str          | str is the supplement of the standard library of strings.
 tags         | Manage the tags in a struct.
 tbucket      | **Removed from `0.31`.** Please use `golang.org/x/time/rate`.
 utils        | Some utility functions, which are classified to a certain package.
-validation   | Some validations, such as email, url, etc.
+validation   | Some validations, such as email, url, or the type of a value, etc.
 values       | Get a value from a `slice` or `map`.
 wait         | Poll or listen for changes to a condition. It's copied from `k8s.io/apimachinery/pkg/util/wait`.
 worker       | A worker pool with the dispatcher based on channel.
