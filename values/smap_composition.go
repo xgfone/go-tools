@@ -75,3 +75,38 @@ func (m SMap) MustSMap(k string) SMap {
 		return v
 	}
 }
+
+// MapString is the same as SMap, but map[string]string.
+func (m SMap) MapString(k string) (v map[string]string, ok bool) {
+	if _v, _ok := m[k]; _ok {
+		switch _v.(type) {
+		case map[string]string:
+			return _v.(map[string]string), true
+		case map[string]interface{}:
+			sm := ToSMap(_v)
+			v = make(map[string]string, len(sm))
+			for k := range sm {
+				if v[k], ok = sm.String(k); !ok {
+					return nil, false
+				}
+			}
+		}
+	}
+	return
+}
+
+// MapStringWithDefault is the same as SMapWithDefault, but map[string]string.
+func (m SMap) MapStringWithDefault(k string, _default map[string]string) (v map[string]string) {
+	if v, ok := m.MapString(k); ok {
+		return v
+	}
+	return _default
+}
+
+// MustMapString is the same as MustSMap, but map[string]string.
+func (m SMap) MustMapString(k string) (v map[string]string) {
+	if v, ok := m.MapString(k); ok {
+		return v
+	}
+	panic(ErrTypeOrIndex)
+}
