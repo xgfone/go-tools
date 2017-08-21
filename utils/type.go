@@ -57,6 +57,8 @@ func init() {
 	RegisterVerifyFunc("string2interface", verifyMapType)
 	RegisterVerifyFunc("int642interface", verifyMapType)
 	RegisterVerifyFunc("int642string", verifyMapType)
+	RegisterVerifyFunc("int2string", verifyMapType)
+	RegisterVerifyFunc("int2interface", verifyMapType)
 }
 
 // RegisterVerifyFunc registers a type verification function.
@@ -154,6 +156,10 @@ func verifyMapType(v interface{}, t string) (ok bool) {
 		_, ok = v.(map[int64]interface{})
 	case "int642string":
 		_, ok = v.(map[int64]string)
+	case "int2string":
+		_, ok = v.(map[int]string)
+	case "int2interface":
+		_, ok = v.(map[int]interface{})
 	}
 	return
 }
@@ -172,6 +178,8 @@ func verifyMapType(v interface{}, t string) (ok bool) {
 //   string2interface for map[string]interface{}
 //   int642interface for map[int64]interface{}
 //   int642string for map[int64]string
+//   int2string for map[int]string
+//   int2interface for map[int]interface{}
 func VerifyType(v interface{}, t string) bool {
 	if f, ok := typeMap[t]; ok {
 		return f(v, t)
