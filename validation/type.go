@@ -171,7 +171,8 @@ func verifyMapType(v interface{}, t string) (ok bool) {
 // "uint64", "float32", "float64", "complex64", "complex128".
 //
 // t may be the list type of a basic builtin type as above. Notice: the type name
-// is the name of the basic builtin type, which ends with "s".
+// is the name of the basic builtin type, which ends with "s", such as ints for
+// []int, bytes for []byte, strings for []string.
 //
 // t may be a map type:
 //   string2string for map[string]string,
