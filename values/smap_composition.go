@@ -16,12 +16,32 @@ func (m SMap) Slice(k string) (v Slice, ok bool) {
 	return nil, false
 }
 
+// IsSlice returns true when the type of the value whose key is k is Slice or
+// []interface{}; or false.
+func (m SMap) IsSlice(k string) bool {
+	_v, ok := m[k]
+	if !ok {
+		return false
+	}
+	return isSlice(_v)
+}
+
 // SMap does the best to convert the value whose key is k to SMap.
 func (m SMap) SMap(k string) (v SMap, ok bool) {
 	if v1, ok := m[k]; ok {
 		return toSMap(v1)
 	}
 	return nil, false
+}
+
+// IsSMap returns true when the type of the value whose key is k is SMap or
+// map[string]interface{}; or false.
+func (m SMap) IsSMap(k string) bool {
+	_v, ok := m[k]
+	if !ok {
+		return false
+	}
+	return isSMap(_v)
 }
 
 // MapString does the best to convert the value whose key is k to map[string]string.
@@ -41,4 +61,15 @@ func (m SMap) MapString(k string) (v map[string]string, ok bool) {
 		}
 	}
 	return
+}
+
+// IsMapString returns true when the type of the value whose key is k is map[string]string;
+// or false.
+func (m SMap) IsMapString(k string) bool {
+	_v, ok := m[k]
+	if !ok {
+		return false
+	}
+	_, ok = _v.(map[string]string)
+	return ok
 }

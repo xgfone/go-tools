@@ -20,6 +20,22 @@ var (
 	ErrTypeOrIndex = errors.New("The type or index is wrong")
 )
 
+func isSMap(v interface{}) bool {
+	if _, ok := v.(map[string]interface{}); ok {
+		return true
+	}
+	_, ok := v.(SMap)
+	return ok
+}
+
+func isSlice(v interface{}) bool {
+	if _, ok := v.([]interface{}); ok {
+		return true
+	}
+	_, ok := v.(Slice)
+	return ok
+}
+
 // IsZero return true if the value is the ZERO value, or false.
 //
 // For bool, false is ZERO. For the integer, 0 is the ZERO. For the complex,

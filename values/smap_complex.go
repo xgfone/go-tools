@@ -6,6 +6,17 @@ func (m SMap) Complex64(k string) (v complex64, ok bool) {
 	return complex64(_v), ok
 }
 
+// IsComplex64 returns true when the type of the value whose key is k is complex64;
+// or false.
+func (m SMap) IsComplex64(k string) bool {
+	_v, ok := m[k]
+	if !ok {
+		return false
+	}
+	_, ok = _v.(complex64)
+	return ok
+}
+
 // Complex128 does the best to convert the value whose key is k to complex128.
 func (m SMap) Complex128(k string) (v complex128, ok bool) {
 	_v, ok := m[k]
@@ -13,4 +24,15 @@ func (m SMap) Complex128(k string) (v complex128, ok bool) {
 		return
 	}
 	return ToComplex128(_v)
+}
+
+// IsComplex128 returns true when the type of the value whose key is k is complex128;
+// or false.
+func (m SMap) IsComplex128(k string) bool {
+	_v, ok := m[k]
+	if !ok {
+		return false
+	}
+	_, ok = _v.(complex128)
+	return ok
 }
