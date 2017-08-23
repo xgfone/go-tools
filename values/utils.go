@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-// ToInt64 converts a certain value to int64.
+// ToInt64 does the best to convert a certain value to int64.
 func ToInt64(_v interface{}) (v int64, ok bool) {
 	ok = true
 	switch _v.(type) {
@@ -32,7 +32,7 @@ func ToInt64(_v interface{}) (v int64, ok bool) {
 	return
 }
 
-// ToUInt64 converts a certain value to uint64.
+// ToUInt64 does the best to convert a certain value to uint64.
 func ToUInt64(_v interface{}) (v uint64, ok bool) {
 	ok = true
 	switch _v.(type) {
@@ -58,7 +58,7 @@ func ToUInt64(_v interface{}) (v uint64, ok bool) {
 	return
 }
 
-// ToString converts a certain value to string.
+// ToString does the best to convert a certain value to string.
 func ToString(_v interface{}) (v string, ok bool) {
 	ok = true
 	switch _v.(type) {
@@ -74,7 +74,7 @@ func ToString(_v interface{}) (v string, ok bool) {
 	return
 }
 
-// ToFloat64 converts a certain value to float64.
+// ToFloat64 does the best to convert a certain value to float64.
 func ToFloat64(_v interface{}) (v float64, ok bool) {
 	ok = true
 	switch _v.(type) {
@@ -100,7 +100,7 @@ func ToFloat64(_v interface{}) (v float64, ok bool) {
 	return
 }
 
-// ToComplex128 converts a certain value to complex128.
+// ToComplex128 does the best to convert a certain value to complex128.
 func ToComplex128(_v interface{}) (v complex128, ok bool) {
 	ok = true
 	switch _v.(type) {
