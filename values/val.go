@@ -4,21 +4,7 @@
 //
 package values
 
-import (
-	"errors"
-	"text/template"
-)
-
-var (
-	// FZERO32 is the ZERO value of float32.
-	FZERO32 float32
-
-	// FZERO64 is the ZERO value of float64.
-	FZERO64 float64
-
-	// ErrTypeOrIndex is the type or index error.
-	ErrTypeOrIndex = errors.New("The type or index is wrong")
-)
+import "text/template"
 
 func isSMap(v interface{}) bool {
 	if _, ok := v.(map[string]interface{}); ok {
