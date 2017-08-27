@@ -1,3 +1,4 @@
+// Package sync2 is the supplement of the standard library `sync`.
 package sync2
 
 import (
