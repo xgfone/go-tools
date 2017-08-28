@@ -1,3 +1,4 @@
+// Package nets is the supplement of the standard library `net`.
 package nets
 
 import (

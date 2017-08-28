@@ -30,7 +30,7 @@ lifecycle    | The manager of the lifecycle of some apps in a program.
 lifecycle/server | **Removed from `0.35`.** Its functions have been merged into `lifecycle`.
 log/handler  | The logger handler, such as `TimedRotatingFile` like `logging.handlers.TimedRotatingFileHandler` in Python.
 method       | Call the method of a type dynamically.
-nets         | Some helpers about net.
+nets         | The supplement of the standard library `net`, such as some helpers about net.
 nets/mac     | Standardize the mac address.
 nets/server  | The simple `TCP` / `UDP` server.
 pagination   | It is usually used to compute the web pagination.
