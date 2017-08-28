@@ -16,6 +16,7 @@ limitations under the License.
 
 // Copy from github.com/youtube/vitess/go/sync2:atomic.go
 
+// Package atomics supples some atomic types, such as AtomicInt32, AtomicBool, etc.
 package atomics
 
 import (
