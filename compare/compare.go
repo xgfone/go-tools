@@ -102,7 +102,7 @@ func Compare(v1, v2 interface{}) int {
 			return strings.Compare(_v1, _v2)
 		}
 	default:
-		return CompareSlice(v1, v2)
+		return compareSlice(v1, v2)
 	}
 
 	if first > second {
