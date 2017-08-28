@@ -94,7 +94,7 @@ func compareSlice(v1, v2 interface{}) int {
 
 func compareIntSlice(v1, v2 []int) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		if v1[i] < v2[i] {
 			return -1
@@ -114,7 +114,7 @@ func compareIntSlice(v1, v2 []int) int {
 
 func compareUintSlice(v1, v2 []uint) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		if v1[i] < v2[i] {
 			return -1
@@ -134,7 +134,7 @@ func compareUintSlice(v1, v2 []uint) int {
 
 func compareInt8Slice(v1, v2 []int8) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		if v1[i] < v2[i] {
 			return -1
@@ -154,7 +154,7 @@ func compareInt8Slice(v1, v2 []int8) int {
 
 func compareUint8Slice(v1, v2 []uint8) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		if v1[i] < v2[i] {
 			return -1
@@ -174,7 +174,7 @@ func compareUint8Slice(v1, v2 []uint8) int {
 
 func compareInt16Slice(v1, v2 []int16) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		if v1[i] < v2[i] {
 			return -1
@@ -194,7 +194,7 @@ func compareInt16Slice(v1, v2 []int16) int {
 
 func compareUint16Slice(v1, v2 []uint16) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		if v1[i] < v2[i] {
 			return -1
@@ -214,7 +214,7 @@ func compareUint16Slice(v1, v2 []uint16) int {
 
 func compareInt32Slice(v1, v2 []int32) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		if v1[i] < v2[i] {
 			return -1
@@ -234,7 +234,7 @@ func compareInt32Slice(v1, v2 []int32) int {
 
 func compareUint32Slice(v1, v2 []uint32) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		if v1[i] < v2[i] {
 			return -1
@@ -254,7 +254,7 @@ func compareUint32Slice(v1, v2 []uint32) int {
 
 func compareInt64Slice(v1, v2 []int64) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		if v1[i] < v2[i] {
 			return -1
@@ -274,7 +274,7 @@ func compareInt64Slice(v1, v2 []int64) int {
 
 func compareUint64Slice(v1, v2 []uint64) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		if v1[i] < v2[i] {
 			return -1
@@ -294,7 +294,7 @@ func compareUint64Slice(v1, v2 []uint64) int {
 
 func compareFloat32Slice(v1, v2 []float32) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		if v1[i] < v2[i] {
 			return -1
@@ -314,7 +314,7 @@ func compareFloat32Slice(v1, v2 []float32) int {
 
 func compareFloat64Slice(v1, v2 []float64) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		if v1[i] < v2[i] {
 			return -1
@@ -334,7 +334,7 @@ func compareFloat64Slice(v1, v2 []float64) int {
 
 func compareStringSlice(v1, v2 []string) int {
 	len1, len2 := len(v1), len(v2)
-	_len := extremum.MinInt(len1, len2)
+	_len := extremum.Min(len1, len2).(int)
 	for i := 0; i < _len; i++ {
 		diff := strings.Compare(v1[i], v2[i])
 		if diff != 0 {
