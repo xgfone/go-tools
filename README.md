@@ -15,7 +15,7 @@ subpackage   |   notice
 -------------|-----------
 atomics      | Some atomic types, such as `AtomicInt32`, `AtomicInt64`, `AtomicDuration`, `AtomicBool`, `AtomicString`, `Semaphore`, `Count`, etc. Notice: Some types are copied from `github.com/youtube/vitess/go/sync2`.
 cache        | Supply some caches, such as `LRUCache`. Notice: LRUCache is copied from `github.com/youtube/vitess/go/cache`.
-caller       | Get the filename and the line number where to call these functions.
+caller       | **Remove from `v0.44`.** Please use `github.com/go-stack/stack`. Get the filename and the line number where to call these functions.
 checksum     | Calculate the checksum, such as `ICMP`.
 compare      | Compare whether the first is greater than, less than, or equal to the second.
 daemon       | Make the current process to the daemon process.
