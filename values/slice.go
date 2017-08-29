@@ -1,6 +1,9 @@
 package values
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+)
 
 // Slice is a type alias of []interface{}.
 type Slice []interface{}
@@ -16,6 +19,14 @@ func NewSlice(i int) Slice {
 func ToSlice(v interface{}) Slice {
 	_v, _ := toSlice(v)
 	return _v
+}
+
+// MustToSlice must parse the argument v to Slice, or panic.
+func MustToSlice(v interface{}) Slice {
+	if _v, ok := toSlice(v); ok {
+		return _v
+	}
+	panic(fmt.Errorf("can't parse the value to Slice"))
 }
 
 func toSlice(v interface{}) (Slice, bool) {

@@ -39,7 +39,7 @@ func MustToInt64(v interface{}) int64 {
 	if _v, ok := ToInt64(v); ok {
 		return _v
 	}
-	panic(fmt.Errorf("don't parse the value to int64"))
+	panic(fmt.Errorf("can't parse the value to int64"))
 }
 
 // ToUInt64 does the best to convert a certain value to uint64.
@@ -75,7 +75,7 @@ func MustToUInt64(v interface{}) uint64 {
 	if _v, ok := ToUInt64(v); ok {
 		return _v
 	}
-	panic(fmt.Errorf("don't parse the value to uint64"))
+	panic(fmt.Errorf("can't parse the value to uint64"))
 }
 
 // ToString does the best to convert a certain value to string.
@@ -101,7 +101,7 @@ func MustToString(v interface{}) string {
 	if _v, ok := ToString(v); ok {
 		return _v
 	}
-	panic(fmt.Errorf("don't parse the value to string"))
+	panic(fmt.Errorf("can't parse the value to string"))
 }
 
 // ToFloat64 does the best to convert a certain value to float64.
@@ -137,7 +137,7 @@ func MustToFloat64(v interface{}) float64 {
 	if _v, ok := ToFloat64(v); ok {
 		return _v
 	}
-	panic(fmt.Errorf("don't parse the value to float64"))
+	panic(fmt.Errorf("can't parse the value to float64"))
 }
 
 // ToComplex128 does the best to convert a certain value to complex128.
@@ -167,5 +167,5 @@ func MustToComplex128(v interface{}) complex128 {
 	if _v, ok := ToComplex128(v); ok {
 		return _v
 	}
-	panic(fmt.Errorf("don't parse the value to complex128"))
+	panic(fmt.Errorf("can't parse the value to complex128"))
 }

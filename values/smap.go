@@ -1,6 +1,9 @@
 package values
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+)
 
 // SMap is a type based on the string key.
 type SMap map[string]interface{}
@@ -16,6 +19,14 @@ func NewSMap() SMap {
 func ToSMap(v interface{}) SMap {
 	_v, _ := toSMap(v)
 	return _v
+}
+
+// MustToSMap must parse the argument v to SMap, or panic.
+func MustToSMap(v interface{}) SMap {
+	if _v, ok := toSMap(v); ok {
+		return _v
+	}
+	panic(fmt.Errorf("can't parse the value to SMap"))
 }
 
 func toSMap(v interface{}) (SMap, bool) {
