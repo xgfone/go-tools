@@ -32,6 +32,16 @@ func ToInt64(_v interface{}) (v int64, ok bool) {
 	return
 }
 
+// MustToInt64 must parse the value v to int64, or panic.
+//
+// Notice: it will do the best to parse v.
+func MustToInt64(v interface{}) int64 {
+	if _v, ok := ToInt64(v); ok {
+		return _v
+	}
+	panic(fmt.Errorf("don't parse the value to int64"))
+}
+
 // ToUInt64 does the best to convert a certain value to uint64.
 func ToUInt64(_v interface{}) (v uint64, ok bool) {
 	ok = true
@@ -58,6 +68,16 @@ func ToUInt64(_v interface{}) (v uint64, ok bool) {
 	return
 }
 
+// MustToUInt64 must parse the value v to uint64, or panic.
+//
+// Notice: it will do the best to parse v.
+func MustToUInt64(v interface{}) uint64 {
+	if _v, ok := ToUInt64(v); ok {
+		return _v
+	}
+	panic(fmt.Errorf("don't parse the value to uint64"))
+}
+
 // ToString does the best to convert a certain value to string.
 func ToString(_v interface{}) (v string, ok bool) {
 	ok = true
@@ -72,6 +92,16 @@ func ToString(_v interface{}) (v string, ok bool) {
 		ok = false
 	}
 	return
+}
+
+// MustToString must parse the value v to string, or panic.
+//
+// Notice: it will do the best to parse v.
+func MustToString(v interface{}) string {
+	if _v, ok := ToString(v); ok {
+		return _v
+	}
+	panic(fmt.Errorf("don't parse the value to string"))
 }
 
 // ToFloat64 does the best to convert a certain value to float64.
@@ -100,6 +130,16 @@ func ToFloat64(_v interface{}) (v float64, ok bool) {
 	return
 }
 
+// MustToFloat64 must parse the value v to float64, or panic.
+//
+// Notice: it will do the best to parse v.
+func MustToFloat64(v interface{}) float64 {
+	if _v, ok := ToFloat64(v); ok {
+		return _v
+	}
+	panic(fmt.Errorf("don't parse the value to float64"))
+}
+
 // ToComplex128 does the best to convert a certain value to complex128.
 func ToComplex128(_v interface{}) (v complex128, ok bool) {
 	ok = true
@@ -118,4 +158,14 @@ func ToComplex128(_v interface{}) (v complex128, ok bool) {
 		ok = false
 	}
 	return
+}
+
+// MustToComplex128 must parse the value v to complex128, or panic.
+//
+// Notice: it will do the best to parse v.
+func MustToComplex128(v interface{}) complex128 {
+	if _v, ok := ToComplex128(v); ok {
+		return _v
+	}
+	panic(fmt.Errorf("don't parse the value to complex128"))
 }
