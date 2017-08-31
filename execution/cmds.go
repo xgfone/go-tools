@@ -1,5 +1,23 @@
 package execution
 
+// Cmd is an once executioin.
+var Cmd = NewOnceExecution()
+
+// Output is short for Cmd.Output.
+func Output(args []string) (output string, err error) {
+	return Cmd.Output(args)
+}
+
+// Execute is short for Cmd.Execute.
+func Execute(args []string) (err error) {
+	return Cmd.Execute(args)
+}
+
+// ErrOutput is short for Cmd.ErrOutput.
+func ErrOutput(args []string) (output string, err error) {
+	return Cmd.ErrOutput(args)
+}
+
 // NewOnceExecution returns a new execution, which will be executed once.
 //
 // Notice: don't modify the field of the returned execution, Count and Interval.
