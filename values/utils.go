@@ -6,6 +6,62 @@ import (
 	"strconv"
 )
 
+// In returns true if the key exists.
+func In(m map[string]interface{}, key string) bool {
+	if _, ok := m[key]; ok {
+		return true
+	}
+	return false
+}
+
+// Ins returns true if the key exists.
+func Ins(m map[string]string, key string) bool {
+	if _, ok := m[key]; ok {
+		return true
+	}
+	return false
+}
+
+// GetString returns the value of the key.
+//
+// The key must exist, or panic.
+func GetString(m map[string]string, key string) string {
+	if v, ok := m[key]; ok {
+		return v
+	}
+	panic(fmt.Errorf("the key '%s' is missing", key))
+}
+
+// GetStringWithDefault returns the value of the key.
+//
+// Return the default if the key does not exist.
+func GetStringWithDefault(m map[string]string, key string, _default string) string {
+	if v, ok := m[key]; ok {
+		return v
+	}
+	return _default
+}
+
+// GetInterface returns the value of the key.
+//
+// The key must exist, or panic.
+func GetInterface(m map[string]interface{}, key string) interface{} {
+	if v, ok := m[key]; ok {
+		return v
+	}
+	panic(fmt.Errorf("the key '%s' is missing", key))
+}
+
+// GetInterfaceWithDefault returns the value of the key.
+//
+// Return the default if the key does not exist.
+func GetInterfaceWithDefault(m map[string]interface{}, key string, _default interface{}) interface{} {
+	if v, ok := m[key]; ok {
+		return v
+	}
+	return _default
+}
+
 // ToInt64 does the best to convert a certain value to int64.
 func ToInt64(_v interface{}) (v int64, ok bool) {
 	ok = true
