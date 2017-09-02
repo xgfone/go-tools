@@ -36,7 +36,7 @@ nets/mac     | Standardize the mac address.
 nets/server  | The simple `TCP` / `UDP` server.
 pagination   | It is usually used to compute the web pagination.
 parse        | Convert something from a string to `bool`, `int`, `uint`, `float`, or from a certain type to string, etc.
-pools        | Some simple convenient pools, such as `BufPool`, `GoPool`, `ResourcePool`, etc. Notice: **Rename to `pools` from `v0.40`**.
+pools        | Some simple convenient pools, such as `BufPool`, `GoPool`, `ResourcePool`, `AddrTCPConnPool`, etc. Notice: **Rename to `pools` from `v0.40`**.
 queue        | Supply the `Queue` interface, and some implementations such as `NewMemoryQueue` based on memory.
 slice        | Get a value from a slice and check whether a value exists in a slice.
 str          | str is the supplement of the standard library of strings.
