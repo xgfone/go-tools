@@ -1,5 +1,5 @@
-// Package str is the supplement of the standard library of strings.
-package str
+// Package string2 is the supplement of the standard library of strings.
+package string2
 
 import (
 	"bytes"
