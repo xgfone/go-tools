@@ -1,15 +1,13 @@
-package str_test
+package string2
 
 import (
 	"fmt"
 	"unicode"
-
-	"github.com/xgfone/go-tools/str"
 )
 
 func ExampleSplitSpace() {
 	s := "   1   2   3   "
-	ss := str.SplitSpace(s)
+	ss := SplitSpace(s)
 	fmt.Printf("[len=%v: %v-%v-%v]\n", len(ss), ss[0], ss[1], ss[2])
 
 	// Output:
@@ -18,7 +16,7 @@ func ExampleSplitSpace() {
 
 func ExampleSplit() {
 	s := "   1   2   3   "
-	ss := str.Split(s, unicode.IsSpace)
+	ss := Split(s, unicode.IsSpace)
 	fmt.Printf("[len=%v: %v-%v-%v]\n", len(ss), ss[0], ss[1], ss[2])
 
 	// Output:
@@ -27,7 +25,7 @@ func ExampleSplit() {
 
 func ExampleSplitString() {
 	s := "abcdefg-12345"
-	ss := str.SplitString(s, "3-edc")
+	ss := SplitString(s, "3-edc")
 	fmt.Printf("[len=%v: %v-%v-%v-%v]\n", len(ss), ss[0], ss[1], ss[2], ss[3])
 
 	// Output:
@@ -37,13 +35,13 @@ func ExampleSplitString() {
 func ExampleSplitN() {
 	s := "   1   2   3   "
 
-	s1 := str.SplitN(s, unicode.IsSpace, -1)
+	s1 := SplitN(s, unicode.IsSpace, -1)
 	fmt.Printf("[len=%v: -%v-%v-%v-]\n", len(s1), s1[0], s1[1], s1[2])
 
-	s2 := str.SplitN(s, unicode.IsSpace, 0)
+	s2 := SplitN(s, unicode.IsSpace, 0)
 	fmt.Printf("[len=%v: -%v-]\n", len(s2), s2[0])
 
-	s3 := str.SplitN(s, unicode.IsSpace, 1)
+	s3 := SplitN(s, unicode.IsSpace, 1)
 	fmt.Printf("[len=%v: -%v-%v-]\n", len(s3), s3[0], s3[1])
 
 	// Output:
