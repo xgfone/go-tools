@@ -23,18 +23,19 @@ func ToSMap(v interface{}) SMap {
 
 // MustToSMap must parse the argument v to SMap, or panic.
 func MustToSMap(v interface{}) SMap {
-	if _v, ok := toSMap(v); ok {
-		return _v
+	_v, err := toSMap(v)
+	if err != nil {
+		panic(err)
 	}
-	panic(fmt.Errorf("can't parse the value to SMap"))
+	return _v
 }
 
-func toSMap(v interface{}) (SMap, bool) {
+func toSMap(v interface{}) (SMap, error) {
 	switch v.(type) {
 	case map[string]interface{}:
-		return SMap(v.(map[string]interface{})), true
+		return SMap(v.(map[string]interface{})), nil
 	case SMap:
-		return v.(SMap), true
+		return v.(SMap), nil
 	default:
 		return ConvertToSMap(v)
 	}
@@ -45,18 +46,18 @@ func toSMap(v interface{}) (SMap, bool) {
 // Return nil if it's not a map, or it's nil or has no elements.
 //
 // Notice: SMap(nil) is not a valid SMap.
-func ConvertToSMap(v interface{}) (SMap, bool) {
+func ConvertToSMap(v interface{}) (SMap, error) {
 	_v := reflect.ValueOf(v)
 	if !_v.IsValid() || _v.Kind() != reflect.Map {
-		return nil, false
+		return nil, fmt.Errorf("the value is not valid or a map")
 	}
 
 	results := make(SMap, _v.Len())
 	for _, key := range _v.MapKeys() {
 		if key.Kind() != reflect.String {
-			return nil, false
+			return nil, fmt.Errorf("the key is not string")
 		}
 		results[key.String()] = _v.MapIndex(key).Interface()
 	}
-	return results, true
+	return results, nil
 }

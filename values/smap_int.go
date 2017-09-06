@@ -1,9 +1,10 @@
 package values
 
 // Int64 does the best to convert the value whose key is k to int64.
-func (m SMap) Int64(k string) (v int64, ok bool) {
+func (m SMap) Int64(k string) (v int64, err error) {
 	_v, ok := m[k]
 	if !ok {
+		err = ErrNoKey
 		return
 	}
 	return ToInt64(_v)
@@ -21,7 +22,7 @@ func (m SMap) IsInt64(k string) bool {
 }
 
 // Rune does the best to convert the value whose key is k to rune.
-func (m SMap) Rune(k string) (v rune, ok bool) {
+func (m SMap) Rune(k string) (v rune, err error) {
 	return m.Int32(k)
 }
 
@@ -32,9 +33,9 @@ func (m SMap) IsRune(k string) bool {
 }
 
 // Int does the best to convert the value whose key is k to int.
-func (m SMap) Int(k string) (v int, ok bool) {
-	_v, ok := m.Int64(k)
-	return int(_v), ok
+func (m SMap) Int(k string) (v int, err error) {
+	_v, err := m.Int64(k)
+	return int(_v), err
 
 }
 
@@ -50,9 +51,9 @@ func (m SMap) IsInt(k string) bool {
 }
 
 // Int8 does the best to convert the value whose key is k to int8.
-func (m SMap) Int8(k string) (v int8, ok bool) {
-	_v, ok := m.Int64(k)
-	return int8(_v), ok
+func (m SMap) Int8(k string) (v int8, err error) {
+	_v, err := m.Int64(k)
+	return int8(_v), err
 }
 
 // IsInt8 returns true when the type of the value whose key is k is int8;
@@ -67,9 +68,9 @@ func (m SMap) IsInt8(k string) bool {
 }
 
 // Int16 does the best to convert the value whose key is k to int16.
-func (m SMap) Int16(k string) (v int16, ok bool) {
-	_v, ok := m.Int64(k)
-	return int16(_v), ok
+func (m SMap) Int16(k string) (v int16, err error) {
+	_v, err := m.Int64(k)
+	return int16(_v), err
 }
 
 // IsInt16 returns true when the type of the value whose key is k is int16;
@@ -84,9 +85,9 @@ func (m SMap) IsInt16(k string) bool {
 }
 
 // Int32 does the best to convert the value whose key is k to int32.
-func (m SMap) Int32(k string) (v int32, ok bool) {
-	_v, ok := m.Int64(k)
-	return int32(_v), ok
+func (m SMap) Int32(k string) (v int32, err error) {
+	_v, err := m.Int64(k)
+	return int32(_v), err
 }
 
 // IsInt32 returns true when the type of the value whose key is k is int32;

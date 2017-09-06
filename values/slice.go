@@ -23,18 +23,19 @@ func ToSlice(v interface{}) Slice {
 
 // MustToSlice must parse the argument v to Slice, or panic.
 func MustToSlice(v interface{}) Slice {
-	if _v, ok := toSlice(v); ok {
-		return _v
+	_v, err := toSlice(v)
+	if err != nil {
+		panic(err)
 	}
-	panic(fmt.Errorf("can't parse the value to Slice"))
+	return _v
 }
 
-func toSlice(v interface{}) (Slice, bool) {
+func toSlice(v interface{}) (Slice, error) {
 	switch v.(type) {
 	case []interface{}:
-		return Slice(v.([]interface{})), true
+		return Slice(v.([]interface{})), nil
 	case Slice:
-		return v.(Slice), true
+		return v.(Slice), nil
 	default:
 		return ConvertToSlice(v)
 	}
@@ -45,10 +46,10 @@ func toSlice(v interface{}) (Slice, bool) {
 // Return nil if it's not a slice, or it's nil or has no elements.
 //
 // Notice: Slice(nil) is not a valid Slice.
-func ConvertToSlice(v interface{}) (Slice, bool) {
+func ConvertToSlice(v interface{}) (Slice, error) {
 	_v := reflect.ValueOf(v)
 	if !_v.IsValid() || _v.Kind() != reflect.Slice {
-		return nil, false
+		return nil, fmt.Errorf("the value is not valid or a slice")
 	}
 
 	_len := _v.Len()
@@ -56,5 +57,5 @@ func ConvertToSlice(v interface{}) (Slice, bool) {
 	for i := 0; i < _len; i++ {
 		results[i] = _v.Index(i).Interface()
 	}
-	return results, true
+	return results, nil
 }

@@ -63,8 +63,7 @@ func GetInterfaceWithDefault(m map[string]interface{}, key string, _default inte
 }
 
 // ToInt64 does the best to convert a certain value to int64.
-func ToInt64(_v interface{}) (v int64, ok bool) {
-	ok = true
+func ToInt64(_v interface{}) (v int64, err error) {
 	switch _v.(type) {
 	case complex64, complex128:
 		v = int64(real(reflect.ValueOf(_v).Complex()))
@@ -77,13 +76,9 @@ func ToInt64(_v interface{}) (v int64, ok bool) {
 	case float32, float64:
 		v = int64(reflect.ValueOf(_v).Float())
 	case string:
-		if vv, err := strconv.ParseInt(_v.(string), 10, 64); err == nil {
-			v = vv
-		} else {
-			ok = false
-		}
+		return strconv.ParseInt(_v.(string), 10, 64)
 	default:
-		ok = false
+		err = fmt.Errorf("unknown type of %t", _v)
 	}
 	return
 }
@@ -92,15 +87,15 @@ func ToInt64(_v interface{}) (v int64, ok bool) {
 //
 // Notice: it will do the best to parse v.
 func MustToInt64(v interface{}) int64 {
-	if _v, ok := ToInt64(v); ok {
-		return _v
+	_v, err := ToInt64(v)
+	if err != nil {
+		panic(err)
 	}
-	panic(fmt.Errorf("can't parse the value to int64"))
+	return _v
 }
 
 // ToUInt64 does the best to convert a certain value to uint64.
-func ToUInt64(_v interface{}) (v uint64, ok bool) {
-	ok = true
+func ToUInt64(_v interface{}) (v uint64, err error) {
 	switch _v.(type) {
 	case complex64, complex128:
 		v = uint64(real(reflect.ValueOf(_v).Complex()))
@@ -113,13 +108,9 @@ func ToUInt64(_v interface{}) (v uint64, ok bool) {
 	case float32, float64:
 		v = uint64(reflect.ValueOf(_v).Float())
 	case string:
-		if vv, err := strconv.ParseUint(_v.(string), 10, 64); err == nil {
-			v = vv
-		} else {
-			ok = false
-		}
+		return strconv.ParseUint(_v.(string), 10, 64)
 	default:
-		ok = false
+		err = fmt.Errorf("unknown type of %t", _v)
 	}
 	return
 }
@@ -128,24 +119,26 @@ func ToUInt64(_v interface{}) (v uint64, ok bool) {
 //
 // Notice: it will do the best to parse v.
 func MustToUInt64(v interface{}) uint64 {
-	if _v, ok := ToUInt64(v); ok {
-		return _v
+	_v, err := ToUInt64(v)
+	if err != nil {
+		panic(err)
 	}
-	panic(fmt.Errorf("can't parse the value to uint64"))
+	return _v
 }
 
 // ToString does the best to convert a certain value to string.
-func ToString(_v interface{}) (v string, ok bool) {
-	ok = true
+func ToString(_v interface{}) (v string, err error) {
 	switch _v.(type) {
 	case string:
 		v = _v.(string)
 	case []byte:
 		v = string(_v.([]byte))
-	case bool, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64:
-		v = fmt.Sprintf("%v", _v)
+	case bool, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
+		v = fmt.Sprintf("%d", _v)
+	case float32, float64:
+		v = fmt.Sprintf("%f", _v)
 	default:
-		ok = false
+		err = fmt.Errorf("unknown type of %t", _v)
 	}
 	return
 }
@@ -154,15 +147,15 @@ func ToString(_v interface{}) (v string, ok bool) {
 //
 // Notice: it will do the best to parse v.
 func MustToString(v interface{}) string {
-	if _v, ok := ToString(v); ok {
-		return _v
+	_v, err := ToString(v)
+	if err != nil {
+		panic(err)
 	}
-	panic(fmt.Errorf("can't parse the value to string"))
+	return _v
 }
 
 // ToFloat64 does the best to convert a certain value to float64.
-func ToFloat64(_v interface{}) (v float64, ok bool) {
-	ok = true
+func ToFloat64(_v interface{}) (v float64, err error) {
 	switch _v.(type) {
 	case complex64, complex128:
 		v = float64(real(reflect.ValueOf(_v).Complex()))
@@ -175,13 +168,9 @@ func ToFloat64(_v interface{}) (v float64, ok bool) {
 	case float32, float64:
 		v = reflect.ValueOf(_v).Float()
 	case string:
-		if vv, err := strconv.ParseFloat(_v.(string), 64); err == nil {
-			v = vv
-		} else {
-			ok = false
-		}
+		return strconv.ParseFloat(_v.(string), 64)
 	default:
-		ok = false
+		err = fmt.Errorf("unknown type of %t", _v)
 	}
 	return
 }
@@ -190,15 +179,15 @@ func ToFloat64(_v interface{}) (v float64, ok bool) {
 //
 // Notice: it will do the best to parse v.
 func MustToFloat64(v interface{}) float64 {
-	if _v, ok := ToFloat64(v); ok {
-		return _v
+	_v, err := ToFloat64(v)
+	if err != nil {
+		panic(err)
 	}
-	panic(fmt.Errorf("can't parse the value to float64"))
+	return _v
 }
 
 // ToComplex128 does the best to convert a certain value to complex128.
-func ToComplex128(_v interface{}) (v complex128, ok bool) {
-	ok = true
+func ToComplex128(_v interface{}) (v complex128, err error) {
 	switch _v.(type) {
 	case complex64, complex128:
 		v = complex128(reflect.ValueOf(_v).Complex())
@@ -211,7 +200,7 @@ func ToComplex128(_v interface{}) (v complex128, ok bool) {
 	case float32, float64:
 		v = complex(reflect.ValueOf(_v).Float(), 0)
 	default:
-		ok = false
+		err = fmt.Errorf("unknown type of %t", _v)
 	}
 	return
 }
@@ -220,8 +209,9 @@ func ToComplex128(_v interface{}) (v complex128, ok bool) {
 //
 // Notice: it will do the best to parse v.
 func MustToComplex128(v interface{}) complex128 {
-	if _v, ok := ToComplex128(v); ok {
-		return _v
+	_v, err := ToComplex128(v)
+	if err != nil {
+		panic(err)
 	}
-	panic(fmt.Errorf("can't parse the value to complex128"))
+	return _v
 }

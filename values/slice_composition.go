@@ -1,18 +1,18 @@
 package values
 
 // Interface returns the interface of the ith value.
-func (s Slice) Interface(i int) (v interface{}, ok bool) {
+func (s Slice) Interface(i int) (v interface{}, err error) {
 	if len(s) <= i {
-		return nil, false
+		return nil, ErrOutOfLen
 	}
 
-	return s[i], true
+	return s[i], nil
 }
 
 // Slice does the best to convert the value whose index is i to Slice.
-func (s Slice) Slice(i int) (v Slice, ok bool) {
+func (s Slice) Slice(i int) (v Slice, err error) {
 	if len(s) <= i {
-		return nil, false
+		return nil, ErrOutOfLen
 	}
 	return toSlice(s[i])
 }
@@ -27,9 +27,9 @@ func (s Slice) IsSlice(i int) bool {
 }
 
 // SMap does the best to convert the value whose index is i to SMap.
-func (s Slice) SMap(i int) (v SMap, ok bool) {
+func (s Slice) SMap(i int) (v SMap, err error) {
 	if len(s) <= i {
-		return nil, false
+		return nil, ErrOutOfLen
 	}
 	return toSMap(s[i])
 }

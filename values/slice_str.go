@@ -1,9 +1,9 @@
 package values
 
 // String does the best to convert the value whose index is i to string.
-func (s Slice) String(i int) (v string, ok bool) {
+func (s Slice) String(i int) (v string, err error) {
 	if len(s) <= i {
-		return
+		return "", ErrOutOfLen
 	}
 	return ToString(s[i])
 }
@@ -19,9 +19,9 @@ func (s Slice) IsString(i int) bool {
 }
 
 // Bytes does the best to convert the value whose index is i to []byte.
-func (s Slice) Bytes(i int) (v []byte, ok bool) {
-	_v, ok := s.String(i)
-	return []byte(_v), ok
+func (s Slice) Bytes(i int) (v []byte, err error) {
+	_v, err := s.String(i)
+	return []byte(_v), err
 }
 
 // IsBytes returns true when the type of the ith value is []byte; or false.

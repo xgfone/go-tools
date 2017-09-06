@@ -1,19 +1,19 @@
 package values
 
 // Interface returns the interface of the value based on the key k.
-func (m SMap) Interface(k string) (v interface{}, ok bool) {
+func (m SMap) Interface(k string) (v interface{}, err error) {
 	if v1, ok := m[k]; ok {
-		return v1, true
+		return v1, nil
 	}
-	return nil, false
+	return nil, ErrNoKey
 }
 
 // Slice does the best to convert the value whose key is k to Slice.
-func (m SMap) Slice(k string) (v Slice, ok bool) {
+func (m SMap) Slice(k string) (v Slice, err error) {
 	if v1, ok := m[k]; ok {
 		return toSlice(v1)
 	}
-	return nil, false
+	return nil, ErrNoKey
 }
 
 // IsSlice returns true when the type of the value whose key is k is Slice or
@@ -27,11 +27,11 @@ func (m SMap) IsSlice(k string) bool {
 }
 
 // SMap does the best to convert the value whose key is k to SMap.
-func (m SMap) SMap(k string) (v SMap, ok bool) {
+func (m SMap) SMap(k string) (v SMap, err error) {
 	if v1, ok := m[k]; ok {
 		return toSMap(v1)
 	}
-	return nil, false
+	return nil, ErrNoKey
 }
 
 // IsSMap returns true when the type of the value whose key is k is SMap or
@@ -45,17 +45,17 @@ func (m SMap) IsSMap(k string) bool {
 }
 
 // MapString does the best to convert the value whose key is k to map[string]string.
-func (m SMap) MapString(k string) (v map[string]string, ok bool) {
+func (m SMap) MapString(k string) (v map[string]string, err error) {
 	if _v, _ok := m[k]; _ok {
 		switch _v.(type) {
 		case map[string]string:
-			return _v.(map[string]string), true
+			return _v.(map[string]string), nil
 		case map[string]interface{}:
 			sm := ToSMap(_v)
 			v = make(map[string]string, len(sm))
 			for k := range sm {
-				if v[k], ok = sm.String(k); !ok {
-					return nil, false
+				if v[k], err = sm.String(k); err != nil {
+					return nil, err
 				}
 			}
 		}

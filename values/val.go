@@ -4,7 +4,18 @@
 //
 package values
 
-import "text/template"
+import (
+	"fmt"
+	"html/template"
+)
+
+var (
+	// ErrOutOfLen is returns when the index exceeds the length of the slice.
+	ErrOutOfLen = fmt.Errorf("the index exceeds the length of the slice")
+
+	// ErrNoKey is returns when the key does not exist.
+	ErrNoKey = fmt.Errorf("the key does not exist")
+)
 
 func isSMap(v interface{}) bool {
 	if _, ok := v.(map[string]interface{}); ok {
