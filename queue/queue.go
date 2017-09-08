@@ -5,6 +5,10 @@
 // The package has implemented a memory queue based on Go channel.
 package queue
 
+import (
+	"fmt"
+)
+
 // Queue is an queue interface.
 type Queue interface {
 	// Get returns an element from the queue.
@@ -34,13 +38,14 @@ type memoryQueue struct {
 
 // NewMemoryQueue returns a new Queue based on the memory.
 //
-// the size is the size of the queue. if it's 0, the queue has no size limit.
-// If size is a negative number, it's equal to 0.
+// the size is the size of the queue. if it's 0, the queue is a synchronized
+// queue, which you can equate it with channel. If the size is a negative,
+// it will panic.
 //
 // Notice: the memory queue doesn't return an error forever.
 func NewMemoryQueue(size int) Queue {
 	if size < 0 {
-		size = 0
+		panic(fmt.Errorf("the queue size must not be negative"))
 	}
 	return memoryQueue{cap: size, caches: make(chan interface{}, size)}
 }
