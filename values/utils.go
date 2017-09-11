@@ -215,3 +215,27 @@ func MustToComplex128(v interface{}) complex128 {
 	}
 	return _v
 }
+
+// ToInt does the best to convert a certain value to int.
+func ToInt(v interface{}) (int, error) {
+	_v, err := ToInt64(v)
+	return int(_v), err
+}
+
+// ToUInt does the best to convert a certain value to uint.
+func ToUInt(v interface{}) (uint, error) {
+	_v, err := ToUInt64(v)
+	return uint(_v), err
+}
+
+// ToInt32 does the best to convert a certain value to int32.
+func ToInt32(v interface{}) (int32, error) {
+	_v, err := ToInt64(v)
+	return int32(_v), err
+}
+
+// ToUInt32 does the best to convert a certain value to uint32.
+func ToUInt32(v interface{}) (uint32, error) {
+	_v, err := ToUInt64(v)
+	return uint32(_v), err
+}
