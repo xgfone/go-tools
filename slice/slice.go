@@ -6,9 +6,8 @@ package slice
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
-
-	"github.com/xgfone/go-tools/compare"
 )
 
 var (
@@ -61,39 +60,32 @@ func SetValue(out interface{}, slice interface{}, index int) error {
 // In returns true if value is in slice. Or false. Also reutrn false if value or
 // slice is nil, or the length of slice is 0.
 //
-// The type of value must be consistent with the type of the element of slice.
-// Or panic. If the type is the customizable struct, it MUST implement the interface
-// Comparer in the package "github.com/xgfone/go-tools/compare".
+// Notice: the type of slice must be either []string or []interface{}, or panic.
+// When it's []string, the type of value must be string, or panic.
+//
+// For []string, it doesn't use the reflect, but use for []interface{}, that's,
+// reflect.DeepEqual(x, y).
 func In(value interface{}, slice interface{}) bool {
 	if value == nil || slice == nil {
 		return false
 	}
 
-	stype := reflect.ValueOf(slice)
-	if stype.Kind() == reflect.Ptr {
-		stype = stype.Elem()
-	}
-
-	if stype.Kind() != reflect.Array && stype.Kind() != reflect.Slice {
-		panic("The second argument is not a slice or an array")
-	}
-
-	slen := stype.Len()
-	if slen == 0 {
-		return false
-	}
-
-	vv := reflect.ValueOf(value)
-	if stype.Index(0).Kind() != reflect.ValueOf(value).Kind() {
-		panic("The type of value must be consistent with the type of the element of slice")
-	}
-
-	for i := 0; i < slen; i++ {
-		v1 := vv.Interface()
-		v2 := stype.Index(i).Interface()
-		if compare.EQ(v1, v2) {
-			return true
+	switch slice.(type) {
+	case []string:
+		v := value.(string)
+		for _, _v := range slice.([]string) {
+			if v == _v {
+				return true
+			}
 		}
+	case []interface{}:
+		for _, _v := range slice.([]interface{}) {
+			if reflect.DeepEqual(value, _v) {
+				return true
+			}
+		}
+	default:
+		panic(fmt.Errorf("only support the slice of []string and []interface"))
 	}
 
 	return false
