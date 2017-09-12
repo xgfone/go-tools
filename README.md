@@ -32,7 +32,8 @@ pagination   | It is usually used to compute the web pagination.
 pools        | Some simple convenient pools, such as `BufPool`, `GoPool`, `ResourcePool`, `AddrTCPConnPool`, etc. Notice: **Rename to `pools` from `v0.40`**.
 queue        | Supply the `Queue` interface, and some implementations such as `NewMemoryQueue` based on memory.
 slice        | Get a value from a slice and check whether a value exists in a slice.
-string2      | The supplement of the standard library of strings.
+sort2        | The supplement of the standard library of `sort`, such as `SortMap`.
+string2      | The supplement of the standard library of `strings`.
 sync2        | The supplement of the standard library `sync`, such as `ResourceLock` for locking a certain resource by its id.
 tags         | Manage the tags in a struct.
 validation   | Some validations, such as email, url, or the type of a value, etc.
