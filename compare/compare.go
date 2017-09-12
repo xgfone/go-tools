@@ -24,83 +24,31 @@ func Compare(v1, v2 interface{}) int {
 	var first, second float64
 	switch _v1 := v1.(type) {
 	case int:
-		if _v2, ok := v2.(int); !ok {
-			panic("Type is not the same")
-		} else {
-			first, second = float64(_v1), float64(_v2)
-		}
+		first, second = float64(_v1), float64(v2.(int))
 	case uint:
-		if _v2, ok := v2.(uint); !ok {
-			panic("Type is not the same")
-		} else {
-			first, second = float64(_v1), float64(_v2)
-		}
+		first, second = float64(_v1), float64(v2.(int))
 	case int32:
-		if _v2, ok := v2.(int32); !ok {
-			panic("Type is not the same")
-		} else {
-			first, second = float64(_v1), float64(_v2)
-		}
+		first, second = float64(_v1), float64(v2.(int))
 	case uint32:
-		if _v2, ok := v2.(uint32); !ok {
-			panic("Type is not the same")
-		} else {
-			first, second = float64(_v1), float64(_v2)
-		}
+		first, second = float64(_v1), float64(v2.(int))
 	case int16:
-		if _v2, ok := v2.(int16); !ok {
-			panic("Type is not the same")
-		} else {
-			first, second = float64(_v1), float64(_v2)
-		}
+		first, second = float64(_v1), float64(v2.(int))
 	case uint16:
-		if _v2, ok := v2.(uint16); !ok {
-			panic("Type is not the same")
-		} else {
-			first, second = float64(_v1), float64(_v2)
-		}
+		first, second = float64(_v1), float64(v2.(int))
 	case int64:
-		if _v2, ok := v2.(int64); !ok {
-			panic("Type is not the same")
-		} else {
-			first, second = float64(_v1), float64(_v2)
-		}
+		first, second = float64(_v1), float64(v2.(int))
 	case uint64:
-		if _v2, ok := v2.(uint64); !ok {
-			panic("Type is not the same")
-		} else {
-			first, second = float64(_v1), float64(_v2)
-		}
+		first, second = float64(_v1), float64(v2.(int))
 	case int8:
-		if _v2, ok := v2.(int8); !ok {
-			panic("Type is not the same")
-		} else {
-			first, second = float64(_v1), float64(_v2)
-		}
+		first, second = float64(_v1), float64(v2.(int))
 	case uint8:
-		if _v2, ok := v2.(uint8); !ok {
-			panic("Type is not the same")
-		} else {
-			first, second = float64(_v1), float64(_v2)
-		}
+		first, second = float64(_v1), float64(v2.(int))
 	case float32:
-		if _v2, ok := v2.(float32); !ok {
-			panic("Type is not the same")
-		} else {
-			first, second = float64(_v1), float64(_v2)
-		}
+		first, second = float64(_v1), float64(v2.(int))
 	case float64:
-		if _v2, ok := v2.(float64); !ok {
-			panic("Type is not the same")
-		} else {
-			first, second = _v1, _v2
-		}
+		first, second = _v1, v2.(float64)
 	case string:
-		if _v2, ok := v2.(string); !ok {
-			panic("Type is not the same")
-		} else {
-			return strings.Compare(_v1, _v2)
-		}
+		return strings.Compare(_v1, v2.(string))
 	default:
 		return compareSlice(v1, v2)
 	}

@@ -7,88 +7,46 @@ import (
 	"github.com/xgfone/go-tools/extremum"
 )
 
+func compareLen(len1, len2 int) int {
+	if len1 == len2 {
+		return 0
+	} else if len1 < len2 {
+		return -1
+	} else {
+		return 1
+	}
+}
+
 func compareSlice(v1, v2 interface{}) int {
 	switch _v1 := v1.(type) {
 	case []int:
-		if _v2, ok := v2.([]int); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareIntSlice(_v1, _v2)
-		}
+		return compareIntSlice(_v1, v2.([]int))
 	case []uint:
-		if _v2, ok := v2.([]uint); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareUintSlice(_v1, _v2)
-		}
+		return compareUintSlice(_v1, v2.([]uint))
 	case []int8:
-		if _v2, ok := v2.([]int8); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareInt8Slice(_v1, _v2)
-		}
+		return compareInt8Slice(_v1, v2.([]int8))
 	case []uint8:
-		if _v2, ok := v2.([]uint8); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareUint8Slice(_v1, _v2)
-		}
+		return compareUint8Slice(_v1, v2.([]uint8))
 	case []int16:
-		if _v2, ok := v2.([]int16); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareInt16Slice(_v1, _v2)
-		}
+		return compareInt16Slice(_v1, v2.([]int16))
 	case []uint16:
-		if _v2, ok := v2.([]uint16); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareUint16Slice(_v1, _v2)
-		}
+		return compareUint16Slice(_v1, v2.([]uint16))
 	case []int32:
-		if _v2, ok := v2.([]int32); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareInt32Slice(_v1, _v2)
-		}
+		return compareInt32Slice(_v1, v2.([]int32))
 	case []uint32:
-		if _v2, ok := v2.([]uint32); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareUint32Slice(_v1, _v2)
-		}
+		return compareUint32Slice(_v1, v2.([]uint32))
 	case []int64:
-		if _v2, ok := v2.([]int64); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareInt64Slice(_v1, _v2)
-		}
+		return compareInt64Slice(_v1, v2.([]int64))
 	case []uint64:
-		if _v2, ok := v2.([]uint64); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareUint64Slice(_v1, _v2)
-		}
+		return compareUint64Slice(_v1, v2.([]uint64))
 	case []string:
-		if _v2, ok := v2.([]string); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareStringSlice(_v1, _v2)
-		}
+		return compareStringSlice(_v1, v2.([]string))
 	case []float32:
-		if _v2, ok := v2.([]float32); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareFloat32Slice(_v1, _v2)
-		}
+		return compareFloat32Slice(_v1, v2.([]float32))
 	case []float64:
-		if _v2, ok := v2.([]float64); !ok {
-			panic("Type is not the same")
-		} else {
-			return compareFloat64Slice(_v1, _v2)
-		}
+		return compareFloat64Slice(_v1, v2.([]float64))
 	default:
-		panic(fmt.Sprintf("Type is not supported: %v\n", _v1))
+		panic(fmt.Sprintf("Type is not supported: %t\n", _v1))
 	}
 }
 
@@ -103,13 +61,7 @@ func compareIntSlice(v1, v2 []int) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
 
 func compareUintSlice(v1, v2 []uint) int {
@@ -123,13 +75,7 @@ func compareUintSlice(v1, v2 []uint) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
 
 func compareInt8Slice(v1, v2 []int8) int {
@@ -143,13 +89,7 @@ func compareInt8Slice(v1, v2 []int8) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
 
 func compareUint8Slice(v1, v2 []uint8) int {
@@ -163,13 +103,7 @@ func compareUint8Slice(v1, v2 []uint8) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
 
 func compareInt16Slice(v1, v2 []int16) int {
@@ -183,13 +117,7 @@ func compareInt16Slice(v1, v2 []int16) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
 
 func compareUint16Slice(v1, v2 []uint16) int {
@@ -203,13 +131,7 @@ func compareUint16Slice(v1, v2 []uint16) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
 
 func compareInt32Slice(v1, v2 []int32) int {
@@ -223,13 +145,7 @@ func compareInt32Slice(v1, v2 []int32) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
 
 func compareUint32Slice(v1, v2 []uint32) int {
@@ -243,13 +159,7 @@ func compareUint32Slice(v1, v2 []uint32) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
 
 func compareInt64Slice(v1, v2 []int64) int {
@@ -263,13 +173,7 @@ func compareInt64Slice(v1, v2 []int64) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
 
 func compareUint64Slice(v1, v2 []uint64) int {
@@ -283,13 +187,7 @@ func compareUint64Slice(v1, v2 []uint64) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
 
 func compareFloat32Slice(v1, v2 []float32) int {
@@ -303,13 +201,7 @@ func compareFloat32Slice(v1, v2 []float32) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
 
 func compareFloat64Slice(v1, v2 []float64) int {
@@ -323,13 +215,7 @@ func compareFloat64Slice(v1, v2 []float64) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
 
 func compareStringSlice(v1, v2 []string) int {
@@ -342,11 +228,5 @@ func compareStringSlice(v1, v2 []string) int {
 		}
 	}
 
-	if len1 == len2 {
-		return 0
-	} else if len1 < len2 {
-		return -1
-	} else {
-		return 1
-	}
+	return compareLen(len1, len2)
 }
