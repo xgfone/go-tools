@@ -26,25 +26,25 @@ func Compare(v1, v2 interface{}) int {
 	case int:
 		first, second = float64(_v1), float64(v2.(int))
 	case uint:
-		first, second = float64(_v1), float64(v2.(int))
+		first, second = float64(_v1), float64(v2.(uint))
 	case int32:
-		first, second = float64(_v1), float64(v2.(int))
+		first, second = float64(_v1), float64(v2.(int32))
 	case uint32:
-		first, second = float64(_v1), float64(v2.(int))
+		first, second = float64(_v1), float64(v2.(uint32))
 	case int16:
-		first, second = float64(_v1), float64(v2.(int))
+		first, second = float64(_v1), float64(v2.(int16))
 	case uint16:
-		first, second = float64(_v1), float64(v2.(int))
+		first, second = float64(_v1), float64(v2.(uint16))
 	case int64:
-		first, second = float64(_v1), float64(v2.(int))
+		first, second = float64(_v1), float64(v2.(int64))
 	case uint64:
-		first, second = float64(_v1), float64(v2.(int))
+		first, second = float64(_v1), float64(v2.(uint64))
 	case int8:
-		first, second = float64(_v1), float64(v2.(int))
+		first, second = float64(_v1), float64(v2.(int8))
 	case uint8:
-		first, second = float64(_v1), float64(v2.(int))
+		first, second = float64(_v1), float64(v2.(uint8))
 	case float32:
-		first, second = float64(_v1), float64(v2.(int))
+		first, second = float64(_v1), float64(v2.(float32))
 	case float64:
 		first, second = _v1, v2.(float64)
 	case string:
