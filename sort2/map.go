@@ -27,9 +27,12 @@ func (p KeyValuePair) Swap(i, j int) {
 
 // SortMap returns the sorted key-value pairs.
 //
+// if giving the second argument and is true, it will sort the map in reverse
+// order.
+//
 // The result is the sorted key-value pair slice. the first of the pair is key,
 // and the second of that is value.
-func SortMap(sm map[interface{}]interface{}) [][2]interface{} {
+func SortMap(sm map[interface{}]interface{}, reverse ...bool) [][2]interface{} {
 	if len(sm) == 0 {
 		return nil
 	}
@@ -39,6 +42,11 @@ func SortMap(sm map[interface{}]interface{}) [][2]interface{} {
 		results = append(results, [2]interface{}{key, value})
 	}
 
-	sort.Sort(KeyValuePair(results))
+	if len(reverse) > 0 && reverse[0] {
+		sort.Sort(sort.Reverse(KeyValuePair(results)))
+	} else {
+		sort.Sort(KeyValuePair(results))
+	}
+
 	return results
 }
