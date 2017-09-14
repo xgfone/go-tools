@@ -62,6 +62,27 @@ func GetInterfaceWithDefault(m map[string]interface{}, key string, _default inte
 	return _default
 }
 
+// ToBool does the best to convert a certain value to bool.
+//
+// When the value is string, for "t", "T", "1", "true", "True", "TRUE",
+// it's true, for "f", "F", "0", "false", "False", "FALSE", "", it's false.
+//
+// For other types, if the value is ZERO of the type, it's false. Or it's true.
+func ToBool(v interface{}) (bool, error) {
+	switch _v := v.(type) {
+	case string:
+		switch _v {
+		case "t", "T", "1", "true", "True", "TRUE":
+			return true, nil
+		case "f", "F", "0", "false", "False", "FALSE", "":
+			return false, nil
+		default:
+			return false, fmt.Errorf("unrecognized bool string: %s", _v)
+		}
+	}
+	return !IsZero(v), nil
+}
+
 // ToInt64 does the best to convert a certain value to int64.
 func ToInt64(_v interface{}) (v int64, err error) {
 	switch _v.(type) {
