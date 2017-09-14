@@ -94,8 +94,14 @@ func MustToInt64(v interface{}) int64 {
 	return _v
 }
 
-// ToUInt64 does the best to convert a certain value to uint64.
+// ToUInt64 is the alias of ToUint64. This function is deprecated, and please
+// use ToUint64.
 func ToUInt64(_v interface{}) (v uint64, err error) {
+	return ToUint64(_v)
+}
+
+// ToUint64 does the best to convert a certain value to uint64.
+func ToUint64(_v interface{}) (v uint64, err error) {
 	switch _v.(type) {
 	case complex64, complex128:
 		v = uint64(real(reflect.ValueOf(_v).Complex()))
@@ -115,11 +121,17 @@ func ToUInt64(_v interface{}) (v uint64, err error) {
 	return
 }
 
-// MustToUInt64 must parse the value v to uint64, or panic.
+// MustToUInt64 is the alias of MustToUint64. This function is deprecated,
+// and please use MustToUint64.
+func MustToUInt64(v interface{}) uint64 {
+	return MustToUint64(v)
+}
+
+// MustToUint64 must parse the value v to uint64, or panic.
 //
 // Notice: it will do the best to parse v.
-func MustToUInt64(v interface{}) uint64 {
-	_v, err := ToUInt64(v)
+func MustToUint64(v interface{}) uint64 {
+	_v, err := ToUint64(v)
 	if err != nil {
 		panic(err)
 	}
@@ -222,9 +234,15 @@ func ToInt(v interface{}) (int, error) {
 	return int(_v), err
 }
 
-// ToUInt does the best to convert a certain value to uint.
+// ToUInt is the alias of ToUint. This function is deprecated, and please use
+// ToUint.
 func ToUInt(v interface{}) (uint, error) {
-	_v, err := ToUInt64(v)
+	return ToUint(v)
+}
+
+// ToUint does the best to convert a certain value to uint.
+func ToUint(v interface{}) (uint, error) {
+	_v, err := ToUint64(v)
 	return uint(_v), err
 }
 
@@ -234,8 +252,14 @@ func ToInt32(v interface{}) (int32, error) {
 	return int32(_v), err
 }
 
-// ToUInt32 does the best to convert a certain value to uint32.
+// ToUInt32 is the alias of ToUint32. This function is deprecated, and please
+// use ToUint32.
 func ToUInt32(v interface{}) (uint32, error) {
-	_v, err := ToUInt64(v)
+	return ToUint32(v)
+}
+
+// ToUint32 does the best to convert a certain value to uint32.
+func ToUint32(v interface{}) (uint32, error) {
+	_v, err := ToUint64(v)
 	return uint32(_v), err
 }
