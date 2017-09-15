@@ -20,7 +20,7 @@ func (f FuncTask) Handle(job interface{}) {
 // Dispatch starts a worker pool and dispatches the task to it.
 //
 // Notice: you maybe cancel the worker pool by the context.
-func Dispatch(cxt context.Context, workerNum int, jobQueue chan interface{},
+func Dispatch(cxt context.Context, workerNum int, jobQueue <-chan interface{},
 	handler Task) {
 	// Call the handler to handle the job.
 	handleJob := func(job interface{}) {
