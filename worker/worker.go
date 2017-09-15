@@ -9,7 +9,17 @@ type Task interface {
 	Handle(interface{})
 }
 
+// TaskFunc converts a function to Task.
+type TaskFunc func(interface{})
+
+// Handle implements the interface Task.
+func (f TaskFunc) Handle(job interface{}) {
+	f(job)
+}
+
 // FuncTask converts a function to Task.
+//
+// DEPRECATED!!! Please use TaskFunc.
 type FuncTask func(interface{})
 
 // Handle implements the interface Task.

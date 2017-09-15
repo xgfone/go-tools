@@ -9,7 +9,7 @@ import (
 func ExampleDispatch() {
 	cxt, cancel := context.WithCancel(context.TODO())
 	jobQueue := make(chan interface{}, 10)
-	Dispatch(cxt, 2, jobQueue, FuncTask(func(job interface{}) {
+	Dispatch(cxt, 2, jobQueue, TaskFunc(func(job interface{}) {
 		fmt.Println(job)
 	}))
 
@@ -26,7 +26,7 @@ func ExampleDispatch() {
 
 func ExampleDispatcher() {
 	JobQueue := make(chan interface{}, 2)
-	dispatcher := NewDispatcher(5, FuncTask(func(job interface{}) {
+	dispatcher := NewDispatcher(5, TaskFunc(func(job interface{}) {
 		//fmt.Printf("Receive job: %v\n", job.Payload)
 		fmt.Printf("Receive job\n")
 	}))
