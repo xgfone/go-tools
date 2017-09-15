@@ -4,6 +4,10 @@ package worker
 //
 // Notice: The dispatcher is not thread-safe, so you should call its method only
 // in a same goroutine.
+//
+// Refer to http://marcio.io/2015/07/handling-1-million-requests-per-minute-with-golang.
+//
+// DEPRECATED: suggest to use the function Dispatch.
 type Dispatcher struct {
 	// The number of the worker.
 	WorkerNum int

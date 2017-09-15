@@ -1,7 +1,7 @@
 // Package worker is a worker pool with the dispatcher based on channel.
-//
-// Refer to http://marcio.io/2015/07/handling-1-million-requests-per-minute-with-golang.
 package worker
+
+import "context"
 
 // Task is an interface to handle the job.
 type Task interface {
@@ -15,6 +15,35 @@ type FuncTask func(interface{})
 // Handle implements the interface Task.
 func (f FuncTask) Handle(job interface{}) {
 	f(job)
+}
+
+// Dispatch starts a worker pool and dispatches the task to it.
+//
+// Notice: you maybe cancel the worker pool by the context.
+func Dispatch(cxt context.Context, workerNum int, jobQueue chan interface{},
+	handler Task) {
+	// Call the handler to handle the job.
+	handleJob := func(job interface{}) {
+		defer recover()
+		handler.Handle(job)
+	}
+
+	// The job worker.
+	worker := func() {
+		for {
+			select {
+			case job := <-jobQueue:
+				handleJob(job)
+			case <-cxt.Done():
+				return
+			}
+		}
+	}
+
+	// Create the workers.
+	for i := 0; i < workerNum; i++ {
+		go worker()
+	}
 }
 
 // worker represents the worker that executes the job
