@@ -115,7 +115,7 @@ func MustToInt64(v interface{}) int64 {
 	return _v
 }
 
-// ToUInt64 is the alias of ToUint64. This function is deprecated, and please
+// ToUInt64 is the alias of ToUint64. This function is DEPRECATED, and please
 // use ToUint64.
 func ToUInt64(_v interface{}) (v uint64, err error) {
 	return ToUint64(_v)
@@ -142,7 +142,7 @@ func ToUint64(_v interface{}) (v uint64, err error) {
 	return
 }
 
-// MustToUInt64 is the alias of MustToUint64. This function is deprecated,
+// MustToUInt64 is the alias of MustToUint64. This function is DEPRECATED,
 // and please use MustToUint64.
 func MustToUInt64(v interface{}) uint64 {
 	return MustToUint64(v)
@@ -255,7 +255,7 @@ func ToInt(v interface{}) (int, error) {
 	return int(_v), err
 }
 
-// ToUInt is the alias of ToUint. This function is deprecated, and please use
+// ToUInt is the alias of ToUint. This function is DEPRECATED, and please use
 // ToUint.
 func ToUInt(v interface{}) (uint, error) {
 	return ToUint(v)
@@ -273,7 +273,7 @@ func ToInt32(v interface{}) (int32, error) {
 	return int32(_v), err
 }
 
-// ToUInt32 is the alias of ToUint32. This function is deprecated, and please
+// ToUInt32 is the alias of ToUint32. This function is DEPRECATED, and please
 // use ToUint32.
 func ToUInt32(v interface{}) (uint32, error) {
 	return ToUint32(v)
