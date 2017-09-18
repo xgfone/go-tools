@@ -44,6 +44,10 @@ type memoryQueue struct {
 // queue, which you can equate it with channel. If the size is a negative,
 // it will panic.
 //
+// When the size of the queue is very large, suggest to use NewListQueue,
+// which is the queue based on the list, not pre-allocate the memory for the
+// elements.
+//
 // Notice: the memory queue doesn't return an error forever.
 func NewMemoryQueue(size int) Queue {
 	if size < 0 {
@@ -94,6 +98,8 @@ type listQueue struct {
 // NewListQueue returns a Queue based on list.
 //
 // If the size is equal to or less than 0, the queue has no limit.
+//
+// The queue does not pre-allocate the memory for the elements.
 //
 // Notice: the memory queue doesn't return an error forever.
 func NewListQueue(size int) Queue {
