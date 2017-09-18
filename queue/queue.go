@@ -6,7 +6,9 @@
 package queue
 
 import (
+	"container/list"
 	"fmt"
+	"sync"
 )
 
 // Queue is an queue interface.
@@ -74,4 +76,136 @@ func (m memoryQueue) Full() (bool, error) {
 // Empty implements the method Empty of the interface Queue.
 func (m memoryQueue) Empty() (bool, error) {
 	return len(m.caches) == 0, nil
+}
+
+type listQueue struct {
+	sync.Mutex
+
+	getWaiter int
+	putWaiter int
+
+	getChan chan struct{}
+	putChan chan struct{}
+
+	lists *list.List
+	cap   int
+}
+
+// NewListQueue returns a Queue based on list.
+//
+// If the size is equal to or less than 0, the queue has no limit.
+//
+// Notice: the memory queue doesn't return an error forever.
+func NewListQueue(size int) Queue {
+	return &listQueue{
+		cap:   size,
+		lists: list.New(),
+
+		getChan: make(chan struct{}, 1),
+		putChan: make(chan struct{}, 1),
+	}
+}
+
+// Get implements the method Get of the interface Queue.
+func (l *listQueue) Get() (v interface{}, err error) {
+	first := true
+	for {
+		if v, ok := l.get(first); ok {
+			return v, nil
+		}
+		first = false
+	}
+}
+
+func (l *listQueue) get(first bool) (v interface{}, ok bool) {
+	l.Lock()
+	if l.lists.Len() == 0 { // Empty
+		if first {
+			l.getWaiter++
+		}
+		l.Unlock()
+		<-l.getChan
+		return
+	}
+
+	v = l.lists.Remove(l.lists.Front())
+
+	if !first {
+		l.getWaiter--
+	}
+
+	waiter := l.putWaiter > 0
+	l.Unlock()
+
+	if waiter { // There are some goroutines to wait to get the value and wake it up.
+		l.putChan <- struct{}{}
+	}
+	ok = true
+	return
+}
+
+// Put implements the method Put of the interface Queue.
+func (l *listQueue) Put(v interface{}) (err error) {
+	first := true
+	for !l.put(v, first) {
+		first = false
+	}
+	return
+}
+
+func (l *listQueue) put(v interface{}, first bool) (ok bool) {
+	l.Lock()
+	if l.full() {
+		if first {
+			l.putWaiter++ // Represent that there is a goroutine to wait to put a value.
+		}
+		l.Unlock()
+		<-l.putChan
+		return
+	}
+
+	l.lists.PushBack(v)
+
+	if !first {
+		l.putWaiter-- // Represent that the goroutine waiting to put a value has done.
+	}
+
+	waiter := l.getWaiter > 0
+	l.Unlock()
+
+	if waiter { // There are some goroutines to wait to get the value and wake it up.
+		l.getChan <- struct{}{}
+	}
+	return true
+}
+
+// Size implements the method Size of the interface Queue.
+func (l *listQueue) Size() (v int, err error) {
+	l.Lock()
+	v = l.lists.Len()
+	l.Unlock()
+	return
+}
+
+// Full implements the method Full of the interface Queue.
+func (l *listQueue) Full() (v bool, err error) {
+	l.Lock()
+	v = l.full()
+	l.Unlock()
+	return
+}
+
+func (l *listQueue) full() bool {
+	if l.cap < 1 {
+		return false
+	}
+	return l.lists.Len() == l.cap
+}
+
+// Empty implements the method Empty of the interface Queue.
+func (l *listQueue) Empty() (v bool, err error) {
+	l.Lock()
+	v = l.lists.Len() == 0
+	l.Unlock()
+	return
 }
