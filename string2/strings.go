@@ -57,11 +57,16 @@ func SplitN(s string, filter func(c rune) bool, number int) []string {
 		return []string{s}
 	}
 
+	j := 0
 	for i, c := range s {
-		if !filter(c) {
-			s = s[i:]
+		if filter(c) {
+			j = i
+		} else {
 			break
 		}
+	}
+	if j != 0 {
+		s = s[j+1:]
 	}
 
 	if len(s) == 0 {

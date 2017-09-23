@@ -44,8 +44,11 @@ func ExampleSplitN() {
 	s3 := SplitN(s, unicode.IsSpace, 1)
 	fmt.Printf("[len=%v: -%v-%v-]\n", len(s3), s3[0], s3[1])
 
+	fmt.Println(len(SplitSpace("   ")))
+
 	// Output:
 	// [len=3: -1-2-3-]
 	// [len=1: -   1   2   3   -]
 	// [len=2: -1-2   3   -]
+	// 0
 }
