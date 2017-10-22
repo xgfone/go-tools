@@ -3,6 +3,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/xgfone/go-tools/file"
+	"github.com/xgfone/go-tools/function"
 )
 
 const (
@@ -112,10 +114,7 @@ func (t *TimedRotatingFile) SetInterval(interval int) *TimedRotatingFile {
 }
 
 func (t *TimedRotatingFile) shouldRollover() bool {
-	if time.Now().Unix() >= t.rotatorAt {
-		return true
-	}
-	return false
+	return time.Now().Unix() >= t.rotatorAt
 }
 
 // Close closes the handler.
@@ -205,4 +204,119 @@ func (t *TimedRotatingFile) reComputeRollover() {
 
 	r := t.interval - int64((currentHour*60+currentMinute)*60+currentSecond)
 	t.rotatorAt = currentTime + r
+}
+
+// RotatingFile is a rotating logging handler based on the size.
+type RotatingFile struct {
+	sync.Mutex
+	w *WriteCloser
+
+	filename    string
+	maxSize     int
+	backupCount int
+	nbytes      int
+}
+
+// NewRotatingFile returns a new RotatingFile.
+func NewRotatingFile(filename string, size, count int) *RotatingFile {
+	r := &RotatingFile{
+		filename:    filename,
+		maxSize:     size,
+		backupCount: count,
+	}
+
+	if err := r.open(); err != nil {
+		panic(err)
+	}
+	return r
+}
+
+// Write implements the interface io.Writer.
+func (r *RotatingFile) Write(data []byte) (n int, err error) {
+	r.Lock()
+	defer r.Unlock()
+
+	if r.w == nil || r.w.Closed() {
+		err = ErrFileNotOpen
+		return
+	}
+
+	if r.nbytes+len(data) > r.maxSize {
+		if err = r.doRollover(); err != nil {
+			return
+		}
+	}
+
+	if n, err = r.w.Write(data); err != nil {
+		return
+	}
+	r.nbytes += n
+	return
+}
+
+// WriteString writes the string.
+func (r *RotatingFile) WriteString(data string) (n int, err error) {
+	return r.w.Write([]byte(data))
+}
+
+// Close implements the interface io.Closer.
+func (r *RotatingFile) Close() (err error) {
+	r.Lock()
+	err = r.close()
+	r.Unlock()
+	return
+}
+
+func (r *RotatingFile) close() (err error) {
+	if r.w != nil {
+		err = r.w.Close()
+		r.w = nil
+	}
+	return
+}
+
+func (r *RotatingFile) doRollover() (err error) {
+	r.close()
+	if r.backupCount > 0 {
+		for _, i := range function.Range(r.backupCount-1, 0, -1) {
+			sfn := fmt.Sprintf("%s.%d", r.filename, i)
+			dfn := fmt.Sprintf("%s.%d", r.filename, i+1)
+			if file.IsExist(sfn) {
+				if file.IsExist(dfn) {
+					if err = os.Remove(dfn); err != nil {
+						return
+					}
+					if err = os.Rename(sfn, dfn); err != nil {
+						return
+					}
+				}
+			}
+		}
+		dfn := r.filename + ".1"
+		if file.IsExist(dfn) {
+			if err = os.Remove(dfn); err != nil {
+				return
+			}
+		}
+		if file.IsExist(r.filename) {
+			if err = os.Rename(r.filename, dfn); err != nil {
+				return
+			}
+		}
+	}
+	return r.open()
+}
+
+func (r *RotatingFile) open() (err error) {
+	file, err := os.OpenFile(r.filename, FILE_MODE, FILE_PERM)
+	if err != nil {
+		return
+	}
+	info, err := file.Stat()
+	if err != nil {
+		return
+	}
+	r.nbytes = int(info.Size())
+	r.w = NewWriteCloser(file)
+	return
 }
