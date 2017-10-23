@@ -256,7 +256,7 @@ func (r *RotatingFile) Write(data []byte) (n int, err error) {
 
 // WriteString writes the string.
 func (r *RotatingFile) WriteString(data string) (n int, err error) {
-	return r.w.Write([]byte(data))
+	return r.Write([]byte(data))
 }
 
 // Close implements the interface io.Closer.
@@ -276,19 +276,19 @@ func (r *RotatingFile) close() (err error) {
 }
 
 func (r *RotatingFile) doRollover() (err error) {
-	r.close()
 	if r.backupCount > 0 {
+		if err = r.close(); err != nil {
+			return
+		}
 		for _, i := range function.Range(r.backupCount-1, 0, -1) {
 			sfn := fmt.Sprintf("%s.%d", r.filename, i)
 			dfn := fmt.Sprintf("%s.%d", r.filename, i+1)
 			if file.IsExist(sfn) {
 				if file.IsExist(dfn) {
-					if err = os.Remove(dfn); err != nil {
-						return
-					}
-					if err = os.Rename(sfn, dfn); err != nil {
-						return
-					}
+					os.Remove(dfn)
+				}
+				if err = os.Rename(sfn, dfn); err != nil {
+					return
 				}
 			}
 		}
@@ -303,8 +303,9 @@ func (r *RotatingFile) doRollover() (err error) {
 				return
 			}
 		}
+		err = r.open()
 	}
-	return r.open()
+	return
 }
 
 func (r *RotatingFile) open() (err error) {

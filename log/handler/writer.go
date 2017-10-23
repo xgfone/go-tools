@@ -6,11 +6,13 @@ import (
 	"os"
 )
 
+// WriteCloser implements the interface io.WriteCloser with the buffer.
 type WriteCloser struct {
 	w   io.WriteCloser
 	buf *bufio.Writer
 }
 
+// NewWriteCloser returns a new WriteCloser.
 func NewWriteCloser(w io.WriteCloser) *WriteCloser {
 	return &WriteCloser{
 		w:   w,
@@ -30,6 +32,7 @@ func (wc *WriteCloser) Write(data []byte) (int, error) {
 
 // Close implements the interface io.Closer.
 func (wc *WriteCloser) Close() (err error) {
+	wc.buf.Flush()
 	err = wc.w.Close()
 	wc.w = nil
 	wc.buf.Reset(os.Stderr)
