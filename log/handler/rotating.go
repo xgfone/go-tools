@@ -17,14 +17,11 @@ import (
 )
 
 const (
-	// DAY_FMT is the date-rotaed format.
-	DAY_FMT = "2006-01-02"
+	// FileMode is the mode to open the log file.
+	FileMode = os.O_APPEND | os.O_CREATE | os.O_WRONLY
 
-	// FILE_MODE is the mode to open the log file.
-	FILE_MODE = os.O_APPEND | os.O_CREATE | os.O_WRONLY
-
-	// FILE_PERM is the default permission to open the log file.
-	FILE_PERM os.FileMode = 0644
+	// FilePerm is the default permission to open the log file.
+	FilePerm os.FileMode = 0644
 )
 
 var (
@@ -32,10 +29,10 @@ var (
 	day   int64 = 3600 * 24
 
 	time2fmt = map[int64]string{
-		day: DAY_FMT,
+		day: "2006-01-02",
 	}
 
-	filePerm = FILE_PERM
+	filePerm = FilePerm
 )
 
 var (
@@ -128,7 +125,7 @@ func (t *TimedRotatingFile) Close() (err error) {
 }
 
 func (t *TimedRotatingFile) open() error {
-	file, err := os.OpenFile(t.filename, FILE_MODE, FILE_PERM)
+	file, err := os.OpenFile(t.filename, FileMode, FilePerm)
 	if err != nil {
 		return err
 	}
@@ -309,7 +306,7 @@ func (r *RotatingFile) doRollover() (err error) {
 }
 
 func (r *RotatingFile) open() (err error) {
-	file, err := os.OpenFile(r.filename, FILE_MODE, FILE_PERM)
+	file, err := os.OpenFile(r.filename, FileMode, FilePerm)
 	if err != nil {
 		return
 	}
