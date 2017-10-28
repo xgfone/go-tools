@@ -31,6 +31,7 @@ nets/server  | The simple `TCP` / `UDP` server.
 pagination   | It is usually used to compute the web pagination.
 pools        | Some simple convenient pools, such as `BufPool`, `GoPool`, `ResourcePool`, `AddrTCPConnPool`, etc. Notice: **Rename to `pools` from `v0.40`**.
 queue        | Supply the `Queue` interface, and some implementations such as `NewMemoryQueue` based on memory.
+signal2      | The supplement of the standard library of `signal`, such as `HandleSignal`.
 slice        | Get a value from a slice and check whether a value exists in a slice.
 sort2        | The supplement of the standard library of `sort`, such as `SortMap`.
 string2      | The supplement of the standard library of `strings`.
