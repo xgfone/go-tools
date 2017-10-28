@@ -1,3 +1,5 @@
+// Package signal2 is the supplement of the standard library of `signal`,
+// such as `HandleSignal`.
 package signal2
 
 import (
