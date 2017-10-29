@@ -13,15 +13,15 @@ type HTTPError struct {
 	// The error information
 	Err error
 
-	// You can assign it any what you want.
-	Flag int
+	// The status code
+	Code int
 
 	// You can place data into it to carry in an error.
 	Data map[string]interface{}
 }
 
 // NewHTTPError returns a new HTTPError.
-func NewHTTPError(flag int, err interface{}) error {
+func NewHTTPError(code int, err interface{}) error {
 	switch err.(type) {
 	case error:
 	case []byte:
@@ -29,11 +29,11 @@ func NewHTTPError(flag int, err interface{}) error {
 	default:
 		err = fmt.Errorf("%v", err)
 	}
-	return HTTPError{Flag: flag, Err: err.(error)}
+	return HTTPError{Code: code, Err: err.(error)}
 }
 
 func (e HTTPError) Error() string {
-	return e.Err.Error()
+	return fmt.Sprintf("status=%d, err=%s", e.Code, e.Err)
 }
 
 // ErrorLogFunc handles the http error log in ErrorHandler and
@@ -53,7 +53,7 @@ func init() {
 func ErrorHandler(f func(http.ResponseWriter, *http.Request) error) http.HandlerFunc {
 	return ErrorHandlerWithStatusCode(func(w http.ResponseWriter,
 		r *http.Request) (int, error) {
-		return http.StatusInternalServerError, f(w, r)
+		return 0, f(w, r)
 	})
 }
 
@@ -64,7 +64,11 @@ func ErrorHandlerWithStatusCode(f func(http.ResponseWriter, *http.Request) (
 	return func(w http.ResponseWriter, r *http.Request) {
 		if code, err := f(w, r); err != nil {
 			if code == 0 {
-				code = http.StatusInternalServerError
+				if _err, ok := err.(HTTPError); ok {
+					code = _err.Code
+				} else {
+					code = http.StatusInternalServerError
+				}
 			}
 			http.Error(w, err.Error(), code)
 			ErrorLogFunc("Handling %q: status=%d, err=%v", r.RequestURI, code, err)
