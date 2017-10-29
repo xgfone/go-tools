@@ -3,7 +3,9 @@
 package https
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 )
@@ -33,7 +35,7 @@ func NewHTTPError(code int, err interface{}) error {
 }
 
 func (e HTTPError) Error() string {
-	return fmt.Sprintf("status=%d, err=%s", e.Code, e.Err)
+	return e.Err.Error()
 }
 
 // ErrorLogFunc handles the http error log in ErrorHandler and
@@ -59,8 +61,7 @@ func ErrorHandler(f func(http.ResponseWriter, *http.Request) error) http.Handler
 
 // ErrorHandlerWithStatusCode handles the error and responds it the client
 // with the status code.
-func ErrorHandlerWithStatusCode(f func(http.ResponseWriter, *http.Request) (
-	int, error)) http.HandlerFunc {
+func ErrorHandlerWithStatusCode(f func(http.ResponseWriter, *http.Request) (int, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if code, err := f(w, r); err != nil {
 			if code == 0 {
@@ -72,6 +73,42 @@ func ErrorHandlerWithStatusCode(f func(http.ResponseWriter, *http.Request) (
 			}
 			http.Error(w, err.Error(), code)
 			ErrorLogFunc("Handling %q: status=%d, err=%v", r.RequestURI, code, err)
+		}
+	}
+}
+
+// HandlerWrapper handles the response result.
+func HandlerWrapper(f func(http.ResponseWriter, *http.Request) (int, []byte, error)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		code, resp, err := f(w, r)
+
+		// Handle the error.
+		if err != nil {
+			if code == 0 {
+				if _err, ok := err.(HTTPError); ok {
+					code = _err.Code
+				} else {
+					code = http.StatusInternalServerError
+				}
+			}
+			http.Error(w, err.Error(), code)
+			ErrorLogFunc("Failed to handle %q: %s", r.RequestURI, err)
+			return
+		}
+
+		// Determine the status code.
+		if code == 0 {
+			if len(resp) == 0 {
+				code = http.StatusNoContent
+			} else {
+				code = http.StatusOK
+			}
+		}
+
+		// Send the response result.
+		w.WriteHeader(code)
+		if _, err = io.CopyN(w, bytes.NewBuffer(resp), int64(len(resp))); err != nil {
+			ErrorLogFunc("Failed to send the response of %q: %s", r.RequestURI, err)
 		}
 	}
 }
