@@ -18,16 +18,16 @@ type Standard struct {
 }
 
 var (
-	// StandardUU standardize MAC such as "".
+	// StandardUU standardize MAC such as "AA:BB:01:02:00:00".
 	StandardUU = NewStandard(true, true)
 
-	// StandardUu standardize MAC such as "".
+	// StandardUu standardize MAC such as "AA:BB:1:2:0:0".
 	StandardUu = NewStandard(true, false)
 
-	// StandarduU standardize MAC such as "".
+	// StandarduU standardize MAC such as "aa:bb:01:02:00:00".
 	StandarduU = NewStandard(false, true)
 
-	// Standarduu standardize MAC such as "".
+	// Standarduu standardize MAC such as "aa:bb:1:2:0:0".
 	Standarduu = NewStandard(false, false)
 
 	// Default is alias of StandardizeUU.
@@ -35,6 +35,10 @@ var (
 )
 
 // NewStandard returns a new Standard.
+//
+// If upper is true, the mac address is uppercase such as "AA", or lowercase
+// if false, such as "ab". If unified is true, it fills 0 in the front
+// if each byte is one character, such as "01", or not if false such as "1".
 func NewStandard(upper, unified bool) Standard {
 	return Standard{Upper: upper, Unified: unified}
 }
