@@ -28,9 +28,14 @@ func HandleSignal(signals ...os.Signal) {
 // For running it in a goroutine, use
 //   go HandleSignalWithLifecycle(m, syscall.SIGTERM, syscall.SIGQUIT)
 func HandleSignalWithLifecycle(m *lifecycle.Manager, signals ...os.Signal) {
+	HandleSignalWithFunc(func() { m.Stop() }, os.Interrupt, signals...)
+}
+
+// HandleSignalWithFunc calls the function f when the signals are received.
+func HandleSignalWithFunc(f func(), sig os.Signal, signals ...os.Signal) {
 	ss := make(chan os.Signal, 1)
-	signals = append(signals, os.Interrupt)
+	signals = append(signals, sig)
 	signal.Notify(ss, signals...)
 	<-ss
-	m.Stop()
+	f()
 }
