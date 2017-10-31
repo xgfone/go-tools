@@ -4,10 +4,13 @@ package https
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/xgfone/go-tools/lifecycle"
 )
 
 // HTTPError stands for a HTTP error.
@@ -111,4 +114,22 @@ func HandlerWrapper(f func(http.ResponseWriter, *http.Request) (int, []byte, err
 			ErrorLogFunc("Failed to send the response of %q: %s", r.RequestURI, err)
 		}
 	}
+}
+
+// ListenAndServe is equal to http.ListenAndServe, but calling the method
+// server.Shutdown(context.TODO()) to shutdown the HTTP server gracefully
+// when calling lifecycle.Stop().
+func ListenAndServe(addr string, handler http.Handler) error {
+	server := http.Server{Addr: addr, Handler: handler}
+	lifecycle.Register(func() { server.Shutdown(context.TODO()) })
+	return server.ListenAndServe()
+}
+
+// ListenAndServeTLS is equal to http.ListenAndServeTLS, but calling the method
+// server.Shutdown(context.TODO()) to shutdown the HTTP server gracefully
+// when calling lifecycle.Stop().
+func ListenAndServeTLS(addr, certFile, keyFile string, handler http.Handler) error {
+	server := http.Server{Addr: addr, Handler: handler}
+	lifecycle.Register(func() { server.Shutdown(context.TODO()) })
+	return server.ListenAndServeTLS(certFile, keyFile)
 }
