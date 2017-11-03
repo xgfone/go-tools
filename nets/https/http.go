@@ -13,6 +13,42 @@ import (
 	"github.com/xgfone/go-tools/lifecycle"
 )
 
+var (
+	// DefaultHealthURL is the url to register the health HTTP handler.
+	DefaultHealthURL = "/health"
+
+	// DefaultServeMux is the default serve multiplexer.
+	DefaultServeMux = http.DefaultServeMux
+)
+
+// SetHealthHandler registers the health handler with DefaultHealthURL into
+// DefaultServeMux.
+//
+// Notice: The handler may be nil, which will use the default handler that only
+// returns the status code 200.
+func SetHealthHandler(handler http.Handler) {
+	if handler == nil {
+		handler = http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})
+	}
+	http.Handle(DefaultHealthURL, handler)
+}
+
+// SetHealthHandlerFunc is same as SetHealthHandler, but the handler is
+// a function that returns the body content.
+//
+// Notice: If the handler function panic,it will return the status code 500.
+func SetHealthHandlerFunc(handler func() string) {
+	SetHealthHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if recover() != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		}()
+
+		io.WriteString(w, handler())
+	}))
+}
+
 // HTTPError stands for a HTTP error.
 type HTTPError struct {
 	// The error information
