@@ -78,6 +78,7 @@ func (m *Manager) Stop() {
 	if m.stoped {
 		return
 	}
+	m.stoped = true
 
 	for _, f := range m.callbacks {
 		// f()
