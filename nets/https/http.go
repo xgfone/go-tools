@@ -51,8 +51,8 @@ func SetHealthHandlerFunc(handler func() string) {
 	}))
 }
 
-// StartHealth starts the HTTP server to serve the health check.
-func StartHealth(addr string, handler interface{}, files ...string) error {
+// StartHealthServer starts the HTTP server to serve the health check.
+func StartHealthServer(addr string, handler interface{}, files ...string) error {
 	switch h := handler.(type) {
 	case nil, http.Handler:
 		SetHealthHandler(h)
