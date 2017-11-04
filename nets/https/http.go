@@ -52,6 +52,12 @@ func SetHealthHandlerFunc(handler func() string) {
 }
 
 // StartHealthServer starts the HTTP server to serve the health check.
+//
+// The handler may be nil, http.Handler, or a function, the type of which is
+// `func() string` that the returned result is the response content.
+//
+// If you want to start the server on SSL, you can give certFile and keyFile
+// as the last two arguments.
 func StartHealthServer(addr string, handler interface{}, files ...string) error {
 	switch h := handler.(type) {
 	case nil, http.Handler:
