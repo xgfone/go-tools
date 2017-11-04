@@ -106,10 +106,6 @@ func (m *Manager) IsStop() (yes bool) {
 // RunForever is the same as m.Wait(), but it should be called in main goroutine
 // to wait to exit the program.
 func (m *Manager) RunForever() {
-	if m.IsStop() {
-		panic(ErrStopped)
-	}
-
 	<-m.shouldStop
 }
 
