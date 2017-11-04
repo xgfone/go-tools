@@ -32,7 +32,7 @@ func SetHealthHandler(handler interface{}) {
 	} else if _, ok := handler.(http.Handler); !ok {
 		panic("The handler is not nil or http.Handler")
 	}
-	http.Handle(DefaultHealthURL, handler.(http.Handler))
+	DefaultServeMux.Handle(DefaultHealthURL, handler.(http.Handler))
 }
 
 // SetHealthHandlerFunc is same as SetHealthHandler, but the handler is
