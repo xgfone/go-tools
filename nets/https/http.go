@@ -183,17 +183,27 @@ func HandlerWrapper(f func(http.ResponseWriter, *http.Request) (int, []byte, err
 // ListenAndServe is equal to http.ListenAndServe, but calling the method
 // server.Shutdown(context.TODO()) to shutdown the HTTP server gracefully
 // when calling lifecycle.Stop().
+//
+// Notice: It will call lifecycle.Stop() when the server exits.
 func ListenAndServe(addr string, handler http.Handler) error {
 	server := http.Server{Addr: addr, Handler: handler}
 	lifecycle.Register(func() { server.Shutdown(context.TODO()) })
-	return server.ListenAndServe()
+	err := server.ListenAndServe()
+	ErrorLogFunc("The server listening on %s has an error: %s", addr, err)
+	lifecycle.Stop()
+	return err
 }
 
 // ListenAndServeTLS is equal to http.ListenAndServeTLS, but calling the method
 // server.Shutdown(context.TODO()) to shutdown the HTTP server gracefully
 // when calling lifecycle.Stop().
+//
+// Notice: It will call lifecycle.Stop() when the server exits.
 func ListenAndServeTLS(addr, certFile, keyFile string, handler http.Handler) error {
 	server := http.Server{Addr: addr, Handler: handler}
 	lifecycle.Register(func() { server.Shutdown(context.TODO()) })
-	return server.ListenAndServeTLS(certFile, keyFile)
+	err := server.ListenAndServeTLS(certFile, keyFile)
+	ErrorLogFunc("The TLS server listening on %s has an error: %s", addr, err)
+	lifecycle.Stop()
+	return err
 }
