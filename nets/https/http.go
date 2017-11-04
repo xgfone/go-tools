@@ -26,11 +26,13 @@ var (
 //
 // Notice: The handler may be nil, which will use the default handler that only
 // returns the status code 200.
-func SetHealthHandler(handler http.Handler) {
+func SetHealthHandler(handler interface{}) {
 	if handler == nil {
 		handler = http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})
+	} else if _, ok := handler.(http.Handler); !ok {
+		panic("The handler is not nil or http.Handler")
 	}
-	http.Handle(DefaultHealthURL, handler)
+	http.Handle(DefaultHealthURL, handler.(http.Handler))
 }
 
 // SetHealthHandlerFunc is same as SetHealthHandler, but the handler is
@@ -47,6 +49,26 @@ func SetHealthHandlerFunc(handler func() string) {
 
 		io.WriteString(w, handler())
 	}))
+}
+
+// StartHealth starts the HTTP server to serve the health check.
+func StartHealth(addr string, handler interface{}, files ...string) error {
+	switch h := handler.(type) {
+	case nil, http.Handler:
+		SetHealthHandler(h)
+	case func() string:
+		SetHealthHandlerFunc(h)
+	default:
+		return fmt.Errorf("Unknown handler type")
+	}
+
+	_len := len(files)
+	if _len == 0 {
+		return ListenAndServe(addr, DefaultServeMux)
+	} else if _len == 2 {
+		return ListenAndServeTLS(addr, files[0], files[1], DefaultServeMux)
+	}
+	return fmt.Errorf("the options files is not certFile and keyFile")
 }
 
 // HTTPError stands for a HTTP error.
