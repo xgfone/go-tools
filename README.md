@@ -28,6 +28,7 @@ nets         | The supplement of the standard library `net`, such as some helper
 nets/https   | The supplement of the standard library `http`, not the protocal `https`.
 nets/mac     | Standardize the mac address.
 nets/server  | The simple `TCP` / `UDP` server.
+os2          | The supplement of the standard library of `os`, such as `Exit`.
 pagination   | It is usually used to compute the web pagination.
 pools        | Some simple convenient pools, such as `BufPool`, `GoPool`, `ResourcePool`, `AddrTCPConnPool`, etc. Notice: **Rename to `pools` from `v0.40`**.
 queue        | Supply the `Queue` interface, and some implementations such as `NewMemoryQueue` based on memory.
