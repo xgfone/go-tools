@@ -13,11 +13,13 @@ type ResourceLock interface {
 	//
 	// When the resource named id has been locked, it should wait to be unlocked
 	// by the locker.
+	//
+	// If id is empty, it should panic.
 	Lock(id string)
 
 	// Unlock unlocks the resource, which id is the resource id.
 	//
-	// Notice: If the lock is not locked, it should panic.
+	// If the lock is not locked or id is empty, it should panic.
 	Unlock(id string)
 }
 
