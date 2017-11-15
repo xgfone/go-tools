@@ -38,7 +38,8 @@ func (h hashResourceLock) Unlock(id string) {
 // NewHashResourceLock returns a new ResourceLock based on hash.
 //
 // Notice: this implementation use the quadratic hash. The first hash does not
-// use the lock, so it has a better performance.
+// use the lock, so it maybe have a better performance when the resources are
+// not the same.
 func NewHashResourceLock() ResourceLock {
 	r := make(hashResourceLock, 256)
 	for i := 0; i < 256; i++ {
