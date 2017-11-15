@@ -1,5 +1,29 @@
 package log
 
+import "log"
+
+var (
+	// DebugF is used to output the debug logging by other packages,
+	// which supplies a common way. The logging is outputted to os.Stderr
+	// by default.
+	DebugF func(format string, args ...interface{})
+
+	// ErrorF is used to output the error logging by other packages,
+	// which supplies a common way. The logging is outputted to os.Stderr
+	// by default.
+	ErrorF func(format string, args ...interface{})
+)
+
+func init() {
+	DebugF = func(format string, args ...interface{}) {
+		log.Printf("[DEBUG] "+format, args...)
+	}
+
+	ErrorF = func(format string, args ...interface{}) {
+		log.Printf("[ERROR] "+format, args...)
+	}
+}
+
 // LoggerFunc converts a function to a suitable logger interface.
 type LoggerFunc func(format string, args ...interface{})
 
