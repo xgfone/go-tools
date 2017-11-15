@@ -3,6 +3,7 @@ package sync2
 import (
 	"fmt"
 	"sync"
+	"time"
 )
 
 func ExampleResourceLock_Lock() {
@@ -14,6 +15,7 @@ func ExampleResourceLock_Lock() {
 	go func() {
 		locker.Lock(id)
 		fmt.Println("Locked")
+		time.Sleep(time.Second)
 		fmt.Println("Unlocking")
 		locker.Unlock(id)
 		waiter.Done()
@@ -23,6 +25,7 @@ func ExampleResourceLock_Lock() {
 	go func() {
 		locker.Lock(id)
 		fmt.Println("Locked")
+		time.Sleep(time.Second)
 		fmt.Println("Unlocking")
 		locker.Unlock(id)
 		waiter.Done()
@@ -32,6 +35,7 @@ func ExampleResourceLock_Lock() {
 	go func() {
 		locker.Lock(id)
 		fmt.Println("Locked")
+		time.Sleep(time.Second)
 		fmt.Println("Unlocking")
 		locker.Unlock(id)
 		waiter.Done()
