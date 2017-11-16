@@ -9,6 +9,10 @@ These packages only depend on the standard libraries, not any third-part package
 $ go get -u github.com/xgfone/go-tools
 ```
 
+**Notice:**
+
+Some sub-packages need the logging output. Now the sub-package `log` supplies the unified logging output function, `ErrorF` and `DebugF`. You can set it to set the logging output of all the sub-packages, such as `nets/https`, `nets/server`, and `worker`, etc.
+
 ## Subpackages
 
 subpackage   |   notice
