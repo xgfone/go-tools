@@ -1,7 +1,11 @@
 // Package worker is a worker pool with the dispatcher based on channel.
 package worker
 
-import "context"
+import (
+	"context"
+
+	"github.com/xgfone/go-tools/log"
+)
 
 // Task is an interface to handle the job.
 type Task interface {
@@ -34,7 +38,11 @@ func Dispatch(cxt context.Context, workerNum int, jobQueue <-chan interface{},
 	handler Task) {
 	// Call the handler to handle the job.
 	handleJob := func(job interface{}) {
-		defer recover()
+		defer func() {
+			if err := recover(); err != nil {
+				log.ErrorF("Get an error when handling the job: %v", err)
+			}
+		}()
 		handler.Handle(job)
 	}
 
