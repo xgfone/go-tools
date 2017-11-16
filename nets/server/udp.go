@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net"
 
+	"github.com/xgfone/go-tools/log"
 	"github.com/xgfone/go-tools/nets"
 )
 
@@ -28,16 +29,16 @@ func (h UHandleFunc) Handle(buf []byte, addr *net.UDPAddr) []byte {
 func UDPWithError(conn *net.UDPConn, handler UHandle, buf []byte, addr *net.UDPAddr) {
 	defer func() {
 		if err := recover(); err != nil {
-			_logger.Printf("[ERROR] Get a error: %v", err)
+			log.ErrorF("Get a error: %v", err)
 		}
 	}()
 
 	// If returning nil, don't send the response to the client.
 	if result := handler.Handle(buf, addr); result != nil {
 		if n, err := conn.WriteToUDP(result, addr); err != nil {
-			_logger.Printf("[ERROR] Failed to send the data to %s: %v", addr, err)
+			log.ErrorF("Failed to send the data to %s: %v", addr, err)
 		} else {
-			_logger.Printf("[DEBUG] Send %v bytes successfully", n)
+			log.DebugF("Send %v bytes successfully", n)
 		}
 	}
 }
@@ -83,21 +84,21 @@ func UDPServerForever(addr string, size int, handle interface{}) error {
 	}
 
 	defer conn.Close()
-	_logger.Printf("[INFO] Listening on %v", addr)
+	log.DebugF("Listening on %v", addr)
 
 	if wrap != nil {
 		return wrap(conn)
 	}
 
 	if size < 1 || size > 65536 {
-		return errors.New("The size of the buffer is limited between 1 and 65536.")
+		return errors.New("The size of the buffer is limited between 1 and 65536")
 	}
 	buf := make([]byte, size)
 
 	for {
 		num, caddr, err := conn.ReadFromUDP(buf)
 		if err != nil {
-			_logger.Printf("[ERROR] Failed to read the UDP data: %v", err)
+			log.ErrorF("Failed to read the UDP data: %v", err)
 		} else {
 			UDPWithError(conn, handler, buf[:num], caddr)
 		}

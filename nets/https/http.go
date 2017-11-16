@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 
 	"github.com/xgfone/go-tools/lifecycle"
+	"github.com/xgfone/go-tools/log"
 )
 
 var (
@@ -110,13 +110,10 @@ func (e HTTPError) Error() string {
 //
 // Notice: The caller doesn't append the new line, so the function should
 // append the new line.
+//
+// DEPRECATED!!! Please ErrorF in the sub-package log instead.
+// It is only reserved, and not effect.
 var ErrorLogFunc func(format string, args ...interface{})
-
-func init() {
-	ErrorLogFunc = func(format string, args ...interface{}) {
-		fmt.Fprintf(os.Stderr, format+"\n", args...)
-	}
-}
 
 // ErrorHandler handles the error and responds it the client.
 func ErrorHandler(f func(http.ResponseWriter, *http.Request) error) http.HandlerFunc {
@@ -139,7 +136,7 @@ func ErrorHandlerWithStatusCode(f func(http.ResponseWriter, *http.Request) (int,
 				}
 			}
 			http.Error(w, err.Error(), code)
-			ErrorLogFunc("Handling %q: status=%d, err=%v", r.RequestURI, code, err)
+			log.ErrorF("Handling %q: status=%d, err=%v", r.RequestURI, code, err)
 		}
 	}
 }
@@ -159,7 +156,7 @@ func HandlerWrapper(f func(http.ResponseWriter, *http.Request) (int, []byte, err
 				}
 			}
 			http.Error(w, err.Error(), code)
-			ErrorLogFunc("Failed to handle %q: %s", r.RequestURI, err)
+			log.ErrorF("Failed to handle %q: %s", r.RequestURI, err)
 			return
 		}
 
@@ -175,7 +172,7 @@ func HandlerWrapper(f func(http.ResponseWriter, *http.Request) (int, []byte, err
 		// Send the response result.
 		w.WriteHeader(code)
 		if _, err = io.CopyN(w, bytes.NewBuffer(resp), int64(len(resp))); err != nil {
-			ErrorLogFunc("Failed to send the response of %q: %s", r.RequestURI, err)
+			log.ErrorF("Failed to send the response of %q: %s", r.RequestURI, err)
 		}
 	}
 }
@@ -189,7 +186,7 @@ func ListenAndServe(addr string, handler http.Handler) error {
 	server := http.Server{Addr: addr, Handler: handler}
 	lifecycle.Register(func() { server.Shutdown(context.TODO()) })
 	err := server.ListenAndServe()
-	ErrorLogFunc("The server listening on %s has an error: %s", addr, err)
+	log.ErrorF("The server listening on %s has an error: %s", addr, err)
 	lifecycle.Stop()
 	return err
 }
@@ -203,7 +200,7 @@ func ListenAndServeTLS(addr, certFile, keyFile string, handler http.Handler) err
 	server := http.Server{Addr: addr, Handler: handler}
 	lifecycle.Register(func() { server.Shutdown(context.TODO()) })
 	err := server.ListenAndServeTLS(certFile, keyFile)
-	ErrorLogFunc("The TLS server listening on %s has an error: %s", addr, err)
+	log.ErrorF("The TLS server listening on %s has an error: %s", addr, err)
 	lifecycle.Stop()
 	return err
 }

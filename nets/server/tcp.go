@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net"
 
+	"github.com/xgfone/go-tools/log"
 	"github.com/xgfone/go-tools/nets"
 )
 
@@ -25,7 +26,7 @@ func (h THandleFunc) Handle(conn *net.TCPConn) {
 func TCPWrapError(conn *net.TCPConn, handler THandle) {
 	defer func() {
 		if err := recover(); err != nil {
-			_logger.Printf("[ERROR] Get a error: %v", err)
+			log.ErrorF("Get a error: %v", err)
 		}
 
 		if conn != nil {
@@ -64,14 +65,14 @@ func TCPServerForever(addr string, handle interface{}) error {
 
 	defer ln.Close()
 
-	_logger.Printf("[INFO] Listening on %v", addr)
+	log.ErrorF("Listening on %v", addr)
 
 	for {
 		conn, err := ln.AcceptTCP()
 		if err != nil {
-			_logger.Printf("[ERROR] Failed to AcceptTCP: %v", err)
+			log.ErrorF("Failed to AcceptTCP: %v", err)
 		} else {
-			_logger.Printf("[DEBUG] Get a connection from %v", conn.RemoteAddr())
+			log.DebugF("Get a connection from %v", conn.RemoteAddr())
 			go TCPWrapError(conn, handler)
 		}
 	}
