@@ -7,6 +7,11 @@ import (
 	"sync"
 )
 
+var (
+	// ErrEmpty represents the error that the resource id is empty.
+	ErrEmpty = fmt.Errorf("The resource id is empty")
+)
+
 // ResourceLock is an interface about the resource lock.
 type ResourceLock interface {
 	// Lock locks the resource, which id is the resource id.
@@ -14,18 +19,22 @@ type ResourceLock interface {
 	// When the resource named id has been locked, it should wait to be unlocked
 	// by the locker.
 	//
-	// If id is empty, it should panic.
+	// If id is empty, it should panic, the value of which is ErrEmpty.
 	Lock(id string)
 
 	// Unlock unlocks the resource, which id is the resource id.
 	//
-	// If the lock is not locked or id is empty, it should panic.
+	// If the lock is not locked or id is empty, it should panic, the value
+	// of which is ErrEmpty.
 	Unlock(id string)
 }
 
-type hashResourceLock map[uint8]resourceLock
+type hashResourceLock map[uint8]BaseResourceLock
 
-func (h hashResourceLock) getResource(id string) resourceLock {
+func (h hashResourceLock) getResource(id string) BaseResourceLock {
+	if id == "" {
+		panic(ErrEmpty)
+	}
 	return h[id[len(id)-1]]
 }
 
@@ -39,13 +48,14 @@ func (h hashResourceLock) Unlock(id string) {
 
 // NewHashResourceLock returns a new ResourceLock based on hash.
 //
-// Notice: this implementation use the quadratic hash. The first hash does not
-// use the lock, so it maybe have a better performance when the resources are
-// not the same.
+// The implementation uses the once hash based on BaseResourceLock, that's,
+// the implementation uses the quadratic hash. The first hash uses 256 buckets,
+// which uses the last byte of the resource id as the hash key and has no lock.
+// So it maybe have a better performance.
 func NewHashResourceLock() ResourceLock {
 	r := make(hashResourceLock, 256)
 	for i := 0; i < 256; i++ {
-		r[uint8(i)] = newResourceLock()
+		r[uint8(i)] = NewBaseResourceLock()
 	}
 	return r
 }
@@ -57,32 +67,36 @@ func NewResourceLock() ResourceLock {
 	return NewHashResourceLock()
 }
 
-// resourceLock is a lock to lock a certain resource by the resource id.
-type resourceLock struct {
+// BaseResourceLock is a lock to lock a certain resource by the resource id.
+type BaseResourceLock struct {
 	locker    *sync.Mutex
 	resources map[string]struct{}
 	waiters   map[string]*list.List
 }
 
-// newResourceLock returns a new resourceLock.
-func newResourceLock() resourceLock {
-	return resourceLock{
+// NewBaseResourceLock returns a new BaseResourceLock.
+func NewBaseResourceLock() BaseResourceLock {
+	return BaseResourceLock{
 		locker:    new(sync.Mutex),
 		resources: make(map[string]struct{}),
 		waiters:   make(map[string]*list.List),
 	}
 }
 
-// Lock locks a certain resource by its id.
+// Lock implements the method Lock of ResourceLock.
 //
-// Once Lock is called, Unlock must be called later, that's, Lock and Unlock
-// must appear in pairs.
-func (r resourceLock) Lock(id string) {
+// Once Lock is called, Unlock should be called later, that's, Lock and Unlock
+// should appear in pairs.
+func (r BaseResourceLock) Lock(id string) {
+	if id == "" {
+		panic(ErrEmpty)
+	}
+
 	for !r.lock(id) {
 	}
 }
 
-func (r resourceLock) lock(id string) bool {
+func (r BaseResourceLock) lock(id string) bool {
 	r.locker.Lock()
 	// Lock successfully
 	if _, ok := r.resources[id]; !ok {
@@ -106,10 +120,14 @@ func (r resourceLock) lock(id string) bool {
 	return false
 }
 
-// Unlock unlocks a certain resource by its id.
+// Unlock implements the method Unlock of ResourceLock.
 //
 // If the lock is not locked, it will panic.
-func (r resourceLock) Unlock(id string) {
+func (r BaseResourceLock) Unlock(id string) {
+	if id == "" {
+		panic(ErrEmpty)
+	}
+
 	r.locker.Lock()
 	if _, ok := r.resources[id]; ok {
 		delete(r.resources, id)
