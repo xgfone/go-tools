@@ -32,3 +32,9 @@ func TestGetIP(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestGetAllIPs(t *testing.T) {
+	if ips, err := GetAllIPs(); err != nil || len(ips) == 0 {
+		t.Fail()
+	}
+}

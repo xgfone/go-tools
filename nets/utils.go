@@ -19,12 +19,7 @@ func JoinHostPort(host, port interface{}) string {
 	return net.JoinHostPort(fmt.Sprintf("%v", host), fmt.Sprintf("%v", port))
 }
 
-// GetIP returns the ip of the network interface name.
-//
-// If the argument iname is a valid ip itself, return it directly.
-//
-// The ip may be a ipv4 or ipv6, which does not include CIDR, but only ip.
-func GetIP(iname string) (ips []string, err error) {
+func getIPByName(iname string, empty bool) (ips []string, err error) {
 	if len(iname) == 0 {
 		return nil, fmt.Errorf("the parameter is empty")
 	}
@@ -46,8 +41,37 @@ func GetIP(iname string) (ips []string, err error) {
 		ips = append(ips, strings.Split(addr.String(), "/")[0])
 	}
 
-	if len(ips) == 0 {
+	if empty && len(ips) == 0 {
 		err = fmt.Errorf("not found the ip of %s", iname)
 	}
+	return
+}
+
+// GetIP returns the ip of the network interface name.
+//
+// If the argument iname is a valid ip itself, return it directly.
+//
+// The ip may be a ipv4 or ipv6, which does not include CIDR, but only ip.
+func GetIP(iname string) (ips []string, err error) {
+	return getIPByName(iname, true)
+}
+
+// GetAllIPs returns all the ips on the current host.
+func GetAllIPs() (ips []string, err error) {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return
+	}
+
+	var _ips []string
+	for _, iface := range ifaces {
+		if _ips, err = getIPByName(iface.Name, false); err != nil {
+			return
+		}
+		for _, ip := range _ips {
+			ips = append(ips, ip)
+		}
+	}
+
 	return
 }
