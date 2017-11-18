@@ -75,3 +75,14 @@ func GetAllIPs() (ips []string, err error) {
 
 	return
 }
+
+// IPIsOnHost returns true if the ip is on the host, or returns false.
+func IPIsOnHost(ip string) bool {
+	ips, _ := GetAllIPs()
+	for _, _ip := range ips {
+		if _ip == ip {
+			return true
+		}
+	}
+	return false
+}

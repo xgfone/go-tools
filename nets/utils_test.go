@@ -38,3 +38,9 @@ func TestGetAllIPs(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestIPIsOnHost(t *testing.T) {
+	if !IPIsOnHost("127.0.0.1") {
+		t.Fail()
+	}
+}
