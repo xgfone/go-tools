@@ -90,7 +90,7 @@ type HTTPError struct {
 }
 
 // NewHTTPError returns a new HTTPError.
-func NewHTTPError(code int, err interface{}) error {
+func NewHTTPError(code int, err interface{}) HTTPError {
 	switch err.(type) {
 	case error:
 	case []byte:
