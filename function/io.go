@@ -12,3 +12,8 @@ type Close struct {
 func (c Close) Close() {
 	c.Value.Close()
 }
+
+// NewClose returns an new Close.
+func NewClose(v io.Closer) Close {
+	return Close{Value: v}
+}
