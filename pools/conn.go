@@ -5,15 +5,9 @@ import (
 	"net"
 	"sync"
 	"time"
+
+	"github.com/xgfone/go-tools/function"
 )
-
-type tcpConnResource struct {
-	c *net.TCPConn
-}
-
-func (t tcpConnResource) Close() {
-	t.c.Close()
-}
 
 // AddrTCPConnPool is the connection pool based on the address, that's, when you
 // need a connection, you only get the connection by the address.
@@ -48,7 +42,7 @@ func (p AddrTCPConnPool) Put(addr string, c *net.TCPConn) {
 	rp := p.pools[addr]
 	p.lock.Unlock()
 
-	rp.Put(tcpConnResource{c: c})
+	rp.Put(function.NewClose(c))
 }
 
 // Get returns a TCP connection by the addr from the pool.
@@ -63,7 +57,7 @@ func (p AddrTCPConnPool) Get(addr string) (c *net.TCPConn, err error) {
 			if err != nil {
 				return nil, err
 			}
-			return tcpConnResource{c: c.(*net.TCPConn)}, nil
+			return function.NewClose(c.(*net.TCPConn)), nil
 		}, p.size, p.size, p.Timeout)
 		p.pools[addr] = rp
 	}
@@ -73,6 +67,6 @@ func (p AddrTCPConnPool) Get(addr string) (c *net.TCPConn, err error) {
 	if err != nil {
 		return
 	}
-	c = r.(tcpConnResource).c
+	c = r.(function.Close).Value.(*net.TCPConn)
 	return
 }
