@@ -14,6 +14,5 @@
 //
 // Some validations in this package is from https://github.com/Unknwon/com/regex.go
 
-// Package validation supplys some validations, such as email, url,
-// or the type of a value, etc.
+// Package validation supplys some validations, such as the type of a value.
 package validation

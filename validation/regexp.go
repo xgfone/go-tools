@@ -25,18 +25,24 @@ func init() {
 
 // IsEmail validates string is an email address, if not return false
 // basically validation can match 99% cases
+//
+// DEPRECATED!!! Please use the other library, such as github.com/asaskevich/govalidator.
 func IsEmail(email string) bool {
 	return regexEmail.MatchString(email)
 }
 
 // IsEmailRFC validates string is an email address, if not return false
 // this validation omits RFC 2822
+//
+// DEPRECATED!!! Please use the other library, such as github.com/asaskevich/govalidator.
 func IsEmailRFC(email string) bool {
 	return regexStrictEmail.MatchString(email)
 }
 
 // IsURL validates string is a url link, if not return false
 // simple validation can match 99% cases
+//
+// DEPRECATED!!! Please use the other library, such as github.com/asaskevich/govalidator.
 func IsURL(url string) bool {
 	return regexURL.MatchString(url)
 }
