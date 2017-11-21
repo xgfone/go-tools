@@ -50,7 +50,10 @@ func Dispatch(cxt context.Context, workerNum int, jobQueue <-chan interface{},
 	worker := func() {
 		for {
 			select {
-			case job := <-jobQueue:
+			case job, ok := <-jobQueue:
+				if !ok {
+					return
+				}
 				handleJob(job)
 			case <-cxt.Done():
 				return
