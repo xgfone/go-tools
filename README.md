@@ -1,15 +1,7 @@
 # go-tools
 A utility tool library of Golang.
 
-The current version is **`v2`**, which is not compatible with `v1`. `v2` rearranges the sub-packages. Relative to `v1`, `v2` has some changes as follows:
-
-- Add some new functions.
-- Merge some sub-packages into one sub-package, such as merging `extremum`, `compare`, `method`, `values` into `function`, etc.
-- Rename the name of some sub-packages, such as `log2`, `net2`, `strings2`, etc.
-- Remove some sub-packages, such as `datetime`, etc.
-- Remove some types, such as `SMap` and `Slice` in the sub-package `values` in `v1`, etc.
-- Remove some deprecated types or functions, such as `Dispatcher` in the sub-package `worker`, etc.
-- ......
+The current version is **`v2`**, which is not compatible with `v1`. `v2` rearranges the sub-packages. Relative to `v1`, `v2` has some changes, See [release](https://github.com/xgfone/go-tools/releases/tag/v2.0.0)
 
 ## Announcement
 These packages only depend on the standard libraries, not any third-part packages.
