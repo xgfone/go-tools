@@ -16,7 +16,7 @@ limitations under the License.
 
 // Copy from github.com/youtube/vitess/go/pools:resource_pool_test.go
 
-package pool
+package pools
 
 import (
 	"context"

@@ -5,7 +5,7 @@ The current version is **`v2`**, which is not compatible with `v1`. `v2` rearran
 
 - Add some new functions.
 - Merge some sub-packages into one sub-package, such as merging `extremum`, `compare`, `method`, `values` into `function`, etc.
-- Rename the name of some sub-packages, such as `log2`, `net2`, `strings2`, `pool`, etc.
+- Rename the name of some sub-packages, such as `log2`, `net2`, `strings2`, etc.
 - Remove some sub-packages, such as `datetime`, etc.
 - Remove some types, such as `SMap` and `Slice` in the sub-package `values` in `v1`, etc.
 - Remove some deprecated types or functions, such as `Dispatcher` in the sub-package `worker`, etc.
@@ -45,7 +45,7 @@ net2/http2   | The supplement of the standard library `http`, not the protocal `
 net2/server  | The simple `TCP` / `UDP` server.
 os2          | The supplement of the standard library of `os`, such as `Exit`.
 pagination   | It is usually used to compute the web pagination.
-pool        | Some simple convenient pools, such as `BufPool`, `ResourcePool`, `AddrTCPConnPool`, etc.
+pools        | Some simple convenient pools, such as `BufPool`, `ResourcePool`, `AddrTCPConnPool`, etc.
 queue        | Supply the `Queue` interface, and some implementations such as `NewMemoryQueue` based on channel and `NewListQueue` based on list.
 signal2      | The supplement of the standard library of `signal`, such as `HandleSignal`.
 sort2        | The supplement of the standard library of `sort`, such as the key-value sort.
