@@ -5,7 +5,7 @@ import (
 )
 
 func ExampleNewMemoryQueue() {
-	q := NewMemoryQueue(0)
+	q := NewMemoryQueue(1)
 	exit := make(chan struct{})
 	go func() {
 		for {

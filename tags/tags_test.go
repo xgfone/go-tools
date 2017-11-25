@@ -1,6 +1,10 @@
 package tags
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/xgfone/go-tools/function"
+)
 
 type TagTest struct {
 	F1 string `tag1:"123" tag2:"456" tag3:"789" tag4:"000"`
@@ -12,7 +16,8 @@ var _tags = New(TagTest{})
 
 func TestGetAllValuesByTag(t *testing.T) {
 	vs := _tags.GetAllValuesByTag("tag1")
-	if len(vs) != 3 || vs[0] != "123" || vs[1] != "aaa" || vs[2] != "ddd" {
+	if len(vs) != 3 || !function.InSlice("123", vs) ||
+		!function.InSlice("aaa", vs) || !function.InSlice("ddd", vs) {
 		t.Fail()
 	}
 }
@@ -25,7 +30,8 @@ func TestGetValueByFieldAndTag(t *testing.T) {
 
 func TestGetAllFieldsByTag(t *testing.T) {
 	fs := _tags.GetAllFieldsByTag("tag2")
-	if len(fs) != 3 || fs[0] != "F1" || fs[1] != "F2" || fs[2] != "F3" {
+	if len(fs) != 3 || !function.InSlice("F1", fs) ||
+		!function.InSlice("F2", fs) || !function.InSlice("F3", fs) {
 		t.Fail()
 	}
 }

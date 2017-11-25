@@ -1,11 +1,9 @@
-package function_test
+package function
 
 import (
 	"errors"
 	"fmt"
 	"testing"
-
-	"github.com/xgfone/go-tools/function"
 )
 
 func get(i int, j int) (int, error) {
@@ -13,7 +11,7 @@ func get(i int, j int) (int, error) {
 }
 
 func TestCall(t *testing.T) {
-	if ret, err := function.Call(get, 1, 2); err != nil {
+	if ret, err := Call(get, 1, 2); err != nil {
 		t.Fail()
 	} else {
 		if ret[0].(int) != 3 || ret[1] != nil {
@@ -25,12 +23,12 @@ func TestCall(t *testing.T) {
 func TestCallWithPointer(t *testing.T) {
 	f := func(v *int) (old int) {
 		old = *v
-		*v += 1
+		*v++
 		return
 	}
 
 	v := 1
-	ret, _ := function.Call(f, &v)
+	ret, _ := Call(f, &v)
 	// The returned value is the old, which is 1, and v became 2.
 	if ret[0].(int) != 1 || v != 2 {
 		t.Fail()
@@ -42,7 +40,7 @@ func ExampleCall() {
 		return i + j, errors.New("This is not an error")
 	}
 
-	ret, _ := function.Call(f, 1, 2)
+	ret, _ := Call(f, 1, 2)
 
 	// Since the first result is an integer, and it's not necessary to check
 	// whether it is nil, so you may omit it, and infer this type directly.

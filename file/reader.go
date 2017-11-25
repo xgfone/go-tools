@@ -8,13 +8,11 @@ import (
 )
 
 // ToBytes reads a file by byte.
-// error is not nil if there is a error.
 func ToBytes(filePath string) ([]byte, error) {
 	return ioutil.ReadFile(filePath)
 }
 
 // ToString reads a file by string.
-// error is not nil if there is a error.
 func ToString(filePath string) (string, error) {
 	b, err := ioutil.ReadFile(filePath)
 	if err != nil {

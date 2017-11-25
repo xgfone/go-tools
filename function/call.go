@@ -1,7 +1,3 @@
-// Package function calls a function dynamically.
-//
-// The constraint will be checked at the runtime.
-//
 package function
 
 import (

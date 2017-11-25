@@ -4,13 +4,13 @@ package worker
 import (
 	"context"
 
-	"github.com/xgfone/go-tools/log"
+	"github.com/xgfone/go-tools/log2"
 )
 
 // Task is an interface to handle the job.
 type Task interface {
 	// The argument is the job object.
-	Handle(interface{})
+	Handle(job interface{})
 }
 
 // TaskFunc converts a function to Task.
@@ -21,14 +21,23 @@ func (f TaskFunc) Handle(job interface{}) {
 	f(job)
 }
 
-// FuncTask converts a function to Task.
+// PutJob puts the job into the job queue.
 //
-// DEPRECATED!!! Please use TaskFunc.
-type FuncTask func(interface{})
+// If the queue is full, it will be blocked.
+func PutJob(jobQueue chan<- interface{}, job interface{}) {
+	jobQueue <- job
+}
 
-// Handle implements the interface Task.
-func (f FuncTask) Handle(job interface{}) {
-	f(job)
+// TryPutJob puts the job into the job queue and returns true.
+//
+// If the queue is full, it will pass it and return false.
+func TryPutJob(jobQueue chan<- interface{}, job interface{}) bool {
+	select {
+	case jobQueue <- job:
+		return true
+	default:
+		return false
+	}
 }
 
 // Dispatch starts a worker pool and dispatches the task to it.
@@ -36,11 +45,12 @@ func (f FuncTask) Handle(job interface{}) {
 // Notice: you maybe cancel the worker pool by the context.
 func Dispatch(cxt context.Context, workerNum int, jobQueue <-chan interface{},
 	handler Task) {
+
 	// Call the handler to handle the job.
 	handleJob := func(job interface{}) {
 		defer func() {
 			if err := recover(); err != nil {
-				log.ErrorF("Get an error when handling the job: %v", err)
+				log2.ErrorF("Get an error when handling the job: %v", err)
 			}
 		}()
 		handler.Handle(job)
@@ -65,57 +75,4 @@ func Dispatch(cxt context.Context, workerNum int, jobQueue <-chan interface{},
 	for i := 0; i < workerNum; i++ {
 		go worker()
 	}
-}
-
-// worker represents the worker that executes the job
-type worker struct {
-	workerPool chan chan interface{}
-	jobChannel chan interface{}
-	quit       chan bool
-	handler    Task
-}
-
-// newWorker creates a new worker.
-//
-// The worker registers its job channel into workPool to get the job,
-// then handle it by handler.
-func newWorker(workerPool chan chan interface{}, handler Task) *worker {
-	return &worker{
-		workerPool: workerPool,
-		jobChannel: make(chan interface{}),
-		quit:       make(chan bool),
-		handler:    handler,
-	}
-}
-
-// Start starts the run loop for the worker, listening for a quit channel in
-// case we need to stop it
-func (w *worker) Start() {
-	go func() {
-		for {
-			// register the current worker into the worker queue.
-			w.workerPool <- w.jobChannel
-
-			select {
-			case job := <-w.jobChannel:
-				// we have received a work request.
-				w.handle(job)
-			case <-w.quit:
-				// we have received a signal to stop
-				return
-			}
-		}
-	}()
-}
-
-func (w *worker) handle(job interface{}) {
-	defer recover()
-	w.handler.Handle(job)
-}
-
-// Stop signals the worker to stop listening for work requests.
-func (w *worker) Stop() {
-	go func() {
-		w.quit <- true
-	}()
 }

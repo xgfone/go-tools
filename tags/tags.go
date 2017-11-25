@@ -5,12 +5,8 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
-)
 
-var (
-	// Debug is on/off. If true, output the procedure building the tags.
-	// If having a question about the building, you can set it to true.
-	Debug = false
+	"github.com/xgfone/go-tools/log2"
 )
 
 // Tag represents a tag of a field in a struct.
@@ -27,6 +23,7 @@ type Tag struct {
 
 // Tags is a struct to manage the tags of a struct.
 type Tags struct {
+	debug  bool
 	name   string
 	caches []*Tag
 
@@ -34,16 +31,13 @@ type Tags struct {
 	t2f map[string]map[string]string
 }
 
-func debugf(format string, args ...interface{}) {
-	if Debug {
-		fmt.Printf(format+"\n", args...)
-	}
-}
-
 // New returns a new Tag to manage the tags in a certain struct.
 //
 // v is a struct variable or a pointer to a struct.
-func New(v interface{}) *Tags {
+//
+// If passing the second argument and it's true, it will enable the debug mode,
+// which will output the procedure building the tags.
+func New(v interface{}, debug ...bool) *Tags {
 	typ := reflect.TypeOf(v)
 	if typ.Kind() == reflect.Ptr {
 		typ = typ.Elem()
@@ -62,7 +56,8 @@ func New(v interface{}) *Tags {
 
 		tags.f2t[fname] = make(map[string]string)
 		for k, v := range GetAllTags(field.Tag) {
-			debugf("Struct=%s, Field=%s, TagName=%s, TagValue=%s", sname, fname, k, v)
+			tags.debugf("Struct=%s, Field=%s, TagName=%s, TagValue=%s",
+				sname, fname, k, v)
 
 			tag = &Tag{Field: fname, Name: k, Value: v}
 			tags.caches = append(tags.caches, tag)
@@ -88,6 +83,12 @@ func newTag(name string) *Tags {
 
 		f2t: make(map[string]map[string]string),
 		t2f: make(map[string]map[string]string),
+	}
+}
+
+func (t Tags) debugf(format string, args ...interface{}) {
+	if t.debug {
+		log2.DebugF(format, args...)
 	}
 }
 

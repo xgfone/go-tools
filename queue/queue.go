@@ -1,8 +1,7 @@
 // Package queue supplies the queue function.
 //
-// You only have to implement the interface Queue.
-//
-// The package has implemented a memory queue based on Go channel.
+// You only have to implement the interface Queue. The package has two
+// implementations based on Channel and List.
 package queue
 
 import (
@@ -11,16 +10,40 @@ import (
 	"sync"
 )
 
+var (
+	// ErrFull represents that the queue is full.
+	ErrFull = fmt.Errorf("The queue is full")
+
+	// ErrEmpty represents that the queue is empty.
+	ErrEmpty = fmt.Errorf("The queue is empty")
+
+	// ErrTimeout represents that the request is timeout.
+	ErrTimeout = fmt.Errorf("The request is timeout")
+)
+
 // Queue is an queue interface.
 type Queue interface {
 	// Get returns an element from the queue.
 	//
-	// It will wait until an element is visible.
+	// If the queue is empty, it maybe wait until an element is visiable,
+	// or return ErrEmpty. If the implementation supports the timeout, it maybe
+	// return ErrTimeout when the timeout arrives.
+	//
+	// Notice: Whether the method returns ErrEmpty or ErrTimeout or not, it is
+	// decided by the implementation. And the implementation should indicate
+	// which kind it supports.
 	Get() (interface{}, error)
 
 	// Put places a value as an element into the queue.
 	//
-	// If the queue has the size limit, it will be blocked when the queue is full.
+	// If the queue is full, it maybe wait until the value can be put,
+	// or return ErrFull to represent that the queue is full. If the
+	// implementation supports the timeout, it maybe return ErrTimeout
+	// when the timeout arrives.
+	//
+	// Notice: Whether the method returns ErrFull or ErrTimeout or not, it is
+	// decided by the implementation. And the implementation should indicate
+	// which kind it supports.
 	Put(interface{}) error
 
 	// Size returns the number of the elements in the queue.
@@ -40,18 +63,18 @@ type memoryQueue struct {
 
 // NewMemoryQueue returns a new Queue based on the memory.
 //
-// the size is the size of the queue. if it's 0, the queue is a synchronized
-// queue, which you can equate it with channel. If the size is a negative,
-// it will panic.
+// the size is the size of the queue, which must be greater than 0; Or it will
+// panic.
 //
 // When the size of the queue is very large, suggest to use NewListQueue,
 // which is the queue based on the list, not pre-allocate the memory for the
 // elements.
 //
-// Notice: the memory queue doesn't return an error forever.
+// Notice: the memory queue is the blocking model, and doesn't return an error
+// forever.
 func NewMemoryQueue(size int) Queue {
-	if size < 0 {
-		panic(fmt.Errorf("the queue size must not be negative"))
+	if size < 1 {
+		panic(fmt.Errorf("the queue size must be greater than 0"))
 	}
 	return memoryQueue{cap: size, caches: make(chan interface{}, size)}
 }
@@ -84,6 +107,7 @@ func (m memoryQueue) Empty() (bool, error) {
 
 type listQueue struct {
 	sync.Mutex
+	block bool
 
 	getWaiter int
 	putWaiter int
@@ -99,13 +123,22 @@ type listQueue struct {
 //
 // If the size is equal to or less than 0, the queue has no limit.
 //
-// The queue does not pre-allocate the memory for the elements.
+// If giving the second argument ant it's true, the queue doesn't return any
+// error forerver. Or Get returns ErrEmpty when the queue is empty, and Put
+// returns ErrFull when the queue is full. This implementation doesn't support
+// the timeout, so both Put and Get don't return ErrTimeout.
 //
-// Notice: the memory queue doesn't return an error forever.
-func NewListQueue(size int) Queue {
+// The queue does not pre-allocate the memory for the elements.
+func NewListQueue(size int, block ...bool) Queue {
+	var b bool
+	if len(block) > 0 && block[0] {
+		b = true
+	}
+
 	return &listQueue{
 		cap:   size,
 		lists: list.New(),
+		block: b,
 
 		getChan: make(chan struct{}, 1),
 		putChan: make(chan struct{}, 1),
@@ -113,19 +146,27 @@ func NewListQueue(size int) Queue {
 }
 
 // Get implements the method Get of the interface Queue.
-func (l *listQueue) Get() (v interface{}, err error) {
+func (l *listQueue) Get() (interface{}, error) {
 	first := true
 	for {
-		if v, ok := l.get(first); ok {
+		if v, ok, err := l.get(first); err != nil {
+			return nil, err
+		} else if ok {
 			return v, nil
 		}
 		first = false
 	}
 }
 
-func (l *listQueue) get(first bool) (v interface{}, ok bool) {
+func (l *listQueue) get(first bool) (v interface{}, ok bool, err error) {
 	l.Lock()
 	if l.lists.Len() == 0 { // Empty
+		if !l.block {
+			err = ErrEmpty
+			l.Unlock()
+			return
+		}
+
 		if first {
 			l.getWaiter++
 		}
@@ -151,17 +192,27 @@ func (l *listQueue) get(first bool) (v interface{}, ok bool) {
 }
 
 // Put implements the method Put of the interface Queue.
-func (l *listQueue) Put(v interface{}) (err error) {
+func (l *listQueue) Put(v interface{}) error {
 	first := true
-	for !l.put(v, first) {
+	for {
+		if ok, err := l.put(v, first); err != nil {
+			return err
+		} else if ok {
+			return nil
+		}
 		first = false
 	}
-	return
 }
 
-func (l *listQueue) put(v interface{}, first bool) (ok bool) {
+func (l *listQueue) put(v interface{}, first bool) (ok bool, err error) {
 	l.Lock()
 	if l.full() {
+		if !l.block {
+			err = ErrFull
+			l.Unlock()
+			return
+		}
+
 		if first {
 			l.putWaiter++ // Represent that there is a goroutine to wait to put a value.
 		}
@@ -182,7 +233,7 @@ func (l *listQueue) put(v interface{}, first bool) (ok bool) {
 	if waiter { // There are some goroutines to wait to get the value and wake it up.
 		l.getChan <- struct{}{}
 	}
-	return true
+	return true, nil
 }
 
 // Size implements the method Size of the interface Queue.
