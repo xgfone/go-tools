@@ -1,5 +1,6 @@
 // +build go1.9
 
+// Package server is deprecated. which is migrated into net2.
 package server
 
 import (
