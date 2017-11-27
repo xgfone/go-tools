@@ -76,8 +76,9 @@ func NewPagination(total, currentPage, limit, number int) Pagination {
 			p.Start = 1
 			p.End = p.Total
 		} else {
-			p.Start = currentPage - int(math.Floor(float64(number)/float64(2)))
-			p.End = currentPage + int(math.Floor(float64(number)/float64(2)))
+			half := int(math.Floor(float64(number) / float64(2)))
+			p.Start = currentPage - half
+			p.End = currentPage + half
 			if p.Start < 1 {
 				p.End += int(math.Abs(float64(p.Start))) + 1
 				p.Start = 1
