@@ -4,7 +4,7 @@ A utility tool library of Golang.
 The current version is **`v2`**, which is not compatible with `v1`. `v2` rearranges the sub-packages. Relative to `v1`, `v2` has some changes, See [release](https://github.com/xgfone/go-tools/releases/tag/v2.0.0)
 
 ## Announcement
-These packages only depend on the standard libraries, not any third-part packages.
+These packages only depend on the standard libraries, not any third-part packages. `Go1.7+` will be supported.
 
 ## Installation
 ```shell
