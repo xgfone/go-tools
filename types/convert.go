@@ -412,10 +412,28 @@ func ToInt(v interface{}) (int, error) {
 	return int(_v), err
 }
 
+// MustToInt is equal to ToInt, but panic if there is an error.
+func MustToInt(v interface{}) int {
+	_v, err := ToInt(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
 // ToUint does the best to convert any certain value to uint.
 func ToUint(v interface{}) (uint, error) {
 	_v, err := ToUint64(v)
 	return uint(_v), err
+}
+
+// MustToUint is equal to ToUint, but panic if there is an error.
+func MustToUint(v interface{}) uint {
+	_v, err := ToUint(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
 }
 
 // ToInt32 does the best to convert any certain value to int32.
@@ -424,8 +442,26 @@ func ToInt32(v interface{}) (int32, error) {
 	return int32(_v), err
 }
 
+// MustToInt32 is equal to ToInt32, but panic if there is an error.
+func MustToInt32(v interface{}) int32 {
+	_v, err := ToInt32(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
 // ToUint32 does the best to convert any certain value to uint32.
 func ToUint32(v interface{}) (uint32, error) {
 	_v, err := ToUint64(v)
 	return uint32(_v), err
+}
+
+// MustToUint32 is equal to ToUint32, but panic if there is an error.
+func MustToUint32(v interface{}) uint32 {
+	_v, err := ToUint32(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
 }
