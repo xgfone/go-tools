@@ -64,6 +64,17 @@ func ToSlice(v interface{}) ([]interface{}, error) {
 	return results, nil
 }
 
+// MustToSlice must parse the value v to []interface{}, or panic.
+//
+// Notice: it will do the best to parse v.
+func MustToSlice(v interface{}) []interface{} {
+	_v, err := ToSlice(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
 // ToMap converts any map type that the key is string to map[string]interface{}.
 //
 // Return nil and an error if v is not a map type or its key is not the string
@@ -95,6 +106,17 @@ func ToMap(v interface{}) (map[string]interface{}, error) {
 		results[key.String()] = _v.MapIndex(key).Interface()
 	}
 	return results, nil
+}
+
+// MustToMap must parse the value v to map[string]interface{}, or panic.
+//
+// Notice: it will do the best to parse v.
+func MustToMap(v interface{}) map[string]interface{} {
+	_v, err := ToMap(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
 }
 
 // ToMapKeys returns all the keys of a map.
@@ -210,6 +232,17 @@ func ToBool(v interface{}) (bool, error) {
 		}
 	}
 	return !IsZero(v), nil
+}
+
+// MustToBool must parse the value v to bool, or panic.
+//
+// Notice: it will do the best to parse v.
+func MustToBool(v interface{}) bool {
+	_v, err := ToBool(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
 }
 
 // ToInt64 does the best to convert any certain value to int64.
