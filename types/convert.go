@@ -104,9 +104,31 @@ func ToMap(v interface{}) (map[string]interface{}, error) {
 //
 // If you ensure that v is a map, and its key is the string type, you can ignore
 // the error.
+//
+// For map[string]interface{}, map[string]string and map[string]int, they have
+// already been optimized.
 func ToMapKeys(v interface{}) ([]string, error) {
-	if v == nil {
+	switch _v := v.(type) {
+	case nil:
 		return []string{}, nil
+	case map[string]interface{}:
+		results := make([]string, len(_v))
+		for k := range _v {
+			results = append(results, k)
+		}
+		return results, nil
+	case map[string]string:
+		results := make([]string, len(_v))
+		for k := range _v {
+			results = append(results, k)
+		}
+		return results, nil
+	case map[string]int:
+		results := make([]string, len(_v))
+		for k := range _v {
+			results = append(results, k)
+		}
+		return results, nil
 	}
 
 	_v := reflect.ValueOf(v)
@@ -130,9 +152,31 @@ func ToMapKeys(v interface{}) ([]string, error) {
 // But if the value is nil, it will return a empty slice, not an error instead.
 //
 // If you ensure that v is a map, you can ignore the error.
+//
+// For map[string]interface{}, map[string]string and map[string]int, they have
+// already been optimized.
 func ToMapValues(v interface{}) ([]interface{}, error) {
-	if v == nil {
+	switch _v := v.(type) {
+	case nil:
 		return []interface{}{}, nil
+	case map[string]interface{}:
+		results := make([]interface{}, len(_v))
+		for k := range _v {
+			results = append(results, k)
+		}
+		return results, nil
+	case map[string]string:
+		results := make([]interface{}, len(_v))
+		for k := range _v {
+			results = append(results, k)
+		}
+		return results, nil
+	case map[string]int:
+		results := make([]interface{}, len(_v))
+		for k := range _v {
+			results = append(results, k)
+		}
+		return results, nil
 	}
 
 	_v := reflect.ValueOf(v)
