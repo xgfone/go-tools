@@ -168,6 +168,15 @@ func ToMapKeys(v interface{}) ([]string, error) {
 	return results, nil
 }
 
+// MustToMapKeys is equal to ToMapKeys, but panic if there is an error.
+func MustToMapKeys(v interface{}) []string {
+	_v, err := ToMapKeys(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
 // ToMapValues returns all the values of a map.
 //
 // If the value is not a map, it returns an error.
@@ -211,6 +220,15 @@ func ToMapValues(v interface{}) ([]interface{}, error) {
 		results[i] = _v.MapIndex(key).Interface()
 	}
 	return results, nil
+}
+
+// MustToMapValues is equal to ToMapValues, but panic if there is an error.
+func MustToMapValues(v interface{}) []interface{} {
+	_v, err := ToMapValues(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
 }
 
 // ToBool does the best to convert any certain value to bool.
