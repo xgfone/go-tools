@@ -64,9 +64,7 @@ func ToSlice(v interface{}) ([]interface{}, error) {
 	return results, nil
 }
 
-// MustToSlice must parse the value v to []interface{}, or panic.
-//
-// Notice: it will do the best to parse v.
+// MustToSlice is equal to ToSlice, but panic if there is an error.
 func MustToSlice(v interface{}) []interface{} {
 	_v, err := ToSlice(v)
 	if err != nil {
@@ -108,9 +106,7 @@ func ToMap(v interface{}) (map[string]interface{}, error) {
 	return results, nil
 }
 
-// MustToMap must parse the value v to map[string]interface{}, or panic.
-//
-// Notice: it will do the best to parse v.
+// MustToMap is equal to ToMap, but panic if there is an error.
 func MustToMap(v interface{}) map[string]interface{} {
 	_v, err := ToMap(v)
 	if err != nil {
@@ -252,9 +248,7 @@ func ToBool(v interface{}) (bool, error) {
 	return !IsZero(v), nil
 }
 
-// MustToBool must parse the value v to bool, or panic.
-//
-// Notice: it will do the best to parse v.
+// MustToBool is equal to ToBool, but panic if there is an error.
 func MustToBool(v interface{}) bool {
 	_v, err := ToBool(v)
 	if err != nil {
@@ -285,9 +279,7 @@ func ToInt64(_v interface{}) (v int64, err error) {
 	return
 }
 
-// MustToInt64 must parse the value v to int64, or panic.
-//
-// Notice: it will do the best to parse v.
+// MustToInt64 is equal to ToInt64, but panic if there is an error.
 func MustToInt64(v interface{}) int64 {
 	_v, err := ToInt64(v)
 	if err != nil {
@@ -318,9 +310,7 @@ func ToUint64(_v interface{}) (v uint64, err error) {
 	return
 }
 
-// MustToUint64 must parse the value v to uint64, or panic.
-//
-// Notice: it will do the best to parse v.
+// MustToUint64 is equal to ToUint64, but panic if there is an error.
 func MustToUint64(v interface{}) uint64 {
 	_v, err := ToUint64(v)
 	if err != nil {
@@ -347,9 +337,7 @@ func ToString(_v interface{}) (v string, err error) {
 	return
 }
 
-// MustToString must parse the value v to string, or panic.
-//
-// Notice: it will do the best to parse v.
+// MustToString is equal to ToString, but panic if there is an error.
 func MustToString(v interface{}) string {
 	_v, err := ToString(v)
 	if err != nil {
@@ -380,9 +368,7 @@ func ToFloat64(_v interface{}) (v float64, err error) {
 	return
 }
 
-// MustToFloat64 must parse the value v to float64, or panic.
-//
-// Notice: it will do the best to parse v.
+// MustToFloat64 is equal to ToFloat64, but panic if there is an error.
 func MustToFloat64(v interface{}) float64 {
 	_v, err := ToFloat64(v)
 	if err != nil {
@@ -411,9 +397,7 @@ func ToComplex128(_v interface{}) (v complex128, err error) {
 	return
 }
 
-// MustToComplex128 must parse the value v to complex128, or panic.
-//
-// Notice: it will do the best to parse v.
+// MustToComplex128 is equal to ToComplex128, but panic if there is an error.
 func MustToComplex128(v interface{}) complex128 {
 	_v, err := ToComplex128(v)
 	if err != nil {
