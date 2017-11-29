@@ -29,3 +29,6 @@ _testmain.go
 
 # test
 test_*
+
+# VS Code
+.vscode/
