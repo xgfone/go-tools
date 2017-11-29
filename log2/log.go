@@ -19,6 +19,26 @@ var (
 	ErrorF func(format string, args ...interface{})
 )
 
+// Logger is a logger interface based on the level.
+//
+// For the level, Critical > Error > Warning > Info > Debug.
+type Logger interface {
+	// Debug records the log as the debug level.
+	Debug(format string, args ...interface{})
+
+	// Info records the log as the info level.
+	Info(format string, args ...interface{})
+
+	// Warning records the log as the warning level.
+	Warning(format string, args ...interface{})
+
+	// Error records the log as the error level.
+	Error(format string, args ...interface{})
+
+	// Critical records the log as the critical level.
+	Critical(format string, args ...interface{})
+}
+
 func init() {
 	DebugF = func(format string, args ...interface{}) {
 		format = fmt.Sprintf("[DEBUG] %s\n", format)
