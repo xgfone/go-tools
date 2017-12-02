@@ -5,10 +5,13 @@ package http2
 import (
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"io"
 	"mime"
+	"mime/multipart"
 	"net"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -16,6 +19,30 @@ import (
 var (
 	xmlHeaderBytes = []byte(xml.Header)
 )
+
+func filteFlag(s string) string {
+	for i, c := range s {
+		if c == ' ' || c == ';' {
+			return s[:i]
+		}
+	}
+	return s
+}
+
+// SetHeader sets the response header.
+func SetHeader(w http.ResponseWriter, key, value string) {
+	w.Header().Set(key, value)
+}
+
+// SetContentType is equal to SetContentTypes(w, []string{value}).
+func SetContentType(w http.ResponseWriter, value string) {
+	w.Header().Set(ContentType, value)
+}
+
+// GetContentType returns the Content-Type of the request body.
+func GetContentType(r *http.Request) string {
+	return filteFlag(r.Header.Get("Content-Type"))
+}
 
 func detectContentType(filename string) (t string) {
 	if t = mime.TypeByExtension(filepath.Ext(filename)); t == "" {
@@ -26,7 +53,8 @@ func detectContentType(filename string) (t string) {
 
 // AcceptedLanguages returns an array of accepted languages denoted by
 // the Accept-Language header sent by the browser
-// NOTE: some stupid browsers send in locales lowercase when all the rest send it properly
+// NOTE: some stupid browsers send in locales lowercase when all the rest send
+// it properly
 func AcceptedLanguages(r *http.Request) (languages []string) {
 	var accepted string
 	if accepted = r.Header.Get(AcceptedLanguage); accepted == blank {
@@ -47,8 +75,8 @@ func AcceptedLanguages(r *http.Request) (languages []string) {
 // Attachment is a helper method for returning an attachement file
 // to be downloaded, if you with to open inline see function Inline
 func Attachment(w http.ResponseWriter, r io.Reader, filename string) (err error) {
-	w.Header().Set(ContentDisposition, "attachment;filename="+filename)
-	w.Header().Set(ContentType, detectContentType(filename))
+	SetHeader(w, ContentDisposition, "attachment;filename="+filename)
+	SetContentType(w, detectContentType(filename))
 	w.WriteHeader(http.StatusOK)
 
 	_, err = io.Copy(w, r)
@@ -58,16 +86,17 @@ func Attachment(w http.ResponseWriter, r io.Reader, filename string) (err error)
 // Inline is a helper method for returning a file inline to
 // be rendered/opened by the browser
 func Inline(w http.ResponseWriter, r io.Reader, filename string) (err error) {
-	w.Header().Set(ContentDisposition, "inline;filename="+filename)
-	w.Header().Set(ContentType, detectContentType(filename))
+	SetHeader(w, ContentDisposition, "inline;filename="+filename)
+	SetContentType(w, detectContentType(filename))
 	w.WriteHeader(http.StatusOK)
 
 	_, err = io.Copy(w, r)
 	return
 }
 
-// ClientIP implements a best effort algorithm to return the real client IP, it parses
-// X-Real-IP and X-Forwarded-For in order to work properly with reverse-proxies such us: nginx or haproxy.
+// ClientIP implements a best effort algorithm to return the real client IP,
+// it parses X-Real-IP and X-Forwarded-For in order to work properly
+// with reverse-proxies such us: nginx or haproxy.
 func ClientIP(r *http.Request) (clientIP string) {
 	var values []string
 
@@ -97,6 +126,24 @@ func ClientIP(r *http.Request) (clientIP string) {
 	return
 }
 
+// String renders the format string into the repsonse.
+func String(w http.ResponseWriter, status int, format string,
+	args ...interface{}) error {
+	SetContentType(w, TextPlainCharsetUTF8)
+	w.WriteHeader(status)
+	_, err := fmt.Fprintf(w, format, args...)
+	return err
+}
+
+// Bytes renders the content into the repsonse with a Content-Type and code.
+func Bytes(w http.ResponseWriter, status int, contentType string,
+	content []byte) error {
+	SetContentType(w, contentType)
+	w.WriteHeader(status)
+	_, err := w.Write(content)
+	return err
+}
+
 // JSON marshals provided interface + returns JSON + status code
 func JSON(w http.ResponseWriter, status int, i interface{}) error {
 	b, err := json.Marshal(i)
@@ -109,21 +156,21 @@ func JSON(w http.ResponseWriter, status int, i interface{}) error {
 
 // JSONBytes returns provided JSON response with status code
 func JSONBytes(w http.ResponseWriter, status int, b []byte) (err error) {
-	w.Header().Set(ContentType, ApplicationJSONCharsetUTF8)
+	SetContentType(w, ApplicationJSONCharsetUTF8)
 	w.WriteHeader(status)
 	_, err = w.Write(b)
 	return
 }
 
-// JSONP sends a JSONP response with status code and uses `callback` to construct
-// the JSONP payload.
+// JSONP sends a JSONP response with status code and uses `callback` to
+// construct the JSONP payload.
 func JSONP(w http.ResponseWriter, status int, i interface{}, callback string) error {
 	b, err := json.Marshal(i)
 	if err != nil {
 		return err
 	}
 
-	w.Header().Set(ContentType, ApplicationJavaScriptCharsetUTF8)
+	SetContentType(w, ApplicationJavaScriptCharsetUTF8)
 	w.WriteHeader(status)
 
 	if _, err = w.Write([]byte(callback + "(")); err == nil {
@@ -147,7 +194,7 @@ func XML(w http.ResponseWriter, status int, i interface{}) error {
 
 // XMLBytes returns provided XML response with status code
 func XMLBytes(w http.ResponseWriter, status int, b []byte) (err error) {
-	w.Header().Set(ContentType, ApplicationXMLCharsetUTF8)
+	SetContentType(w, ApplicationXMLCharsetUTF8)
 	w.WriteHeader(status)
 
 	if _, err = w.Write(xmlHeaderBytes); err == nil {
@@ -157,16 +204,16 @@ func XMLBytes(w http.ResponseWriter, status int, b []byte) (err error) {
 	return
 }
 
-// DecodeJSON decodes the request body into the provided struct and limits the request size via
-// an io.LimitReader using the maxMemory param.
+// DecodeJSON decodes the request body into the provided struct and limits
+// the request size via an io.LimitReader using the maxMemory param.
 //
 // The Content-Type e.g. "application/json" and http method are not checked.
 func DecodeJSON(r *http.Request, maxMemory int64, v interface{}) (err error) {
 	return json.NewDecoder(io.LimitReader(r.Body, maxMemory)).Decode(v)
 }
 
-// DecodeXML decodes the request body into the provided struct and limits the request size via
-// an io.LimitReader using the maxMemory param.
+// DecodeXML decodes the request body into the provided struct and limits
+// the request size via an io.LimitReader using the maxMemory param.
 //
 // The Content-Type e.g. "application/xml" and http method are not checked.
 func DecodeXML(r *http.Request, maxMemory int64, v interface{}) (err error) {
@@ -193,4 +240,22 @@ func Decode(r *http.Request, maxMemory int64, v interface{}) (err error) {
 	}
 
 	return
+}
+
+// SaveUploadedFile uploads the form file to the specific file dst.
+func SaveUploadedFile(file *multipart.FileHeader, dst string) error {
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, src)
+	return err
 }
