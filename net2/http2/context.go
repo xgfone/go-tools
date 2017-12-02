@@ -1,6 +1,7 @@
 package http2
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -146,6 +147,20 @@ func (c Context) SetHeader(key, value string) {
 // Status writes the response header with the status code.
 func (c Context) Status(code int) {
 	c.Writer.WriteHeader(code)
+}
+
+// Redirect redirects the request to location.
+//
+// code must be betwwen 300 and 308, that's [300, 308], or return an error.
+func (c Context) Redirect(code int, location string) error {
+	if code < 300 || code > 308 {
+		return fmt.Errorf("Cannot redirect with status code %d", code)
+	}
+	if location == "" {
+		location = "/"
+	}
+	http.Redirect(c.Writer, c.Request, location, code)
+	return nil
 }
 
 // File Sends the file to the client.
