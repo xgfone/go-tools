@@ -114,9 +114,15 @@ func (c Context) ContentType() string {
 	return GetContentType(c.Request)
 }
 
-// GetRawData returns the raw body data.
-func (c Context) GetRawData() ([]byte, error) {
+// GetRawBody returns the raw body data.
+func (c Context) GetRawBody() ([]byte, error) {
 	return GetBody(c.Request)
+}
+
+// GetBody returns the body as string.
+func (c Context) GetBody() (string, error) {
+	b, err := c.GetRawBody()
+	return string(b), err
 }
 
 //////////////////////////////////////////////////////////////////////////////
