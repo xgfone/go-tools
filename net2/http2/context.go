@@ -209,8 +209,11 @@ func (c Context) SetHeader(key, value string) {
 // Render the response
 
 // Status writes the response header with the status code.
-func (c Context) Status(code int) {
+//
+// The returned value is nil forever.
+func (c Context) Status(code int) error {
 	c.Writer.WriteHeader(code)
+	return nil
 }
 
 // Redirect redirects the request to location.
