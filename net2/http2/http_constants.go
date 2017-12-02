@@ -2,6 +2,11 @@
 
 package http2
 
+// Customized constants
+const (
+	DefaultMaxBodySize = 32 << 20 // 32MB
+)
+
 // HTTP Constant Terms and Variables
 const (
 

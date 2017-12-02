@@ -18,7 +18,34 @@ import (
 
 var (
 	xmlHeaderBytes = []byte(xml.Header)
+
+	decodeMap = make(map[string]func(*http.Request, int64, interface{}) error, 4)
 )
+
+// RegisterDecode registers the decode function for Content-Type ctype.
+//
+// ctype is the Content-Type to decode.
+//
+// f is the decoder for the Content-Type ctype. The decoder has three arguments.
+// The first is the request, the second is the max size of the request body,
+// and the last is the decoded values, which is a pointer or map in general.
+//
+// If giving force as true, it will override the registered content-type decoder.
+func RegisterDecode(ctype string, f func(*http.Request, int64, interface{}) error,
+	force ...bool) error {
+	if _, ok := decodeMap[ctype]; ok {
+		if len(force) == 0 || !force[0] {
+			return fmt.Errorf("the Content-Type '%s' has existed", ctype)
+		}
+	}
+	decodeMap[ctype] = f
+	return nil
+}
+
+func init() {
+	RegisterDecode(ApplicationJSON, DecodeJSON)
+	RegisterDecode(ApplicationXML, DecodeXML)
+}
 
 func filteFlag(s string) string {
 	for i, c := range s {
@@ -227,19 +254,11 @@ func DecodeXML(r *http.Request, maxMemory int64, v interface{}) (err error) {
 //
 // Notice: At present it only supports to decode JSON and XML.
 func Decode(r *http.Request, maxMemory int64, v interface{}) (err error) {
-	typ := r.Header.Get(ContentType)
-	if idx := strings.Index(typ, ";"); idx != -1 {
-		typ = typ[:idx]
+	ct := GetContentType(r)
+	if f := decodeMap[ct]; f != nil {
+		return f(r, maxMemory, v)
 	}
-
-	switch typ {
-	case ApplicationJSON:
-		err = DecodeJSON(r, maxMemory, v)
-	case ApplicationXML:
-		err = DecodeXML(r, maxMemory, v)
-	}
-
-	return
+	return fmt.Errorf("no decode of Content-Type %s", ct)
 }
 
 // SaveUploadedFile uploads the form file to the specific file dst.
