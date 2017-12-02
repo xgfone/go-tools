@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/xgfone/go-tools/log2"
 )
 
 // Render is a HTTP render interface.
@@ -23,6 +25,22 @@ type Context struct {
 	Writer  http.ResponseWriter
 
 	query url.Values
+}
+
+// ContextHandler converts a context handler to http.Handler.
+//
+// For example,
+//
+//     func handler(c Context) error {
+//          // ...
+//     }
+//     http.Handle("/", ContextHandler(handler))
+func ContextHandler(f func(Context) error) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := f(NewContext(w, r)); err != nil {
+			log2.ErrorF("Failed to handle %q: %s", r.RequestURI, err)
+		}
+	})
 }
 
 // NewContext returns a new Context.
