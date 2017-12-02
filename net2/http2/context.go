@@ -15,6 +15,9 @@ type Render interface {
 }
 
 // Context is a wrapper of http.Request and http.ResponseWriter.
+//
+// Notice: the Context struct refers to github.com/henrylee2cn/faygo and
+// github.com/gin-gonic/gin.
 type Context struct {
 	Request *http.Request
 	Writer  http.ResponseWriter
@@ -43,6 +46,49 @@ func (c Context) IsWebsocket() bool {
 // ClientIP returns the client ip.
 func (c Context) ClientIP() string {
 	return ClientIP(c.Request)
+}
+
+// Host returns a host:port of the this request from the client.
+func (c Context) Host() string {
+	return c.Request.Host
+}
+
+// Method returns the request method.
+func (c Context) Method() string {
+	return c.Request.Method
+}
+
+// Domain returns the domain of the client.
+func (c Context) Domain() string {
+	return strings.Split(c.Request.Host, ":")[0]
+}
+
+// Path returns the path of the request URL.
+func (c Context) Path() string {
+	return c.Request.URL.Path
+}
+
+// Proxy returns all the proxys.
+func (c Context) Proxy() []string {
+	if ip := c.GetHeader(XForwardedFor); ip != "" {
+		return strings.Split(ip, ",")
+	}
+	return []string{}
+}
+
+// IsMethod returns true if the request method is the given method.
+func (c Context) IsMethod(method string) bool {
+	return c.Method() == method
+}
+
+// IsAjax returns true if the request is a AJAX request.
+func (c Context) IsAjax() bool {
+	return c.GetHeader(XRequestedWith) == "XMLHttpRequest"
+}
+
+// UserAgent returns the request header "UserAgent".
+func (c Context) UserAgent() string {
+	return c.GetHeader(UserAgent)
 }
 
 // ContentType returns the Content-Type header of the request.
@@ -161,6 +207,17 @@ func (c Context) Redirect(code int, location string) error {
 	}
 	http.Redirect(c.Writer, c.Request, location, code)
 	return nil
+}
+
+// Error renders the error information to the response body.
+//
+// if having no second argument, the status code is 500.
+func (c Context) Error(err error, code ...int) error {
+	status := 500
+	if len(code) > 0 {
+		status = code[0]
+	}
+	return c.String(status, "%s", err)
 }
 
 // File Sends the file to the client.

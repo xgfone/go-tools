@@ -1,8 +1,7 @@
-// Some functions in this file are from "github.com/go-playground/pure".
-
 package http2
 
 import (
+	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -153,7 +152,16 @@ func ClientIP(r *http.Request) (clientIP string) {
 	return
 }
 
-// String renders the format string into the repsonse.
+// FromReader reads the content from the reader, then renders it to the response.
+func FromReader(w http.ResponseWriter, status int, contentType string,
+	reader io.Reader) error {
+	SetContentType(w, contentType)
+	w.WriteHeader(status)
+	_, err := io.Copy(w, reader)
+	return err
+}
+
+// String renders the format string into the response.
 func String(w http.ResponseWriter, status int, format string,
 	args ...interface{}) error {
 	SetContentType(w, TextPlainCharsetUTF8)
@@ -162,7 +170,7 @@ func String(w http.ResponseWriter, status int, format string,
 	return err
 }
 
-// Bytes renders the content into the repsonse with a Content-Type and code.
+// Bytes renders the content into the response with a Content-Type and code.
 func Bytes(w http.ResponseWriter, status int, contentType string,
 	content []byte) error {
 	SetContentType(w, contentType)
@@ -183,10 +191,7 @@ func JSON(w http.ResponseWriter, status int, i interface{}) error {
 
 // JSONBytes returns provided JSON response with status code
 func JSONBytes(w http.ResponseWriter, status int, b []byte) (err error) {
-	SetContentType(w, ApplicationJSONCharsetUTF8)
-	w.WriteHeader(status)
-	_, err = w.Write(b)
-	return
+	return Bytes(w, status, ApplicationJSONCharsetUTF8, b)
 }
 
 // JSONP sends a JSONP response with status code and uses `callback` to
@@ -277,4 +282,13 @@ func SaveUploadedFile(file *multipart.FileHeader, dst string) error {
 
 	_, err = io.Copy(out, src)
 	return err
+}
+
+// GetBody returns the body of the HTTP request.
+func GetBody(r *http.Request) (body []byte, err error) {
+	buf := bytes.NewBuffer(nil)
+	if _, err = io.CopyN(buf, r.Body, r.ContentLength); err != nil {
+		return
+	}
+	return buf.Bytes(), nil
 }

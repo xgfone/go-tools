@@ -130,12 +130,3 @@ func ListenAndServeTLS(addr, certFile, keyFile string, handler http.Handler) err
 	lifecycle.Stop()
 	return err
 }
-
-// GetBody returns the body of the HTTP request.
-func GetBody(r *http.Request) (body []byte, err error) {
-	buf := bytes.NewBuffer(nil)
-	if _, err = io.CopyN(buf, r.Body, r.ContentLength); err != nil {
-		return
-	}
-	return buf.Bytes(), nil
-}
