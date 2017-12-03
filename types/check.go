@@ -12,7 +12,7 @@ import (
 // The function uses VerifyType to verify the type, that's, VerifyType(m[k], t),
 // so for t, see VerifyType.
 func CheckMapType(m map[string]interface{}, k, t string) (interface{}, error) {
-	if len(m) == 0 {
+	if m == nil {
 		return nil, fmt.Errorf("the map is nil")
 	}
 	value := m[k]
