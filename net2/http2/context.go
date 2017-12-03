@@ -114,6 +114,11 @@ func (c Context) ContentType() string {
 	return GetContentType(c.Request)
 }
 
+// ContentLength returns the length of the body.
+func (c Context) ContentLength() int64 {
+	return c.Request.ContentLength
+}
+
 // GetRawBody returns the raw body data.
 func (c Context) GetRawBody() ([]byte, error) {
 	return GetBody(c.Request)
