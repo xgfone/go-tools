@@ -245,11 +245,10 @@ func (c Context) Redirect(code int, location string) error {
 //
 // if having no second argument, the status code is 500.
 func (c Context) Error(err error, code ...int) error {
-	status := 500
 	if len(code) > 0 {
-		status = code[0]
+		return c.String(code[0], "%s", err)
 	}
-	return c.String(status, "%s", err)
+	return c.String(500, "%s", err)
 }
 
 // File Sends the file to the client.
@@ -282,4 +281,70 @@ func (c Context) XML(code int, v interface{}) error {
 // JSON renders the JSON into the response body, with a status code.
 func (c Context) JSON(code int, v interface{}) error {
 	return JSON(c.Writer, code, v)
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Status2 writes the response header with the status code.
+//
+// The returned value is nil forever.
+//
+// The code is 200 by default. It is equal to c.Status(200).
+func (c Context) Status2(code ...int) error {
+	if len(code) > 0 {
+		return c.Status(code[0])
+	}
+	return c.Status(200)
+}
+
+// Redirect2 redirects the request to location.
+//
+// code must be betwwen 300 and 308, that's [300, 308], or return an error.
+//
+// The code is 301 by default. It is equal to c.Redirect(301, location).
+func (c Context) Redirect2(location string, code ...int) error {
+	if len(code) > 0 {
+		return c.Redirect(code[0], location)
+	}
+	return c.Redirect(301, location)
+}
+
+// Data2 writes some data into the repsonse body, with a status code.
+//
+// The code is 200 by default, which is equal to c.Data(200, contentType, data).
+func (c Context) Data2(contentType string, data []byte, code ...int) error {
+	if len(code) > 0 {
+		return c.Data(code[0], contentType, data)
+	}
+	return c.Data(200, contentType, data)
+}
+
+// Render2 renders the content into the response body, with a status code.
+//
+// The code is 200 by default, which is equal to c.Render(200, contentType, r).
+func (c Context) Render2(contentType string, r Render, code ...int) error {
+	if len(code) > 0 {
+		return c.Render(code[0], contentType, r)
+	}
+	return c.Render(200, contentType, r)
+}
+
+// XML2 renders the XML into the response body, with a status code.
+//
+// The code is 200 by default, which is equal to c.XML(200, v).
+func (c Context) XML2(v interface{}, code ...int) error {
+	if len(code) > 0 {
+		return c.XML(code[0], v)
+	}
+	return c.XML(200, v)
+}
+
+// JSON2 renders the JSON into the response body, with a status code.
+//
+// The code is 200 by default, which is equal to c.JSON(200, v).
+func (c Context) JSON2(v interface{}, code ...int) error {
+	if len(code) > 0 {
+		return c.JSON(code[0], v)
+	}
+	return c.JSON(200, v)
 }
