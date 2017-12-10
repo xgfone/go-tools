@@ -36,6 +36,18 @@ type Context struct {
 //     }
 //     http.Handle("/", ContextHandler(handler))
 func ContextHandler(f func(Context) error) http.Handler {
+	return ContextHandlerFunc(f)
+}
+
+// ContextHandlerFunc converts a context handler to http.Handler.
+//
+// For example,
+//
+//     func handler(c Context) error {
+//          // ...
+//     }
+//     http.HandleFunc("/", ContextHandlerFunc(handler))
+func ContextHandlerFunc(f func(Context) error) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := f(NewContext(w, r)); err != nil {
 			log2.ErrorF("Failed to handle %q: %s", r.RequestURI, err)
@@ -295,6 +307,16 @@ func (c Context) Status2(code ...int) error {
 		return c.Status(code[0])
 	}
 	return c.Status(200)
+}
+
+// String2 renders the string s into the response body.
+//
+// The code is 200 by default. It is equal to c.String(200, "%s", s).
+func (c Context) String2(s string, code ...int) error {
+	if len(code) > 0 {
+		return c.String(code[0], "%s", s)
+	}
+	return c.String(200, "%s", s)
 }
 
 // Redirect2 redirects the request to location.
