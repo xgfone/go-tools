@@ -10,9 +10,12 @@ import (
 	"mime/multipart"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/xgfone/go-tools/types"
 )
 
 var (
@@ -291,4 +294,85 @@ func GetBody(r *http.Request) (body []byte, err error) {
 		return
 	}
 	return buf.Bytes(), nil
+}
+
+// GetQuerys returns the query values by the key.
+//
+// If the key does not exist, return nil.
+func GetQuerys(values url.Values, key string) []string {
+	return values[key]
+}
+
+// GetQuery return the first query value by the key.
+//
+// If the key does not exist, return "".
+func GetQuery(values url.Values, key string) string {
+	if vs := GetQuerys(values, key); len(vs) > 0 {
+		return vs[0]
+	}
+	return ""
+}
+
+// GetQueryInt gets the first query value and converts it to int.
+//
+// If the key does not exist. return 0, not an error.
+func GetQueryInt(values url.Values, key string) (int, error) {
+	if v := GetQuery(values, key); v != "" {
+		return types.ToInt(v)
+	}
+	return 0, nil
+}
+
+// GetQueryInt64 gets the first query value and converts it to int64.
+//
+// If the key does not exist. return 0, not an error.
+func GetQueryInt64(values url.Values, key string) (int64, error) {
+	if v := GetQuery(values, key); v != "" {
+		return types.ToInt64(v)
+	}
+	return 0, nil
+}
+
+// GetQueryFloat64 gets the first query value and converts it to float64.
+//
+// If the key does not exist. return 0, not an error.
+func GetQueryFloat64(values url.Values, key string) (float64, error) {
+	if v := GetQuery(values, key); v != "" {
+		return types.ToFloat64(v)
+	}
+	return 0, nil
+}
+
+// GetQueryBool gets the first query value and converts it to bool.
+//
+// If the key does not exist. return false, not an error.
+func GetQueryBool(values url.Values, key string) (bool, error) {
+	if v := GetQuery(values, key); v != "" {
+		return types.ToBool(v)
+	}
+	return false, nil
+}
+
+// GetQueryStringSlice returns the query string slice by the key.
+//
+// The format supports two kinds: (1) more than one key, (2) the value separated
+// by the comma. For example:
+//
+//     // URL: /path/to?key1=v1&key1=v2&key1=v3,v4,v5&key2=value2
+//     GetQueryStringSlice(r.URL.Query(), "key1") // => [v1, v2, v3, v4, v5]
+//
+// If the key does not exist or it value is empty, return an empty string slice.
+func GetQueryStringSlice(values url.Values, key string) []string {
+	if qs := GetQuerys(values, key); len(qs) > 0 {
+		vs := make([]string, 0, len(qs)*2)
+		for _, q := range qs {
+			for _, v := range strings.Split(q, ",") {
+				if v != "" {
+					vs = append(vs, v)
+				}
+			}
+		}
+	}
+
+	return []string{}
 }
