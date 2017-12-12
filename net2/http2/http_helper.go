@@ -323,6 +323,15 @@ func GetQuery(values url.Values, key string) string {
 	return ""
 }
 
+// GetQueryDefault is the same as GetQuery, but return the default if the key
+// does not exist.
+func GetQueryDefault(values url.Values, key, _default string) string {
+	if v := GetQuery(values, key); v != "" {
+		return v
+	}
+	return _default
+}
+
 // GetQueryInt gets the first query value and converts it to int.
 //
 // If the key does not exist. return 0, not an error.
@@ -331,6 +340,17 @@ func GetQueryInt(values url.Values, key string) (int, error) {
 		return types.ToInt(v)
 	}
 	return 0, nil
+}
+
+// GetQueryIntDefault is the same as GetQueryInt, but return the default
+// if the key does not exist.
+func GetQueryIntDefault(values url.Values, key string, _default int) (int, error) {
+	if v, err := GetQueryInt(values, key); err != nil {
+		return 0, err
+	} else if v != 0 {
+		return v, nil
+	}
+	return _default, nil
 }
 
 // GetQueryInt64 gets the first query value and converts it to int64.
@@ -343,6 +363,17 @@ func GetQueryInt64(values url.Values, key string) (int64, error) {
 	return 0, nil
 }
 
+// GetQueryInt64Default is the same as GetQueryInt64, but return the default
+// if the key does not exist.
+func GetQueryInt64Default(values url.Values, key string, _default int64) (int64, error) {
+	if v, err := GetQueryInt64(values, key); err != nil {
+		return 0, err
+	} else if v != 0 {
+		return v, nil
+	}
+	return _default, nil
+}
+
 // GetQueryFloat64 gets the first query value and converts it to float64.
 //
 // If the key does not exist. return 0, not an error.
@@ -353,7 +384,21 @@ func GetQueryFloat64(values url.Values, key string) (float64, error) {
 	return 0, nil
 }
 
+// GetQueryFloat64Default is the same as GetQueryFloat64, but return the default
+// if the key does not exist.
+func GetQueryFloat64Default(values url.Values, key string, _default float64) (float64, error) {
+	if v, err := GetQueryFloat64(values, key); err != nil {
+		return 0, err
+	} else if v != 0 {
+		return v, nil
+	}
+	return _default, nil
+}
+
 // GetQueryBool gets the first query value and converts it to bool.
+//
+// For "t", "T", "1", "true", "True", "TRUE", it's true
+// For "f", "F", "0", "false", "False", "FALSE", "", it's false.
 //
 // If the key does not exist. return false, not an error.
 func GetQueryBool(values url.Values, key string) (bool, error) {
