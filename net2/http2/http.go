@@ -41,6 +41,32 @@ func (e HTTPError) Error() string {
 	return e.Err.Error()
 }
 
+// ErrorWrapper converts the http handler function with an error return value
+// to http.Handler.
+//
+// Notice: the wrapper only wraps the panic and writes the error into log.
+func ErrorWrapper(f func(http.ResponseWriter, *http.Request) error) http.Handler {
+	return ErrorWrapperFunc(f)
+}
+
+// ErrorWrapperFunc converts the http handler function with an error return
+// value to http.HandlerFunc.
+//
+// Notice: the wrapper only wraps the panic and writes the error into log.
+func ErrorWrapperFunc(f func(http.ResponseWriter, *http.Request) error) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var err error
+		defer func() {
+			if e := recover(); e != nil {
+				log2.ErrorF("Get a panic when handling %q: %s", r.RequestURI, e)
+			} else if err != nil {
+				log2.ErrorF("Failed to handle %q: %s", r.RequestURI, err)
+			}
+		}()
+		err = f(w, r)
+	}
+}
+
 // ErrorHandler handles the error and responds it the client.
 func ErrorHandler(f func(http.ResponseWriter, *http.Request) error) http.HandlerFunc {
 	return ErrorHandlerWithStatusCode(func(w http.ResponseWriter,
