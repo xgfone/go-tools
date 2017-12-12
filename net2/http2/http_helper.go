@@ -164,6 +164,16 @@ func FromReader(w http.ResponseWriter, status int, contentType string,
 	return err
 }
 
+// Error renders an error into the response.
+//
+// If the status is not gived, the default is 500.
+func Error(w http.ResponseWriter, err error, status ...int) error {
+	if len(status) > 0 {
+		return String(w, status[0], "%s", err)
+	}
+	return String(w, http.StatusInternalServerError, "%s", err)
+}
+
 // String renders the format string into the response.
 func String(w http.ResponseWriter, status int, format string,
 	args ...interface{}) error {
