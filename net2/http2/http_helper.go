@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"mime"
 	"mime/multipart"
 	"net"
@@ -325,6 +326,33 @@ func GetBody(reqOresp interface{}) (data []byte, err error) {
 		return
 	}
 	return buf.Bytes(), nil
+}
+
+// DiscardBody discards the body of the HTTP request or response.
+//
+// The argument must be http.Request or http.Response, or return an error.
+func DiscardBody(reqOresp interface{}) error {
+	var body io.ReadCloser
+	var length int64
+
+	switch r := reqOresp.(type) {
+	case *http.Request:
+		body = r.Body
+		length = r.ContentLength
+	case *http.Response:
+		body = r.Body
+		length = r.ContentLength
+		defer body.Close()
+	default:
+		return fmt.Errorf("no *http.Request or *http.Response")
+	}
+
+	if length < 1 {
+		return nil
+	}
+
+	_, err := io.CopyN(ioutil.Discard, body, length)
+	return err
 }
 
 // GetQuerys returns the query values by the key.
