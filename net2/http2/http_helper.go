@@ -299,6 +299,10 @@ func SaveUploadedFile(file *multipart.FileHeader, dst string) error {
 
 // GetBody returns the body of the HTTP request.
 func GetBody(r *http.Request) (body []byte, err error) {
+	if r.ContentLength < 1 {
+		return []byte{}, nil
+	}
+
 	buf := bytes.NewBuffer(nil)
 	if _, err = io.CopyN(buf, r.Body, r.ContentLength); err != nil {
 		return
