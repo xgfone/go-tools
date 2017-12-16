@@ -297,14 +297,31 @@ func SaveUploadedFile(file *multipart.FileHeader, dst string) error {
 	return err
 }
 
-// GetBody returns the body of the HTTP request.
-func GetBody(r *http.Request) (body []byte, err error) {
-	if r.ContentLength < 1 {
+// GetBody returns the body of the HTTP request or response.
+//
+// The argument must be http.Request or http.Response, or return an error.
+func GetBody(reqOresp interface{}) (data []byte, err error) {
+	var body io.ReadCloser
+	var length int64
+
+	switch r := reqOresp.(type) {
+	case *http.Request:
+		body = r.Body
+		length = r.ContentLength
+	case *http.Response:
+		body = r.Body
+		length = r.ContentLength
+		defer body.Close()
+	default:
+		return nil, fmt.Errorf("no *http.Request or *http.Response")
+	}
+
+	if length < 1 {
 		return []byte{}, nil
 	}
 
 	buf := bytes.NewBuffer(nil)
-	if _, err = io.CopyN(buf, r.Body, r.ContentLength); err != nil {
+	if _, err = io.CopyN(buf, body, length); err != nil {
 		return
 	}
 	return buf.Bytes(), nil
