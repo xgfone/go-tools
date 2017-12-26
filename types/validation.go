@@ -56,6 +56,14 @@ var stype2type = map[string]string{
 	"uint2interface":   "map[uint]interface{}",
 }
 
+// NameToType returns the type string by the name.
+//
+// The name is the name used by VerifyType, such as string for string, strings
+// for []string, or string2string for map[string]string.
+func NameToType(name string) string {
+	return stype2type[name]
+}
+
 // IsZero judges whether a value is ZERO.
 //
 // For "", 0, 0.0, false, 0+0i, nil, and the slice, array or map that the length

@@ -4,6 +4,17 @@ import (
 	"fmt"
 )
 
+func ExampleNameToType() {
+	fmt.Println(NameToType("string"))
+	fmt.Println(NameToType("strings"))
+	fmt.Println(NameToType("string2string"))
+
+	// Output:
+	// string
+	// []string
+	// map[string]string
+}
+
 func ExampleIsZero() {
 	// bool
 	fmt.Println("bool:", IsZero(true), IsZero(false))
