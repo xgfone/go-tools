@@ -44,7 +44,7 @@ var stype2type = map[string]string{
 	"float64s":         "[]float64",
 	"complex64s":       "[]complex64",
 	"complex128s":      "[]complex128",
-	"string2string":    "map[string]string,",
+	"string2string":    "map[string]string",
 	"string2interface": "map[string]interface{}",
 	"int642interface":  "map[int64]interface{}",
 	"int642string":     "map[int64]string",
