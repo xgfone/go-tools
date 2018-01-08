@@ -257,6 +257,14 @@ func (r *SizedRotatingFile) Close() (err error) {
 	return
 }
 
+// Flush flushes the log cache into the file.
+func (r *SizedRotatingFile) Flush() (err error) {
+	r.Lock()
+	err = r.w.Flush()
+	r.Unlock()
+	return
+}
+
 func (r *SizedRotatingFile) close() (err error) {
 	if r.w != nil {
 		err = r.w.Close()

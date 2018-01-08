@@ -30,6 +30,11 @@ func (wc *WriteCloser) Write(data []byte) (int, error) {
 	return wc.buf.Write(data)
 }
 
+// Flush flushes the buffer into io.Writer.
+func (wc *WriteCloser) Flush() error {
+	return wc.buf.Flush()
+}
+
 // Close implements the interface io.Closer.
 func (wc *WriteCloser) Close() (err error) {
 	wc.buf.Flush()
