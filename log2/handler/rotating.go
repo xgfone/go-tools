@@ -265,6 +265,18 @@ func (r *SizedRotatingFile) Flush() (err error) {
 	return
 }
 
+// ReOpen reopens the log file.
+//
+// Notice: If it failed to reopen the log file, the log will be redirected to
+// os.Stderr.
+func (r *SizedRotatingFile) ReOpen() (err error) {
+	r.Lock()
+	r.close()
+	err = r.open()
+	r.Unlock()
+	return
+}
+
 func (r *SizedRotatingFile) close() (err error) {
 	if r.w != nil {
 		err = r.w.Close()
