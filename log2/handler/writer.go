@@ -37,6 +37,9 @@ func (wc *WriteCloser) Flush() error {
 
 // Close implements the interface io.Closer.
 func (wc *WriteCloser) Close() (err error) {
+	if wc.w == nil {
+		return
+	}
 	wc.buf.Flush()
 	err = wc.w.Close()
 	wc.w = nil

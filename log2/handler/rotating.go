@@ -290,8 +290,17 @@ func (r *SizedRotatingFile) close() (err error) {
 func (r *SizedRotatingFile) doRollover() (err error) {
 	if r.backupCount > 0 {
 		if err = r.close(); err != nil {
-			return
+			return fmt.Errorf("Rotating: close failed: %s", err)
 		}
+
+		if !file.IsExist(r.filename) {
+			return nil
+		} else if n, err := file.Size(r.filename); err != nil {
+			return fmt.Errorf("Rotating: failed to get the size: %s", err)
+		} else if n == 0 {
+			return nil
+		}
+
 		for _, i := range function.Range(r.backupCount-1, 0, -1) {
 			sfn := fmt.Sprintf("%s.%d", r.filename, i)
 			dfn := fmt.Sprintf("%s.%d", r.filename, i+1)
@@ -300,19 +309,21 @@ func (r *SizedRotatingFile) doRollover() (err error) {
 					os.Remove(dfn)
 				}
 				if err = os.Rename(sfn, dfn); err != nil {
-					return
+					return fmt.Errorf("Rotating: failed to rename %s -> %s: %s",
+						sfn, dfn, err)
 				}
 			}
 		}
 		dfn := r.filename + ".1"
 		if file.IsExist(dfn) {
 			if err = os.Remove(dfn); err != nil {
-				return
+				return fmt.Errorf("Rotating: failed to remove %s: %s", dfn, err)
 			}
 		}
 		if file.IsExist(r.filename) {
 			if err = os.Rename(r.filename, dfn); err != nil {
-				return
+				return fmt.Errorf("Rotating: failed to rename %s -> %s: %s",
+					r.filename, dfn, err)
 			}
 		}
 		err = r.open()
