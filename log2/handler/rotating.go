@@ -48,6 +48,8 @@ func ResetDefaultFilePerm(perm int) {
 // TimedRotatingFile is a file handler based on the timed rotating, like
 // `logging.handlers.TimedRotatingFileHandler` in Python.
 // Now only support the rotation by day.
+//
+// DEPRECATED!!! Not suggest to use it again. Use SizedRotatingFile instead.
 type TimedRotatingFile struct {
 	sync.Mutex
 	w io.WriteCloser
