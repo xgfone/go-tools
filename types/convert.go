@@ -229,8 +229,9 @@ func MustToMapValues(v interface{}) []interface{} {
 
 // ToBool does the best to convert any certain value to bool.
 //
-// When the value is string, for "t", "T", "1", "true", "True", "TRUE",
-// it's true, for "f", "F", "0", "false", "False", "FALSE", "", it's false.
+// When the value is string, for "t", "T", "1", "on", "On", "ON", "true",
+// "True", "TRUE", it's true, for "f", "F", "0", "off", "Off", "OFF", "false",
+// "False", "FALSE", "", it's false.
 //
 // For other types, if the value is ZERO of the type, it's false. Or it's true.
 func ToBool(v interface{}) (bool, error) {
