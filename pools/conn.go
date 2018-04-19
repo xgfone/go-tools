@@ -2,12 +2,27 @@ package pools
 
 import (
 	"context"
+	"io"
 	"net"
 	"sync"
 	"time"
-
-	"github.com/xgfone/go-tools/io2"
 )
+
+//////
+// Copy the interface Close from the package io2 to avoid circular reference.
+
+// Close implements the interface with the method Close(), which does not return
+// an error.
+type Close struct {
+	Value io.Closer
+}
+
+// Close implements the method Close().
+func (c Close) Close() {
+	c.Value.Close()
+}
+
+//////
 
 // AddrTCPConnPool is the connection pool based on the address, that's, when you
 // need a connection, you only get the connection by the address.
@@ -61,7 +76,7 @@ func (p AddrTCPConnPool) Put(addr string, c *net.TCPConn) {
 	p.lock.Lock()
 	rp := p.pools[addr]
 	p.lock.Unlock()
-	rp.Put(io2.NewClose(c))
+	rp.Put(Close{Value: c})
 }
 
 // Get returns a TCP connection by the addr from the pool.
@@ -76,7 +91,7 @@ func (p AddrTCPConnPool) Get(addr string) (c *net.TCPConn, err error) {
 			if err != nil {
 				return nil, err
 			}
-			return io2.NewClose(c.(*net.TCPConn)), nil
+			return Close{Value: c.(*net.TCPConn)}, nil
 		}, p.size, p.size, p.timeout)
 		p.pools[addr] = rp
 	}
@@ -86,6 +101,6 @@ func (p AddrTCPConnPool) Get(addr string) (c *net.TCPConn, err error) {
 	if err != nil {
 		return
 	}
-	c = r.(io2.Close).Value.(*net.TCPConn)
+	c = r.(Close).Value.(*net.TCPConn)
 	return
 }
