@@ -1,7 +1,6 @@
 package http2
 
 import (
-	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -16,6 +15,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/xgfone/go-tools/io2"
 	"github.com/xgfone/go-tools/types"
 )
 
@@ -302,30 +302,15 @@ func SaveUploadedFile(file *multipart.FileHeader, dst string) error {
 //
 // The argument must be http.Request or http.Response, or return an error.
 func GetBody(reqOresp interface{}) (data []byte, err error) {
-	var body io.ReadCloser
-	var length int64
-
 	switch r := reqOresp.(type) {
 	case *http.Request:
-		body = r.Body
-		length = r.ContentLength
+		return io2.ReadN(r.Body, r.ContentLength)
 	case *http.Response:
-		body = r.Body
-		length = r.ContentLength
-		defer body.Close()
+		defer r.Body.Close()
+		return io2.ReadN(r.Body, r.ContentLength)
 	default:
 		return nil, fmt.Errorf("no *http.Request or *http.Response")
 	}
-
-	if length < 1 {
-		return []byte{}, nil
-	}
-
-	buf := bytes.NewBuffer(nil)
-	if _, err = io.CopyN(buf, body, length); err != nil {
-		return
-	}
-	return buf.Bytes(), nil
 }
 
 // DiscardBody discards the body of the HTTP request or response.
