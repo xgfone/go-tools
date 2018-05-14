@@ -138,7 +138,6 @@ func ListenAndServe(addr string, handler http.Handler) error {
 	server := http.Server{Addr: addr, Handler: handler}
 	lifecycle.Register(func() { server.Shutdown(context.TODO()) })
 	err := server.ListenAndServe()
-	log2.ErrorF("The server listening on %s has an error: %s", addr, err)
 	lifecycle.Stop()
 	return err
 }
@@ -152,7 +151,6 @@ func ListenAndServeTLS(addr, certFile, keyFile string, handler http.Handler) err
 	server := http.Server{Addr: addr, Handler: handler}
 	lifecycle.Register(func() { server.Shutdown(context.TODO()) })
 	err := server.ListenAndServeTLS(certFile, keyFile)
-	log2.ErrorF("The TLS server listening on %s has an error: %s", addr, err)
 	lifecycle.Stop()
 	return err
 }
