@@ -38,7 +38,6 @@ net2/server  | **DEPRECATED**. The simple `TCP` / `UDP` server. The sub-package 
 os2          | The supplement of the standard library of `os`, such as `Exit`.
 pagination   | It is usually used to compute the web pagination.
 pools        | Some simple convenient pools, such as `BufPool`, `ResourcePool`, `AddrTCPConnPool`, etc.
-pubsub       | A `PubSub` interface and a implementation based on `Memory`.
 queue        | Supply the `Queue` interface, and some implementations such as `NewMemoryQueue` based on channel and `NewListQueue` based on list.
 signal2      | The supplement of the standard library of `signal`, such as `HandleSignal`.
 sort2        | The supplement of the standard library of `sort`, such as the key-value sort.
