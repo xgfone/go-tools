@@ -30,5 +30,8 @@ _testmain.go
 # test
 test_*
 
+# log
+*.log
+
 # VS Code
 .vscode/
