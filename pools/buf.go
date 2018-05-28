@@ -11,14 +11,6 @@ type BytesPool struct {
 	pool *sync.Pool
 }
 
-// BufPool is the alias of BytesPool for backward compatibility.
-type BufPool = BytesPool
-
-// NewBufPool is for backward compatibility.
-func NewBufPool(size int) BufPool {
-	return NewBytesPool(size)
-}
-
 // NewBytesPool returns a new []byte pool.
 //
 // size is the size of the []byte.

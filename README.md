@@ -28,12 +28,11 @@ file         | Some convenient functions about the file operation.
 function     | Collect some convenient funtions, for example, calling a function or method dynamically, comparing two values, deciding the maximum or minimum, getting a integer range, determining whether a value is in a map or slice, etc.
 io2          | The supplement of the standard library of `io`, such as `Close`.
 lifecycle    | The manager of the lifecycle of some apps in a program.
-log2/handler | The logger handler, such as `TimedRotatingFile` and `SizedRotatingFile`.
+log2/handler | The logger handler, such as `SizedRotatingFile`.
 net2         | The supplement of the standard library `net`, such as some helpers about net.
 net2/http2   | The supplement of the standard library `http`, not the protocal `http2`.
-net2/server  | **DEPRECATED**. The simple `TCP` / `UDP` server. The sub-package is merged into `net2`.
 os2          | The supplement of the standard library of `os`, such as `Exit`.
-pools        | Some simple convenient pools, such as `BufPool`, `ResourcePool`, `AddrTCPConnPool`, etc.
+pools        | Some simple convenient pools, such as `BytesPool`, `BufferPool`, `ResourcePool`, `AddrTCPConnPool`, etc.
 queue        | Supply the `Queue` interface, and some implementations such as `NewMemoryQueue` based on channel and `NewListQueue` based on list.
 signal2      | The supplement of the standard library of `signal`, such as `HandleSignal`.
 sort2        | The supplement of the standard library of `sort`, such as the key-value sort.
