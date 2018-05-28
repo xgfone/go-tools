@@ -28,7 +28,6 @@ file         | Some convenient functions about the file operation.
 function     | Collect some convenient funtions, for example, calling a function or method dynamically, comparing two values, deciding the maximum or minimum, getting a integer range, determining whether a value is in a map or slice, etc.
 io2          | The supplement of the standard library of `io`, such as `Close`.
 lifecycle    | The manager of the lifecycle of some apps in a program.
-log2         | Supply a global debug and error log function, and a log function adaptor.
 log2/handler | The logger handler, such as `TimedRotatingFile` and `SizedRotatingFile`.
 net2         | The supplement of the standard library `net`, such as some helpers about net.
 net2/http2   | The supplement of the standard library `http`, not the protocal `http2`.
