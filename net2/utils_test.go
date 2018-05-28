@@ -33,3 +33,13 @@ func TestIPIsOnHost(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestIsIP(t *testing.T) {
+	if !IsIP("1.2.3.4") || !IsIP("fe80::acf4:ffff:feb7:bb24") {
+		t.Fail()
+	}
+
+	if IsIP("1.2.3.4.5") || IsIP("fe80::acf4::ffff:feb7:bb24") {
+		t.Fail()
+	}
+}

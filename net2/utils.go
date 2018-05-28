@@ -85,3 +85,8 @@ func IPIsOnHost(ip string) bool {
 	}
 	return false
 }
+
+// IsIP returns true if ip is a valid IPv4 or IPv6, or returns false.
+func IsIP(ip string) bool {
+	return net.ParseIP(ip) != nil
+}
