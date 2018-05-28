@@ -56,7 +56,7 @@ func GetIP(iname string) (ips []string, err error) {
 }
 
 // GetInterfaceByIP returns the interface name bound the ip.
-func GetInterfaceByIP(ip string) (string, error) {
+func GetInterfaceByIP(ip string) (iface string, err error) {
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		return "", err
