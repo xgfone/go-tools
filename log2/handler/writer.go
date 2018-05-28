@@ -30,6 +30,11 @@ func (wc *WriteCloser) Write(data []byte) (int, error) {
 	return wc.buf.Write(data)
 }
 
+// WriteString writes the string.
+func (wc *WriteCloser) WriteString(data string) (int, error) {
+	return wc.buf.WriteString(data)
+}
+
 // Flush flushes the buffer into io.Writer.
 func (wc *WriteCloser) Flush() error {
 	return wc.buf.Flush()

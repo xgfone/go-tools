@@ -4,20 +4,6 @@ import (
 	"fmt"
 )
 
-func ExampleTimedRotatingFile() {
-	h := NewTimedRotatingFile("test.log", 2)
-	defer h.Close()
-	n, err := h.Write([]byte("test"))
-	if err != nil || n != 4 {
-		fmt.Println("Fail")
-	} else {
-		fmt.Println("Success")
-	}
-
-	// Output:
-	// Success
-}
-
 func ExampleSizedRotatingFile() {
 	h := NewSizedRotatingFile("test_rotatingfile.log", 1024, 3)
 	defer h.Close()
