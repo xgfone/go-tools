@@ -25,6 +25,11 @@ var (
 	decodeMap = make(map[string]func(*http.Request, int64, interface{}) error, 4)
 )
 
+func init() {
+	RegisterDecode(ApplicationJSON, DecodeJSON)
+	RegisterDecode(ApplicationXML, DecodeXML)
+}
+
 // RegisterDecode registers the decode function for Content-Type ctype.
 //
 // ctype is the Content-Type to decode.
@@ -45,209 +50,18 @@ func RegisterDecode(ctype string, f func(*http.Request, int64, interface{}) erro
 	return nil
 }
 
-func init() {
-	RegisterDecode(ApplicationJSON, DecodeJSON)
-	RegisterDecode(ApplicationXML, DecodeXML)
-}
-
-func filteFlag(s string) string {
-	for i, c := range s {
-		if c == ' ' || c == ';' {
-			return s[:i]
-		}
-	}
-	return s
-}
-
-// SetHeader sets the response header.
-func SetHeader(w http.ResponseWriter, key, value string) {
-	w.Header().Set(key, value)
-}
-
-// SetContentType is equal to SetContentTypes(w, []string{value}).
-func SetContentType(w http.ResponseWriter, value string) {
-	w.Header().Set(ContentType, value)
-}
-
-// GetContentType returns the Content-Type of the request body.
-func GetContentType(r *http.Request) string {
-	return filteFlag(r.Header.Get("Content-Type"))
-}
-
-func detectContentType(filename string) (t string) {
-	if t = mime.TypeByExtension(filepath.Ext(filename)); t == "" {
-		t = OctetStream
-	}
-	return
-}
-
-// AcceptedLanguages returns an array of accepted languages denoted by
-// the Accept-Language header sent by the browser
-// NOTE: some stupid browsers send in locales lowercase when all the rest send
-// it properly
-func AcceptedLanguages(r *http.Request) (languages []string) {
-	var accepted string
-	if accepted = r.Header.Get(AcceptedLanguage); accepted == blank {
-		return
-	}
-
-	options := strings.Split(accepted, ",")
-	l := len(options)
-	languages = make([]string, l)
-	for i := 0; i < l; i++ {
-		locale := strings.SplitN(options[i], ";", 2)
-		languages[i] = strings.Trim(locale[0], " ")
-	}
-
-	return
-}
-
-// Attachment is a helper method for returning an attachement file
-// to be downloaded, if you with to open inline see function Inline
-func Attachment(w http.ResponseWriter, r io.Reader, filename string) (err error) {
-	SetHeader(w, ContentDisposition, "attachment;filename="+filename)
-	SetContentType(w, detectContentType(filename))
-	w.WriteHeader(http.StatusOK)
-
-	_, err = io.Copy(w, r)
-	return
-}
-
-// Inline is a helper method for returning a file inline to
-// be rendered/opened by the browser
-func Inline(w http.ResponseWriter, r io.Reader, filename string) (err error) {
-	SetHeader(w, ContentDisposition, "inline;filename="+filename)
-	SetContentType(w, detectContentType(filename))
-	w.WriteHeader(http.StatusOK)
-
-	_, err = io.Copy(w, r)
-	return
-}
-
-// ClientIP implements a best effort algorithm to return the real client IP,
-// it parses X-Real-IP and X-Forwarded-For in order to work properly
-// with reverse-proxies such us: nginx or haproxy.
-func ClientIP(r *http.Request) (clientIP string) {
-	var values []string
-
-	if values, _ = r.Header[XRealIP]; len(values) > 0 {
-
-		clientIP = strings.TrimSpace(values[0])
-		if clientIP != blank {
-			return
-		}
-	}
-
-	if values, _ = r.Header[XForwardedFor]; len(values) > 0 {
-		clientIP = values[0]
-
-		if index := strings.IndexByte(clientIP, ','); index >= 0 {
-			clientIP = clientIP[0:index]
-		}
-
-		clientIP = strings.TrimSpace(clientIP)
-		if clientIP != blank {
-			return
-		}
-	}
-
-	clientIP, _, _ = net.SplitHostPort(strings.TrimSpace(r.RemoteAddr))
-
-	return
-}
-
-// FromReader reads the content from the reader, then renders it to the response.
-func FromReader(w http.ResponseWriter, status int, contentType string,
-	reader io.Reader) error {
-	SetContentType(w, contentType)
-	w.WriteHeader(status)
-	_, err := io.Copy(w, reader)
-	return err
-}
-
-// Error renders an error into the response.
+// Decode takes the request and attempts to discover it's content type via
+// the http headers and then decode the request body into the provided struct.
+// Example if header was "application/json" would decode using
+// json.NewDecoder(io.LimitReader(r.Body, maxMemory)).Decode(v).
 //
-// If the status is not gived, the default is 500.
-func Error(w http.ResponseWriter, err error, status ...int) error {
-	if len(status) > 0 {
-		return String(w, status[0], "%s", err)
+// Notice: At present it only supports to decode JSON and XML.
+func Decode(r *http.Request, maxMemory int64, v interface{}) (err error) {
+	ct := GetContentType(r)
+	if f := decodeMap[ct]; f != nil {
+		return f(r, maxMemory, v)
 	}
-	return String(w, http.StatusInternalServerError, "%s", err)
-}
-
-// String renders the format string into the response.
-func String(w http.ResponseWriter, status int, format string,
-	args ...interface{}) error {
-	SetContentType(w, TextPlainCharsetUTF8)
-	w.WriteHeader(status)
-	_, err := fmt.Fprintf(w, format, args...)
-	return err
-}
-
-// Bytes renders the content into the response with a Content-Type and code.
-func Bytes(w http.ResponseWriter, status int, contentType string,
-	content []byte) error {
-	SetContentType(w, contentType)
-	w.WriteHeader(status)
-	_, err := w.Write(content)
-	return err
-}
-
-// JSON marshals provided interface + returns JSON + status code
-func JSON(w http.ResponseWriter, status int, i interface{}) error {
-	b, err := json.Marshal(i)
-	if err != nil {
-		return err
-	}
-
-	return JSONBytes(w, status, b)
-}
-
-// JSONBytes returns provided JSON response with status code
-func JSONBytes(w http.ResponseWriter, status int, b []byte) (err error) {
-	return Bytes(w, status, ApplicationJSONCharsetUTF8, b)
-}
-
-// JSONP sends a JSONP response with status code and uses `callback` to
-// construct the JSONP payload.
-func JSONP(w http.ResponseWriter, status int, i interface{}, callback string) error {
-	b, err := json.Marshal(i)
-	if err != nil {
-		return err
-	}
-
-	SetContentType(w, ApplicationJavaScriptCharsetUTF8)
-	w.WriteHeader(status)
-
-	if _, err = w.Write([]byte(callback + "(")); err == nil {
-		if _, err = w.Write(b); err == nil {
-			_, err = w.Write([]byte(");"))
-		}
-	}
-
-	return err
-}
-
-// XML marshals provided interface + returns XML + status code
-func XML(w http.ResponseWriter, status int, i interface{}) error {
-	b, err := xml.Marshal(i)
-	if err != nil {
-		return err
-	}
-
-	return XMLBytes(w, status, b)
-}
-
-// XMLBytes returns provided XML response with status code
-func XMLBytes(w http.ResponseWriter, status int, b []byte) (err error) {
-	SetContentType(w, ApplicationXMLCharsetUTF8)
-	w.WriteHeader(status)
-
-	if _, err = w.Write(xmlHeaderBytes); err == nil {
-		_, err = w.Write(b)
-	}
-
-	return
+	return fmt.Errorf("no decode of Content-Type %s", ct)
 }
 
 // DecodeJSON decodes the request body into the provided struct and limits
@@ -266,78 +80,53 @@ func DecodeXML(r *http.Request, maxMemory int64, v interface{}) (err error) {
 	return xml.NewDecoder(io.LimitReader(r.Body, maxMemory)).Decode(v)
 }
 
-// Decode takes the request and attempts to discover it's content type via
-// the http headers and then decode the request body into the provided struct.
-// Example if header was "application/json" would decode using
-// json.NewDecoder(io.LimitReader(r.Body, maxMemory)).Decode(v).
-//
-// Notice: At present it only supports to decode JSON and XML.
-func Decode(r *http.Request, maxMemory int64, v interface{}) (err error) {
-	ct := GetContentType(r)
-	if f := decodeMap[ct]; f != nil {
-		return f(r, maxMemory, v)
+func filteFlag(s string) string {
+	for i, c := range s {
+		if c == ' ' || c == ';' {
+			return s[:i]
+		}
 	}
-	return fmt.Errorf("no decode of Content-Type %s", ct)
+	return s
 }
 
-// SaveUploadedFile uploads the form file to the specific file dst.
-func SaveUploadedFile(file *multipart.FileHeader, dst string) error {
-	src, err := file.Open()
-	if err != nil {
-		return err
-	}
-	defer src.Close()
-
-	out, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	_, err = io.Copy(out, src)
-	return err
+// SetHeader sets the response header.
+func SetHeader(w http.ResponseWriter, key, value string) {
+	w.Header().Set(key, value)
 }
 
-// GetBody returns the body of the HTTP request or response.
-//
-// The argument must be http.Request or http.Response, or return an error.
-func GetBody(reqOresp interface{}) (data []byte, err error) {
-	switch r := reqOresp.(type) {
-	case *http.Request:
-		return io2.ReadN(r.Body, r.ContentLength)
-	case *http.Response:
-		defer r.Body.Close()
-		return io2.ReadN(r.Body, r.ContentLength)
-	default:
-		return nil, fmt.Errorf("no *http.Request or *http.Response")
-	}
+// GetHeader returns the request header.
+func GetHeader(r *http.Request, key string) string {
+	return r.Header.Get(key)
 }
 
-// DiscardBody discards the body of the HTTP request or response.
-//
-// The argument must be http.Request or http.Response, or return an error.
-func DiscardBody(reqOresp interface{}) error {
-	var body io.ReadCloser
-	var length int64
+// SetContentType is equal to SetContentTypes(w, []string{value}).
+func SetContentType(w http.ResponseWriter, value string) {
+	w.Header().Set(ContentType, value)
+}
 
-	switch r := reqOresp.(type) {
-	case *http.Request:
-		body = r.Body
-		length = r.ContentLength
-	case *http.Response:
-		body = r.Body
-		length = r.ContentLength
-		defer body.Close()
-	default:
-		return fmt.Errorf("no *http.Request or *http.Response")
+// GetContentType returns the Content-Type of the request body.
+func GetContentType(r *http.Request) string {
+	return filteFlag(r.Header.Get("Content-Type"))
+}
+
+// IsWebSocket returns true if the request is websocket. Or returns false.
+func IsWebSocket(r *http.Request) bool {
+	connection := strings.ToLower(GetHeader(r, "Connection"))
+	upgrade := strings.ToLower(GetHeader(r, "Upgrade"))
+	if strings.Contains(connection, "upgrade") && upgrade == "websocket" {
+		return true
 	}
+	return false
+}
 
-	if length < 1 {
-		return nil
-	}
+// IsAjax returns true if the request is a AJAX request.
+func IsAjax(r *http.Request) bool {
+	return GetHeader(r, XRequestedWith) == "XMLHttpRequest"
+}
 
-	_, err := io.CopyN(ioutil.Discard, body, length)
-	return err
+// IsMethod checks whether the request method is the given method.
+func IsMethod(r *http.Request, method string) bool {
+	return r.Method == strings.ToUpper(method)
 }
 
 // GetQuerys returns the query values by the key.
@@ -464,4 +253,266 @@ func GetQueryStringSlice(values url.Values, key string) []string {
 	}
 
 	return []string{}
+}
+
+// AcceptedLanguages returns an array of accepted languages denoted by
+// the Accept-Language header sent by the browser
+// NOTE: some stupid browsers send in locales lowercase when all the rest send
+// it properly
+func AcceptedLanguages(r *http.Request) (languages []string) {
+	var accepted string
+	if accepted = r.Header.Get(AcceptedLanguage); accepted == blank {
+		return
+	}
+
+	options := strings.Split(accepted, ",")
+	l := len(options)
+	languages = make([]string, l)
+	for i := 0; i < l; i++ {
+		locale := strings.SplitN(options[i], ";", 2)
+		languages[i] = strings.Trim(locale[0], " ")
+	}
+
+	return
+}
+
+// ClientIP implements a best effort algorithm to return the real client IP,
+// it parses X-Real-IP and X-Forwarded-For in order to work properly
+// with reverse-proxies such us: nginx or haproxy.
+func ClientIP(r *http.Request) (clientIP string) {
+	var values []string
+
+	if values, _ = r.Header[XRealIP]; len(values) > 0 {
+		clientIP = strings.TrimSpace(values[0])
+		if clientIP != blank {
+			return
+		}
+	}
+
+	if values, _ = r.Header[XForwardedFor]; len(values) > 0 {
+		clientIP = values[0]
+
+		if index := strings.IndexByte(clientIP, ','); index >= 0 {
+			clientIP = clientIP[0:index]
+		}
+
+		clientIP = strings.TrimSpace(clientIP)
+		if clientIP != blank {
+			return
+		}
+	}
+
+	clientIP, _, _ = net.SplitHostPort(strings.TrimSpace(r.RemoteAddr))
+
+	return
+}
+
+// SaveUploadedFile uploads the form file to the specific file dst.
+func SaveUploadedFile(file *multipart.FileHeader, dst string) error {
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, src)
+	return err
+}
+
+// GetBody returns the body of the HTTP request or response.
+//
+// The argument must be http.Request or http.Response, or return an error.
+func GetBody(reqOresp interface{}) (data []byte, err error) {
+	switch r := reqOresp.(type) {
+	case *http.Request:
+		return io2.ReadN(r.Body, r.ContentLength)
+	case *http.Response:
+		defer r.Body.Close()
+		return io2.ReadN(r.Body, r.ContentLength)
+	default:
+		return nil, fmt.Errorf("no *http.Request or *http.Response")
+	}
+}
+
+// DiscardBody discards the body of the HTTP request or response.
+//
+// The argument must be http.Request or http.Response, or return an error.
+func DiscardBody(reqOresp interface{}) error {
+	var body io.ReadCloser
+	var length int64
+
+	switch r := reqOresp.(type) {
+	case *http.Request:
+		body = r.Body
+		length = r.ContentLength
+	case *http.Response:
+		body = r.Body
+		length = r.ContentLength
+		defer body.Close()
+	default:
+		return fmt.Errorf("no *http.Request or *http.Response")
+	}
+
+	if length < 1 {
+		return nil
+	}
+
+	_, err := io.CopyN(ioutil.Discard, body, length)
+	return err
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Send the response
+
+func detectContentType(filename string) (t string) {
+	if t = mime.TypeByExtension(filepath.Ext(filename)); t == "" {
+		t = OctetStream
+	}
+	return
+}
+
+// Attachment is a helper method for returning an attachement file
+// to be downloaded, if you with to open inline see function Inline
+func Attachment(w http.ResponseWriter, r io.Reader, filename string) (err error) {
+	SetHeader(w, ContentDisposition, "attachment;filename="+filename)
+	SetContentType(w, detectContentType(filename))
+	w.WriteHeader(http.StatusOK)
+
+	_, err = io.Copy(w, r)
+	return
+}
+
+// Inline is a helper method for returning a file inline to be rendered/opened
+// by the browser.
+func Inline(w http.ResponseWriter, r io.Reader, filename string) (err error) {
+	SetHeader(w, ContentDisposition, "inline;filename="+filename)
+	SetContentType(w, detectContentType(filename))
+	w.WriteHeader(http.StatusOK)
+
+	_, err = io.Copy(w, r)
+	return
+}
+
+// FromReader reads the content from the reader, then renders it to the response.
+func FromReader(w http.ResponseWriter, reader io.Reader, status int,
+	contentType string) error {
+	SetContentType(w, contentType)
+	w.WriteHeader(status)
+	_, err := io.Copy(w, reader)
+	return err
+}
+
+// Redirect redirects the request to location.
+//
+// code must be betwwen 300 and 308, that's [300, 308], or return an error.
+func Redirect(w http.ResponseWriter, r *http.Request, code int, location string) error {
+	if code < 300 || code > 308 {
+		return fmt.Errorf("Cannot redirect with status code %d", code)
+	}
+	if location == "" {
+		location = "/"
+	}
+	http.Redirect(w, r, location, code)
+	return nil
+}
+
+// Status writes the response header with the status code.
+//
+// The returned value is nil forever.
+func Status(w http.ResponseWriter, code int) error {
+	w.WriteHeader(code)
+	return nil
+}
+
+// Error renders an error into the response.
+//
+// If the status is not gived, the default is 500.
+func Error(w http.ResponseWriter, err error, code ...int) error {
+	if len(code) > 0 {
+		return String(w, code[0], "%s", err)
+	}
+	return String(w, http.StatusInternalServerError, "%s", err)
+}
+
+// String renders the format string into the response.
+func String(w http.ResponseWriter, status int, format string,
+	args ...interface{}) error {
+	SetContentType(w, TextPlainCharsetUTF8)
+	w.WriteHeader(status)
+	_, err := fmt.Fprintf(w, format, args...)
+	return err
+}
+
+// Bytes renders the content into the response with a Content-Type and code.
+func Bytes(w http.ResponseWriter, status int, content []byte,
+	contentType ...string) error {
+	if len(contentType) > 0 {
+		SetContentType(w, contentType[0])
+	}
+	w.WriteHeader(status)
+	_, err := w.Write(content)
+	return err
+}
+
+// JSON marshals provided interface + returns JSON + status code
+func JSON(w http.ResponseWriter, status int, i interface{}) error {
+	data, err := json.Marshal(i)
+	if err != nil {
+		return err
+	}
+
+	return JSONBytes(w, status, data)
+}
+
+// JSONBytes returns provided JSON response with status code
+func JSONBytes(w http.ResponseWriter, status int, data []byte) (err error) {
+	return Bytes(w, status, data, ApplicationJSONCharsetUTF8)
+}
+
+// JSONP sends a JSONP response with status code and uses `callback` to
+// construct the JSONP payload.
+func JSONP(w http.ResponseWriter, status int, i interface{}, callback string) error {
+	b, err := json.Marshal(i)
+	if err != nil {
+		return err
+	}
+
+	SetContentType(w, ApplicationJavaScriptCharsetUTF8)
+	w.WriteHeader(status)
+
+	if _, err = w.Write([]byte(callback + "(")); err == nil {
+		if _, err = w.Write(b); err == nil {
+			_, err = w.Write([]byte(");"))
+		}
+	}
+
+	return err
+}
+
+// XML marshals provided interface + returns XML + status code
+func XML(w http.ResponseWriter, status int, i interface{}) error {
+	data, err := xml.Marshal(i)
+	if err != nil {
+		return err
+	}
+
+	return XMLBytes(w, status, data)
+}
+
+// XMLBytes returns provided XML response with status code
+func XMLBytes(w http.ResponseWriter, status int, data []byte) (err error) {
+	SetContentType(w, ApplicationXMLCharsetUTF8)
+	w.WriteHeader(status)
+
+	if _, err = w.Write(xmlHeaderBytes); err == nil {
+		_, err = w.Write(data)
+	}
+
+	return
 }
