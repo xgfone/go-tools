@@ -68,9 +68,10 @@ func NewResourceLock() ResourceLock {
 
 // BaseResourceLock is a lock to lock a certain resource by the resource id.
 type BaseResourceLock struct {
-	locker    *sync.Mutex
-	resources map[string]struct{}
-	waiters   map[string]*list.List
+	locker     *sync.Mutex
+	resources  map[string]struct{}
+	waiters    map[string]*list.List
+	waiterPool *sync.Pool
 }
 
 // NewBaseResourceLock returns a new BaseResourceLock.
@@ -79,6 +80,9 @@ func NewBaseResourceLock() BaseResourceLock {
 		locker:    new(sync.Mutex),
 		resources: make(map[string]struct{}),
 		waiters:   make(map[string]*list.List),
+		waiterPool: &sync.Pool{New: func() interface{} {
+			return list.New()
+		}},
 	}
 }
 
@@ -107,7 +111,7 @@ func (r BaseResourceLock) lock(id string) bool {
 	// Fail to lock, add the wait to wake up.
 	waiter, ok := r.waiters[id]
 	if !ok {
-		waiter = list.New()
+		waiter = r.waiterPool.Get().(*list.List)
 		r.waiters[id] = waiter
 	}
 	wake := make(chan struct{})
@@ -137,6 +141,7 @@ func (r BaseResourceLock) Unlock(id string) {
 
 			if waiter.Len() == 0 {
 				delete(r.waiters, id)
+				r.waiterPool.Put(waiter)
 			}
 		}
 		r.locker.Unlock()
