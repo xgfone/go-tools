@@ -55,6 +55,28 @@ func GetIP(iname string) (ips []string, err error) {
 	return getIPByName(iname, true)
 }
 
+// GetInterfaceByIP returns the interface name bound the ip.
+func GetInterfaceByIP(ip string) (string, error) {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return "", err
+	}
+
+	for _, iface := range ifaces {
+		_ips, err := getIPByName(iface.Name, false)
+		if err != nil {
+			return "", err
+		}
+		for _, _ip := range _ips {
+			if _ip == ip {
+				return iface.Name, nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("not found the interface bound '%s'", ip)
+}
+
 // GetAllIPs returns all the ips on the current host.
 func GetAllIPs() (ips []string, err error) {
 	ifaces, err := net.Interfaces()
