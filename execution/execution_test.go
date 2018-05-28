@@ -1,20 +1,13 @@
-package execution_test
+package execution
 
 import (
+	"context"
 	"fmt"
-	"sync"
-
-	"github.com/xgfone/go-tools/execution"
 )
 
-var lock = new(sync.Mutex)
-
-func ExampleExecution_Execute() {
-	Retry := execution.Execution{Count: 1, Interval: 1000}
-	Retry.SetMutex(lock)
-	err := Retry.Execute([]string{"ls", "."})
-	if err != nil {
-		fmt.Println("ERROR", err)
+func ExampleExecute() {
+	if err := Execute(context.TODO(), "ls", "."); err != nil {
+		fmt.Println("ERROR")
 	} else {
 		fmt.Println("OK")
 	}
@@ -23,25 +16,30 @@ func ExampleExecution_Execute() {
 	// OK
 }
 
-func ExampleExecution_Output() {
-	Redo := execution.Execution{Count: -1, Interval: 1000}
-	Redo.SetMutex(lock)
-	_, err := Redo.Output([]string{"ls", "."})
-	if err == nil { // Notice: we run it until failed
+func ExampleExecutes() {
+	if err := Executes(context.TODO(), []string{"ls"}); err != nil {
 		fmt.Println("ERROR")
 	} else {
 		fmt.Println("OK")
 	}
 
 	// Output:
-	// ERROR
+	// OK
 }
 
-func ExampleExecution_ErrOutput() {
-	Retry := execution.Execution{Count: 1, Interval: 1000}
-	Retry.SetMutex(lock)
-	_, err := Retry.ErrOutput([]string{"ls", "."})
-	if err != nil {
+func ExampleOutput() {
+	if _, err := Output(context.TODO(), "ls", "."); err != nil {
+		fmt.Println("ERROR")
+	} else {
+		fmt.Println("OK")
+	}
+
+	// Output:
+	// OK
+}
+
+func ExampleOutputs() {
+	if _, err := Outputs(context.TODO(), []string{"ls"}); err != nil {
 		fmt.Println("ERROR")
 	} else {
 		fmt.Println("OK")
