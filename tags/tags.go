@@ -5,8 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
-
-	"github.com/xgfone/go-tools/log2"
 )
 
 // Tag represents a tag of a field in a struct.
@@ -25,7 +23,7 @@ type Tag struct {
 type Tags struct {
 	debug  bool
 	name   string
-	caches []*Tag
+	caches []Tag
 
 	f2t map[string]map[string]string
 	t2f map[string]map[string]string
@@ -49,7 +47,7 @@ func New(v interface{}, debug ...bool) *Tags {
 	sname := typ.Name()
 	tags := newTag(sname)
 	nf := typ.NumField()
-	var tag *Tag
+	var tag Tag
 	for i := 0; i < nf; i++ {
 		field := typ.Field(i)
 		fname := field.Name
@@ -59,7 +57,7 @@ func New(v interface{}, debug ...bool) *Tags {
 			tags.debugf("Struct=%s, Field=%s, TagName=%s, TagValue=%s",
 				sname, fname, k, v)
 
-			tag = &Tag{Field: fname, Name: k, Value: v}
+			tag = Tag{Field: fname, Name: k, Value: v}
 			tags.caches = append(tags.caches, tag)
 			tags.f2t[fname][k] = v
 
@@ -79,7 +77,7 @@ func New(v interface{}, debug ...bool) *Tags {
 func newTag(name string) *Tags {
 	return &Tags{
 		name:   name,
-		caches: make([]*Tag, 0),
+		caches: make([]Tag, 0),
 
 		f2t: make(map[string]map[string]string),
 		t2f: make(map[string]map[string]string),
@@ -88,7 +86,7 @@ func newTag(name string) *Tags {
 
 func (t Tags) debugf(format string, args ...interface{}) {
 	if t.debug {
-		log2.DebugF(format, args...)
+		fmt.Printf(format, args...)
 	}
 }
 
@@ -169,7 +167,7 @@ func (t Tags) GetAllTagsAndValuesByField(field string) map[string]string {
 //
 // The returned list is sorted on the basis of the order of the field which is
 // defined in the struct.
-func (t Tags) GetAll() []*Tag {
+func (t Tags) GetAll() []Tag {
 	return t.caches
 }
 
