@@ -20,8 +20,6 @@ go test github.com/xgfone/go-tools/...
 
 **Notice:**
 
-Some sub-packages need the logging output. Now the sub-package `log2` supplies the unified logging output function, `ErrorF` and `DebugF`, which will output the logging to `os.Stderr`. You can set them to set the logging output of all the sub-packages, such as `net2/http2`, `net2/server`, and `worker`, etc.
-
 subpackage   |   notice
 -------------|-----------
 cache        | Supply some caches, such as `LRUCache`. Notice: LRUCache is copied from `github.com/youtube/vitess/go/cache`.

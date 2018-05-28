@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
-	"github.com/xgfone/go-tools/log2"
 )
 
 // Render is a HTTP render interface.
@@ -49,9 +47,7 @@ func ContextHandler(f func(Context) error) http.Handler {
 //     http.HandleFunc("/", ContextHandlerFunc(handler))
 func ContextHandlerFunc(f func(Context) error) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := f(NewContext(w, r)); err != nil {
-			log2.ErrorF("Failed to handle %q: %s", r.RequestURI, err)
-		}
+		f(NewContext(w, r))
 	})
 }
 

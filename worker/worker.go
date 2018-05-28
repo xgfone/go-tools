@@ -3,8 +3,6 @@ package worker
 
 import (
 	"context"
-
-	"github.com/xgfone/go-tools/log2"
 )
 
 // Task is an interface to handle the job.
@@ -49,9 +47,7 @@ func Dispatch(cxt context.Context, workerNum int, jobQueue <-chan interface{},
 	// Call the handler to handle the job.
 	handleJob := func(job interface{}) {
 		defer func() {
-			if err := recover(); err != nil {
-				log2.ErrorF("Get an error when handling the job: %v", err)
-			}
+			recover()
 		}()
 		handler.Handle(job)
 	}
