@@ -16,6 +16,6 @@ func TestGetIP(t *testing.T) {
 
 func TestGetInterfaceByIP(t *testing.T) {
 	if iface, err := GetInterfaceByIP("127.0.0.1"); err != nil || iface != "lo" {
-		return t.Fail()
+		t.Fail()
 	}
 }
