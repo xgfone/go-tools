@@ -36,7 +36,6 @@ net2         | The supplement of the standard library `net`, such as some helper
 net2/http2   | The supplement of the standard library `http`, not the protocal `http2`.
 net2/server  | **DEPRECATED**. The simple `TCP` / `UDP` server. The sub-package is merged into `net2`.
 os2          | The supplement of the standard library of `os`, such as `Exit`.
-pagination   | It is usually used to compute the web pagination.
 pools        | Some simple convenient pools, such as `BufPool`, `ResourcePool`, `AddrTCPConnPool`, etc.
 queue        | Supply the `Queue` interface, and some implementations such as `NewMemoryQueue` based on channel and `NewListQueue` based on list.
 signal2      | The supplement of the standard library of `signal`, such as `HandleSignal`.
