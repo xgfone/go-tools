@@ -152,6 +152,13 @@ func (s Set) Copy() Set {
 	return cs
 }
 
+// Walk travels the elements of the set.
+func (s Set) Walk(f func(interface{})) {
+	for e := range s.cache {
+		f(e)
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // UnionUpdate updates the set, adding the elements from all others.
