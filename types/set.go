@@ -30,8 +30,8 @@ func NewSetFromInts(elements ...int) Set {
 	return s
 }
 
-// NewFromSet returns a new Set.
-func NewFromSet(sets ...Set) Set {
+// NewSetFromSet returns a new Set.
+func NewSetFromSet(sets ...Set) Set {
 	s := Set{cache: make(map[interface{}]struct{}, len(sets))}
 	s.UnionUpdate(sets...)
 	return s
