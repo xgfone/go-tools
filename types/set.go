@@ -6,9 +6,27 @@ type Set struct {
 }
 
 // NewSet returns a new Set.
+//
+// If the element is string, it will ignore the empty string.
 func NewSet(elements ...interface{}) Set {
 	s := Set{cache: make(map[interface{}]struct{}, len(elements))}
 	s.Add(elements...)
+	return s
+}
+
+// NewSetFromStrings returns a new Set.
+//
+// It will ignore the empty string.
+func NewSetFromStrings(elements ...string) Set {
+	s := Set{cache: make(map[interface{}]struct{}, len(elements))}
+	s.AddStrings(elements...)
+	return s
+}
+
+// NewSetFromInts returns a new Set.
+func NewSetFromInts(elements ...int) Set {
+	s := Set{cache: make(map[interface{}]struct{}, len(elements))}
+	s.AddInts(elements...)
 	return s
 }
 
@@ -20,16 +38,54 @@ func NewFromSet(sets ...Set) Set {
 }
 
 // Add adds some elements into the set.
+//
+// If the element is string, it will ignore the empty string.
 func (s Set) Add(elements ...interface{}) {
 	for _, v := range elements {
 		if v != nil {
+			_v, ok := v.(string)
+			if ok && _v == "" {
+				continue
+			}
 			s.cache[v] = struct{}{}
 		}
 	}
 }
 
+// AddStrings adds some string elements into the set.
+//
+// It will ignore the empty string.
+func (s Set) AddStrings(elements ...string) {
+	for _, v := range elements {
+		if v != "" {
+			s.cache[v] = struct{}{}
+		}
+	}
+}
+
+// AddInts adds some int elements into the set.
+func (s Set) AddInts(elements ...int) {
+	for _, v := range elements {
+		s.cache[v] = struct{}{}
+	}
+}
+
 // Remove removes the elements from the set.
 func (s Set) Remove(elements ...interface{}) {
+	for _, v := range elements {
+		delete(s.cache, v)
+	}
+}
+
+// RemoveStrings removes the string elements from the set.
+func (s Set) RemoveStrings(elements ...string) {
+	for _, v := range elements {
+		delete(s.cache, v)
+	}
+}
+
+// RemoveInts removes the int elements from the set.
+func (s Set) RemoveInts(elements ...int) {
 	for _, v := range elements {
 		delete(s.cache, v)
 	}
