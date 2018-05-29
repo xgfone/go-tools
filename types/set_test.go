@@ -14,8 +14,8 @@ func ExampleSet() {
 	// 5 5
 	// true true false true true false
 
-	s1.Remove(1, 2, 9)
-	s2.Remove("a", "b", "z")
+	s1.RemoveInts(1, 2, 9)
+	s2.RemoveStrings("a", "b", "z")
 	fmt.Println(s1.Size(), s2.Size())
 	fmt.Println(s1.Has(1), s1.Has(2), s2.Has("a"), s2.Has("b"))
 	// Output:
