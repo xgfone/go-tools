@@ -1,0 +1,217 @@
+package types
+
+// Set is a set type.
+type Set struct {
+	cache map[interface{}]struct{}
+}
+
+// NewSet returns a new Set.
+func NewSet(elements ...interface{}) Set {
+	s := Set{cache: make(map[interface{}]struct{}, len(elements))}
+	s.Add(elements...)
+	return s
+}
+
+// NewFromSet returns a new Set.
+func NewFromSet(sets ...Set) Set {
+	s := Set{cache: make(map[interface{}]struct{}, len(sets))}
+	s.UnionUpdate(sets...)
+	return s
+}
+
+// Add adds some elements into the set.
+func (s Set) Add(elements ...interface{}) {
+	for _, v := range elements {
+		if v != nil {
+			s.cache[v] = struct{}{}
+		}
+	}
+}
+
+// Remove removes the elements from the set.
+func (s Set) Remove(elements ...interface{}) {
+	for _, v := range elements {
+		delete(s.cache, v)
+	}
+}
+
+// Pop removes and returns an arbitrary element from the set.
+// But return nil if the set is empty.
+func (s Set) Pop() interface{} {
+	for e := range s.cache {
+		delete(s.cache, e)
+		return e
+	}
+	return nil
+}
+
+// Clear removes all the elements from the set.
+func (s Set) Clear() {
+	s.cache = make(map[interface{}]struct{})
+}
+
+// Has returns true if the element is in the set. Or return false.
+func (s Set) Has(element interface{}) bool {
+	_, ok := s.cache[element]
+	return ok
+}
+
+// Equal returns true if s == other.
+func (s Set) Equal(other Set) bool {
+	for e := range s.cache {
+		if !other.Has(e) {
+			return false
+		}
+	}
+
+	for e := range other.cache {
+		if !s.Has(e) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// Size returns the number of the elements in the set.
+func (s Set) Size() int {
+	return len(s.cache)
+}
+
+// List converts the set to a list type.
+func (s Set) List() []interface{} {
+	list := make([]interface{}, 0, len(s.cache))
+	for e := range s.cache {
+		list = append(list, e)
+	}
+	return list
+}
+
+// Copy returns a copy of the current set.
+func (s Set) Copy() Set {
+	cs := Set{cache: make(map[interface{}]struct{}, len(s.cache))}
+	for e := range s.cache {
+		cs.cache[e] = struct{}{}
+	}
+	return cs
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+// UnionUpdate updates the set, adding the elements from all others.
+func (s Set) UnionUpdate(others ...Set) {
+	for _, set := range others {
+		for e := range set.cache {
+			s.cache[e] = struct{}{}
+		}
+	}
+}
+
+// DifferenceUpdate updates the set, removing the elements found in others.
+func (s Set) DifferenceUpdate(others ...Set) {
+	for _, set := range others {
+		for e := range set.cache {
+			delete(s.cache, e)
+		}
+	}
+}
+
+// IntersectionUpdate updates the set, keeping only elements found in it and all others.
+func (s Set) IntersectionUpdate(others ...Set) {
+	cache := make(map[interface{}]struct{})
+	for e := range s.cache {
+		var no bool
+		for _, set := range others {
+			if !set.Has(e) {
+				no = true
+				break
+			}
+		}
+		if !no {
+			cache[e] = struct{}{}
+		}
+	}
+	s.cache = cache
+}
+
+// SymmetricDifferenceUpdate updates the set, keeping only elements
+// found in either set, but not in both.
+func (s Set) SymmetricDifferenceUpdate(other Set) {
+	cache := make(map[interface{}]struct{})
+
+	for e := range other.cache {
+		if _, ok := s.cache[e]; !ok {
+			cache[e] = struct{}{}
+		}
+	}
+
+	for e := range s.cache {
+		if _, ok := other.cache[e]; !ok {
+			cache[e] = struct{}{}
+		}
+	}
+
+	s.cache = cache
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+// Union returns a new set with elements from the set and all others.
+func (s Set) Union(others ...Set) Set {
+	r := s.Copy()
+	for _, set := range others {
+		for e := range set.cache {
+			r.cache[e] = struct{}{}
+		}
+	}
+	return r
+}
+
+// Difference returns a new set with elements in the set that are not in the others.
+func (s Set) Difference(others ...Set) Set {
+	r := s.Copy()
+	for _, set := range others {
+		for e := range set.cache {
+			delete(r.cache, e)
+		}
+	}
+	return r
+}
+
+// Intersection returns a new set with elements common to the set and all others.
+func (s Set) Intersection(others ...Set) Set {
+	r := NewSet()
+	for e := range s.cache {
+		var no bool
+		for _, set := range others {
+			if !set.Has(e) {
+				no = true
+				break
+			}
+		}
+		if !no {
+			r.cache[e] = struct{}{}
+		}
+	}
+	return r
+}
+
+// SymmetricDifference returns a new set with elements in either the set
+// or other but not both.
+func (s Set) SymmetricDifference(other Set) Set {
+	r := NewSet()
+
+	for e := range other.cache {
+		if _, ok := s.cache[e]; !ok {
+			r.cache[e] = struct{}{}
+		}
+	}
+
+	for e := range s.cache {
+		if _, ok := other.cache[e]; !ok {
+			r.cache[e] = struct{}{}
+		}
+	}
+
+	return r
+}
