@@ -1,6 +1,12 @@
 package types
 
 // Set is a set type.
+//
+// The element of the set must be hashable, such as int, string, array, etc.
+// Notice: slice and map is not hashable.
+//
+// The set supports the mixed types, but suggest to use the consistent type
+// in a set.
 type Set struct {
 	cache map[interface{}]struct{}
 }

@@ -69,6 +69,16 @@ func ExampleSet() {
 	// d
 	// e
 
+	set := NewSet([2]int{1, 2}, [2]int{3, 4})
+	fmt.Println(set.Has([2]int{1, 2}))
+	fmt.Println(set.Has([2]int{2, 3}))
+	fmt.Println(set.Has([3]int{2, 3, 4}))
+	fmt.Println(set.Has([2]string{"a", "b"}))
+	// true
+	// false
+	// false
+	// false
+
 	// Unordered output:
 	// 5 5
 	// true true false true true false
@@ -89,4 +99,8 @@ func ExampleSet() {
 	// c
 	// d
 	// e
+	// true
+	// false
+	// false
+	// false
 }
