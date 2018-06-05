@@ -62,6 +62,7 @@ func GetInterfaceByIP(ip string) (iface string, err error) {
 		return "", err
 	}
 
+	ip = strings.ToLower(ip)
 	for _, iface := range ifaces {
 		_ips, err := getIPByName(iface.Name, false)
 		if err != nil {
@@ -99,6 +100,7 @@ func GetAllIPs() (ips []string, err error) {
 
 // IPIsOnHost returns true if the ip is on the host, or returns false.
 func IPIsOnHost(ip string) bool {
+	ip = strings.ToLower(ip)
 	ips, _ := GetAllIPs()
 	for _, _ip := range ips {
 		if _ip == ip {
