@@ -2,6 +2,7 @@ package net2
 
 import (
 	"fmt"
+	"net"
 	"strconv"
 	"strings"
 )
@@ -59,4 +60,44 @@ func NormalizeMacfU(mac string) string {
 // NormalizeMacfu is equal to NormalizeMac(mac, false, false).
 func NormalizeMacfu(mac string) string {
 	return NormalizeMac(mac, false, false)
+}
+
+// GetMacByInterface returns the MAC of the interface iface.
+func GetMacByInterface(iface string) (string, error) {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return "", err
+	}
+
+	for _, i := range ifaces {
+		if i.Name == iface {
+			return i.HardwareAddr.String(), nil
+		}
+	}
+
+	return "", fmt.Errorf("no interface '%s'", iface)
+}
+
+// GetMacByIP returns the MAC of the interface to which the ip is bound.
+func GetMacByIP(ip string) (string, error) {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return "", err
+	}
+
+	ip = strings.ToLower(ip)
+	for _, iface := range ifaces {
+		addrs, err := iface.Addrs()
+		if err != nil {
+			return "", err
+		}
+		for _, addr := range addrs {
+			_ip := strings.Split(addr.String(), "/")[0]
+			if _ip == ip {
+				return iface.HardwareAddr.String(), nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("no mac about '%s'", ip)
 }
