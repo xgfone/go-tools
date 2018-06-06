@@ -29,6 +29,7 @@ type SizedRotatingFile struct {
 	maxSize     int
 	backupCount int
 	nbytes      int
+	buffer      bool
 }
 
 // NewSizedRotatingFile returns a new RotatingFile.
@@ -37,12 +38,19 @@ func NewSizedRotatingFile(filename string, size, count int) *SizedRotatingFile {
 		filename:    filename,
 		maxSize:     size,
 		backupCount: count,
+		buffer:      true,
 	}
 
 	if err := r.open(); err != nil {
 		panic(err)
 	}
 	return r
+}
+
+// DisableBuffer disables the buffer, which writes the log into the file
+// immediately.
+func (r *SizedRotatingFile) DisableBuffer() {
+	r.buffer = false
 }
 
 // Write implements the interface io.Writer.
@@ -68,6 +76,9 @@ func (r *SizedRotatingFile) WriteString(data string) (n int, err error) {
 
 	if n, err = r.w.WriteString(data); err != nil {
 		return
+	}
+	if !r.buffer {
+		r.w.Flush()
 	}
 	r.nbytes += n
 	return
