@@ -5,16 +5,31 @@ package signal2
 import (
 	"os"
 	"os/signal"
+	"syscall"
 
 	"github.com/xgfone/go-tools/lifecycle"
 )
+
+// DefaultSignals is the default signals to be handled.
+var DefaultSignals = []os.Signal{
+	syscall.SIGTERM,
+	syscall.SIGQUIT,
+	syscall.SIGABRT,
+	syscall.SIGINT,
+}
 
 // HandleSignal is the same as HandleSignalWithLifecycle, but using the global
 // default lifecycle manager.
 //
 // It's equal to
 //   HandleSignalWithLifecycle(lifecycle.GetDefaultManager(), signals...)
+//
+// Notice: If the signals are empty, it will be equal to
+//   HandleSignal(DefaultSignals...)
 func HandleSignal(signals ...os.Signal) {
+	if len(signals) == 0 {
+		signals = DefaultSignals
+	}
 	HandleSignalWithLifecycle(lifecycle.GetDefaultManager(), signals...)
 }
 
