@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/xgfone/go-tools/io2"
+	"github.com/xgfone/go-tools/pools"
 	"github.com/xgfone/go-tools/types"
 )
 
@@ -61,23 +62,49 @@ func Decode(r *http.Request, maxMemory int64, v interface{}) (err error) {
 	if f := decodeMap[ct]; f != nil {
 		return f(r, maxMemory, v)
 	}
-	return fmt.Errorf("no decode of Content-Type %s", ct)
+	return fmt.Errorf("no decoder of Content-Type %s", ct)
+}
+
+func decode(r *http.Request, maxMemory int64, v interface{},
+	f func(io.Reader, interface{}) error) (err error) {
+
+	if maxMemory <= 0 {
+		maxMemory = DefaultMaxBodySize
+	}
+	reader := io.LimitReader(r.Body, maxMemory)
+
+	w := pools.DefaultBufferPool.Get()
+	if err = io2.ReadNWriter(w, reader, r.ContentLength); err != nil {
+		pools.DefaultBufferPool.Put(w)
+		return err
+	}
+	err = f(w, v)
+	pools.DefaultBufferPool.Put(w)
+	return err
 }
 
 // DecodeJSON decodes the request body into the provided struct and limits
 // the request size via an io.LimitReader using the maxMemory param.
 //
 // The Content-Type e.g. "application/json" and http method are not checked.
+//
+// If the maxMemory is equal to or less than 0, it's DefaultMaxBodySize.
 func DecodeJSON(r *http.Request, maxMemory int64, v interface{}) (err error) {
-	return json.NewDecoder(io.LimitReader(r.Body, maxMemory)).Decode(v)
+	return decode(r, maxMemory, v, func(reader io.Reader, v interface{}) error {
+		return json.NewDecoder(reader).Decode(v)
+	})
 }
 
 // DecodeXML decodes the request body into the provided struct and limits
 // the request size via an io.LimitReader using the maxMemory param.
 //
 // The Content-Type e.g. "application/xml" and http method are not checked.
+//
+// If the maxMemory is equal to or less than 0, it's DefaultMaxBodySize.
 func DecodeXML(r *http.Request, maxMemory int64, v interface{}) (err error) {
-	return xml.NewDecoder(io.LimitReader(r.Body, maxMemory)).Decode(v)
+	return decode(r, maxMemory, v, func(reader io.Reader, v interface{}) error {
+		return xml.NewDecoder(reader).Decode(v)
+	})
 }
 
 func filteFlag(s string) string {
