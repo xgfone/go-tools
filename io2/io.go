@@ -32,21 +32,28 @@ func NewClose(v io.Closer) Close {
 // ReadN reads the data from io.Reader until n bytes or no incoming data
 // if n is equal to or less than 0.
 func ReadN(r io.Reader, n int64) (v []byte, err error) {
+	w := bufferPool.Get()
+	err = ReadNWriter(w, r, n)
+	v = w.Bytes()
+	bufferPool.Put(w)
+	return v, err
+}
+
+// ReadNWriter is the same as ReadN, but writes the data to the writer
+// from the reader.
+func ReadNWriter(w io.Writer, r io.Reader, n int64) (err error) {
 	buf := bytesPool.Get()
-	writer := bufferPool.Get()
 
 	if n > 0 {
 		var m int64
-		m, err = io.CopyBuffer(writer, io.LimitReader(r, n), buf)
+		m, err = io.CopyBuffer(w, io.LimitReader(r, n), buf)
 		if m < n && err == nil {
 			err = io.EOF
 		}
 	} else {
-		_, err = io.CopyBuffer(writer, r, buf)
+		_, err = io.CopyBuffer(w, r, buf)
 	}
 
-	v = writer.Bytes()
 	bytesPool.Put(buf)
-	bufferPool.Put(writer)
 	return
 }
