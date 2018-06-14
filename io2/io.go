@@ -8,11 +8,6 @@ import (
 	"github.com/xgfone/go-tools/pools"
 )
 
-var (
-	bytesPool  = pools.NewBytesPool(4096)
-	bufferPool = pools.NewBufferPool()
-)
-
 // Close implements the interface with the method Close(), which does not return
 // an error.
 type Close struct {
@@ -32,17 +27,17 @@ func NewClose(v io.Closer) Close {
 // ReadN reads the data from io.Reader until n bytes or no incoming data
 // if n is equal to or less than 0.
 func ReadN(r io.Reader, n int64) (v []byte, err error) {
-	w := bufferPool.Get()
+	w := pools.DefaultBufferPool.Get()
 	err = ReadNWriter(w, r, n)
 	v = w.Bytes()
-	bufferPool.Put(w)
+	pools.DefaultBufferPool.Put(w)
 	return v, err
 }
 
 // ReadNWriter is the same as ReadN, but writes the data to the writer
 // from the reader.
 func ReadNWriter(w io.Writer, r io.Reader, n int64) (err error) {
-	buf := bytesPool.Get()
+	buf := pools.BytesPool4K.Get()
 
 	if n > 0 {
 		var m int64
@@ -54,6 +49,6 @@ func ReadNWriter(w io.Writer, r io.Reader, n int64) (err error) {
 		_, err = io.CopyBuffer(w, r, buf)
 	}
 
-	bytesPool.Put(buf)
+	pools.BytesPool4K.Put(buf)
 	return
 }
