@@ -5,6 +5,23 @@ import (
 	"sync"
 )
 
+var (
+	// DefaultBufferPool is the default global buffer pool.
+	DefaultBufferPool = NewBufferPool()
+
+	// BytesPool1K the bytes buffer with 1K buffer.
+	BytesPool1K = NewBytesPool(1024)
+
+	// BytesPool2K the bytes buffer with 2K buffer.
+	BytesPool2K = NewBytesPool(2048)
+
+	// BytesPool4K the bytes buffer with 4K buffer.
+	BytesPool4K = NewBytesPool(4096)
+
+	// BytesPool8K the bytes buffer with 8K buffer.
+	BytesPool8K = NewBytesPool(8192)
+)
+
 // BytesPool is the []byte wrapper of sync.Pool
 type BytesPool struct {
 	size int
