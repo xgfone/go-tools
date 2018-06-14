@@ -37,7 +37,7 @@ func ReadN(r io.Reader, n int64) (v []byte, err error) {
 // ReadNWriter is the same as ReadN, but writes the data to the writer
 // from the reader.
 func ReadNWriter(w io.Writer, r io.Reader, n int64) (err error) {
-	buf := pools.BytesPool4K.Get()
+	buf := pools.BytesPool2K.Get()
 
 	if n > 0 {
 		var m int64
@@ -49,6 +49,6 @@ func ReadNWriter(w io.Writer, r io.Reader, n int64) (err error) {
 		_, err = io.CopyBuffer(w, r, buf)
 	}
 
-	pools.BytesPool4K.Put(buf)
+	pools.BytesPool2K.Put(buf)
 	return
 }
