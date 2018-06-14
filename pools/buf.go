@@ -49,10 +49,18 @@ func makeBuffer(size int) (b *bytes.Buffer) {
 }
 
 // NewBufferPool returns a new bytes.Buffer pool.
-func NewBufferPool() BufferPool {
+//
+// bufSize is the initializing size of the buffer. If the size is equal to
+// or less than 0, it will be ignored, and use the default size, 1024.
+func NewBufferPool(bufSize ...int) BufferPool {
+	size := 1024
+	if len(bufSize) > 0 && bufSize[0] > 0 {
+		size = bufSize[0]
+	}
+
 	bp := BufferPool{}
 	pool := &sync.Pool{New: func() interface{} {
-		return makeBuffer(1024)
+		return makeBuffer(size)
 	}}
 	bp.pool = pool
 	return bp
