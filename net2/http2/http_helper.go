@@ -83,7 +83,7 @@ func decode(r *http.Request, maxMemory int64, v interface{},
 	return err
 }
 
-// GeneralDecoder is a general decoder.
+// GeneralDecoder returns a general decoder.
 func GeneralDecoder(f func(io.Reader, interface{}) error) func(*http.Request, int64, interface{}) error {
 	return func(r *http.Request, maxMemory int64, v interface{}) (err error) {
 		return decode(r, maxMemory, v, f)
