@@ -151,11 +151,17 @@ func GetHomeDir() string {
 //
 // Return the origin path if there is an error.
 func Abs(p string) string {
+	p = strings.TrimSpace(p)
 	if p != "" && HomeDir != "" {
+		_len := len(p)
 		if p[0] == '~' {
-			p = strings.Replace(p, "~", HomeDir, 1)
-		} else if len(p) >= 5 && p[:5] == "$HOME" {
-			p = strings.Replace(p, "$HOME", HomeDir, 1)
+			if _len == 1 || p[1] == '/' || p[1] == '\\' {
+				p = filepath.Join(HomeDir, p[1:])
+			}
+		} else if _len >= 5 && p[:5] == "$HOME" {
+			if _len == 5 || (p[5] == '/' || p[5] == '\\') {
+				p = filepath.Join(HomeDir, p[5:])
+			}
 		}
 	}
 
