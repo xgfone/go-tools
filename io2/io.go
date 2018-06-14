@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	bytesPool  = pools.NewBytesPool(8192)
+	bytesPool  = pools.NewBytesPool(4096)
 	bufferPool = pools.NewBufferPool()
 )
 
