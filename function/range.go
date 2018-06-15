@@ -28,6 +28,18 @@ func Range(start, stop, step int) (r []int) {
 	panic("The step is 0")
 }
 
+// RangeStepOne is equal to Range(start, stop, 1).
+// That's, range(start, stop) in Python.
+func RangeStepOne(start, stop int) []int {
+	return Range(start, stop, 1)
+}
+
+// RangeStop is equal to Range(0, stop, 1).
+// That's, range(stop) in Python.
+func RangeStop(stop int) []int {
+	return Range(0, stop, 1)
+}
+
 // RangeWithStep is the closure function for step in Range.
 //
 // RangeWithStep(1)(start, stop) is equal to range(start, stop) in Python.
