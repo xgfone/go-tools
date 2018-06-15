@@ -456,6 +456,18 @@ func Redirect(w http.ResponseWriter, r *http.Request, code int, location string)
 	return nil
 }
 
+// CheckError check whether the error is not nil. If true, render the error
+// to the peer and return true; or do nothing and return false.
+//
+// If missing code, it's 500 by default.
+func CheckError(w http.ResponseWriter, err error, code ...int) bool {
+	if err != nil {
+		Error(w, err, code...)
+		return true
+	}
+	return false
+}
+
 // Status writes the response header with the status code.
 //
 // The returned value is nil forever.
