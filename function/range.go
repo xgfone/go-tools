@@ -27,7 +27,7 @@ func Range(start, stop, step int) (r []int) {
 		return
 	}
 
-	panic(fmt.Errorf("The step is not 0"))
+	panic(fmt.Errorf("The step must not be 0"))
 }
 
 // Ranges collects three kinds of the using of Range.
