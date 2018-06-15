@@ -13,6 +13,21 @@ func ExampleRange() {
 	// [10 8 6 4 2]
 }
 
+func ExampleRanges() {
+	fmt.Println(Ranges(10))
+	fmt.Println(Ranges(1, 10))
+	fmt.Println(Ranges(1, 10, 1))
+	fmt.Println(Ranges(1, 10, 2))
+	fmt.Println(Ranges(10, 0))
+
+	// Output:
+	// [0 1 2 3 4 5 6 7 8 9]
+	// [1 2 3 4 5 6 7 8 9]
+	// [1 2 3 4 5 6 7 8 9]
+	// [1 3 5 7 9]
+	// []
+}
+
 func ExampleRangeWithStep() {
 	fmt.Println(RangeWithStep(2)(1, 10))
 	fmt.Println(RangeWithStep(-2)(10, 1))
