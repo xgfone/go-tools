@@ -50,7 +50,9 @@ func NewSizedRotatingFile(filename string, size, count int) *SizedRotatingFile {
 // DisableBuffer disables the buffer, which writes the log into the file
 // immediately.
 func (r *SizedRotatingFile) DisableBuffer() {
+	r.Lock()
 	r.buffer = false
+	r.Unlock()
 }
 
 // Write implements the interface io.Writer.
