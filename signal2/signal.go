@@ -51,6 +51,8 @@ func HandleSignalWithFunc(f func(), sig os.Signal, signals ...os.Signal) {
 	ss := make(chan os.Signal, 1)
 	signals = append(signals, sig)
 	signal.Notify(ss, signals...)
-	<-ss
-	f()
+	for {
+		<-ss
+		f()
+	}
 }
