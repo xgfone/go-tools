@@ -4,7 +4,6 @@ package execution
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"os/exec"
 )
 
@@ -24,20 +23,14 @@ func RunCmd(cxt context.Context, name string, args ...string) (
 
 // Execute is the same as RunCmd, but only returns the error.
 func Execute(cxt context.Context, name string, args ...string) error {
-	_, stderr, err := RunCmd(cxt, name, args...)
-	if err != nil {
-		return fmt.Errorf("%s", string(stderr))
-	}
-	return nil
+	_, _, err := RunCmd(cxt, name, args...)
+	return err
 }
 
 // Output is the same as RunCmd, but only returns the stdout and the error.
 func Output(cxt context.Context, name string, args ...string) (string, error) {
-	stdout, stderr, err := RunCmd(cxt, name, args...)
-	if err != nil {
-		return "", fmt.Errorf("%s", string(stderr))
-	}
-	return string(stdout), nil
+	stdout, _, err := RunCmd(cxt, name, args...)
+	return string(stdout), err
 }
 
 // Executes is equal to Execute(cxt, cmds[0], cmds[1:]...)
