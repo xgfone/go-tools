@@ -15,7 +15,8 @@ type Series interface {
 	Set(key interface{}, value interface{})
 
 	// Get returns the value by the key.
-	// If there is not the key in the store, it will find the key in the parent.
+	// If there is not the key in the current Series, it will find the key
+	// in the parent. If there is not the key in the parent, it will return nil.
 	Get(key interface{}) (value interface{})
 
 	// These methods are the same as Get(), but returns the value of the
