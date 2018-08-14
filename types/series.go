@@ -14,6 +14,9 @@ type Series interface {
 	// Set sets the key to the value.
 	Set(key interface{}, value interface{})
 
+	// GetParent returns the parent Series.
+	GetParent() Series
+
 	// Get returns the value by the key.
 	// If there is not the key in the current Series, it will find the key
 	// in the parent. If there is not the key in the parent, it will return nil.
@@ -68,6 +71,10 @@ func (s series) Delete(key interface{}) {
 
 func (s series) Set(key, value interface{}) {
 	s.maps.Store(key, value)
+}
+
+func (s series) GetParent() Series {
+	return s.parent
 }
 
 func (s series) Get(key interface{}) interface{} {
