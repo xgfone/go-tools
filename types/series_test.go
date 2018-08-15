@@ -23,3 +23,37 @@ func ExampleSeries() {
 	// key2=123
 	// key3=false
 }
+
+func ExampleMergeSeriesKeyP2C() {
+	parent := NewSeries()
+	parent.Set("key1", "abc")
+	parent.Set("key2", 123)
+
+	child := NewSeries(parent)
+	child.Set("key1", "xyz")
+
+	vs := MergeSeriesKeyP2C(child, "key1")
+	fmt.Printf("len=%d\n", len(vs))
+	fmt.Printf("values=%v", vs)
+
+	// Output:
+	// len=2
+	// values=[abc xyz]
+}
+
+func ExampleMergeSeriesKeyC2P() {
+	parent := NewSeries()
+	parent.Set("key1", "abc")
+	parent.Set("key2", 123)
+
+	child := NewSeries(parent)
+	child.Set("key1", "xyz")
+
+	vs := MergeSeriesKeyC2P(child, "key1")
+	fmt.Printf("len=%d\n", len(vs))
+	fmt.Printf("values=%v", vs)
+
+	// Output:
+	// len=2
+	// values=[xyz abc]
+}

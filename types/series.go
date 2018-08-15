@@ -3,6 +3,8 @@ package types
 import (
 	"fmt"
 	"sync"
+
+	"github.com/xgfone/go-tools/function"
 )
 
 // Series is used to store the key-value in series.
@@ -49,6 +51,28 @@ type Series interface {
 	MustGetUint64(key interface{}) (value uint64)
 	MustGetString(key interface{}) (value string)
 	MustGetBool(key interface{}) (value bool)
+}
+
+// MergeSeriesKeyP2C merges the values of the key in the Series s from parent
+// to children. That's, the value in the parent is before that in the children.
+func MergeSeriesKeyP2C(s Series, key interface{}) []interface{} {
+	vlaues := MergeSeriesKeyC2P(s, key)
+	if len(vlaues) > 1 {
+		function.Reverse(vlaues)
+	}
+	return vlaues
+}
+
+// MergeSeriesKeyC2P merges the values of the key in the Series s from children
+// to parent. That's, the values in the children are before that in the parent.
+func MergeSeriesKeyC2P(s Series, key interface{}) []interface{} {
+	var values []interface{}
+	for cur := s; cur != nil; cur = cur.GetParent() {
+		if value := cur.Get(key); value != nil {
+			values = append(values, value)
+		}
+	}
+	return values
 }
 
 type series struct {
