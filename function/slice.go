@@ -167,3 +167,105 @@ func InSlice(v interface{}, slice interface{}) bool {
 	}
 	return false
 }
+
+// Reverse reverses the slice.
+//
+// The type of the argument must be one of []interface{}, []string,
+// []int, []int64, []uint, []uint64.
+func Reverse(slice interface{}) interface{} {
+	switch slice.(type) {
+	case []interface{}:
+		ss := slice.([]interface{})
+		_len := len(ss)
+		if _len < 2 {
+			return slice
+		}
+
+		var tmp interface{}
+		halflen := _len / 2
+		_len--
+		for i := 0; i < halflen; i++ {
+			tmp = ss[i]
+			ss[i] = ss[_len-i]
+			ss[_len-i] = tmp
+		}
+	case []string:
+		ss := slice.([]string)
+		_len := len(ss)
+		if _len < 2 {
+			return slice
+		}
+
+		var tmp string
+		halflen := _len / 2
+		_len--
+		for i := 0; i < halflen; i++ {
+			tmp = ss[i]
+			ss[i] = ss[_len-i]
+			ss[_len-i] = tmp
+		}
+	case []int:
+		ss := slice.([]int)
+		_len := len(ss)
+		if _len < 2 {
+			return slice
+		}
+
+		var tmp int
+		halflen := _len / 2
+		_len--
+		for i := 0; i < halflen; i++ {
+			tmp = ss[i]
+			ss[i] = ss[_len-i]
+			ss[_len-i] = tmp
+		}
+	case []int64:
+		ss := slice.([]int64)
+		_len := len(ss)
+		if _len < 2 {
+			return slice
+		}
+
+		var tmp int64
+		halflen := _len / 2
+		_len--
+		for i := 0; i < halflen; i++ {
+			tmp = ss[i]
+			ss[i] = ss[_len-i]
+			ss[_len-i] = tmp
+		}
+	case []uint:
+		ss := slice.([]uint)
+		_len := len(ss)
+		if _len < 2 {
+			return slice
+		}
+
+		var tmp uint
+		halflen := _len / 2
+		_len--
+		for i := 0; i < halflen; i++ {
+			tmp = ss[i]
+			ss[i] = ss[_len-i]
+			ss[_len-i] = tmp
+		}
+	case []uint64:
+		ss := slice.([]uint64)
+		_len := len(ss)
+		if _len < 2 {
+			return slice
+		}
+
+		var tmp uint64
+		halflen := _len / 2
+		_len--
+		for i := 0; i < halflen; i++ {
+			tmp = ss[i]
+			ss[i] = ss[_len-i]
+			ss[_len-i] = tmp
+		}
+	default:
+		panic(fmt.Errorf("not support the type '%T'", slice))
+	}
+	return slice
+}
