@@ -7,6 +7,12 @@ import (
 	"github.com/xgfone/go-tools/function"
 )
 
+// Nil Error
+var (
+	ErrKeyIsNil   = fmt.Errorf("the key is nil")
+	ErrValueIsNil = fmt.Errorf("the value is nil")
+)
+
 // Series is used to store the key-value in series.
 type Series interface {
 	// Delete deletes the value by the key.
@@ -14,6 +20,8 @@ type Series interface {
 	Delete(key interface{})
 
 	// Set sets the key to the value.
+	//
+	// Notice: both key and value should not be nil. Or it maybe panic.
 	Set(key interface{}, value interface{})
 
 	// GetParent returns the parent Series.
@@ -94,6 +102,12 @@ func (s series) Delete(key interface{}) {
 }
 
 func (s series) Set(key, value interface{}) {
+	if key == nil {
+		panic(ErrKeyIsNil)
+	}
+	if value == nil {
+		panic(ErrValueIsNil)
+	}
 	s.maps.Store(key, value)
 }
 
