@@ -83,6 +83,23 @@ func MergeSeriesKeyC2P(s Series, key interface{}) []interface{} {
 	return values
 }
 
+// NamedSeries is a named Series.
+type NamedSeries struct {
+	Series
+	name string
+}
+
+// NewNamedSeries returns a new NamedSeries.
+func NewNamedSeries(name string, parent ...Series) NamedSeries {
+	s := NewSeries(parent...)
+	return NamedSeries{Series: s, name: name}
+}
+
+// GetName returns the name of Series.
+func (ns NamedSeries) GetName() string {
+	return ns.name
+}
+
 type series struct {
 	maps   *sync.Map
 	parent Series
