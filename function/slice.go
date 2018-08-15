@@ -168,7 +168,7 @@ func InSlice(v interface{}, slice interface{}) bool {
 	return false
 }
 
-// Reverse reverses the slice.
+// Reverse reverses the source slice then returns it.
 //
 // The type of the argument must be one of []interface{}, []string,
 // []int, []int64, []uint, []uint64.
