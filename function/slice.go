@@ -170,8 +170,7 @@ func InSlice(v interface{}, slice interface{}) bool {
 
 // Reverse reverses the source slice then returns it.
 //
-// The type of the argument must be one of []interface{}, []string,
-// []int, []int64, []uint, []uint64.
+// The argument must be a slice or array. Or it will panic.
 func Reverse(slice interface{}) interface{} {
 	switch slice.(type) {
 	case []interface{}:
@@ -265,7 +264,28 @@ func Reverse(slice interface{}) interface{} {
 			ss[_len-i] = tmp
 		}
 	default:
-		panic(fmt.Errorf("not support the type '%T'", slice))
+		v := reflect.ValueOf(slice)
+		if !v.IsValid() || (v.Kind() != reflect.Slice && v.Kind() != reflect.Array) {
+			panic(ErrNotSliceOrArray)
+		}
+
+		_len := v.Len()
+		if _len < 2 {
+			return slice
+		}
+
+		var r reflect.Value
+		if v.Kind() == reflect.Slice {
+			r = reflect.MakeSlice(v.Type(), _len, _len)
+		} else {
+			r = reflect.New(v.Type())
+		}
+
+		for i := 0; i < _len; i++ {
+			r.Elem().Index(i).Set(v.Index(_len - 1 - i))
+		}
+
+		slice = r.Elem().Interface()
 	}
 	return slice
 }

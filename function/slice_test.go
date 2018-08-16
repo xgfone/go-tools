@@ -81,11 +81,19 @@ func ExampleReverse() {
 	s6 = []uint64{1, 2, 3, 4, 5, 6, 7}
 	fmt.Println(Reverse(s6))
 
+	// [n]byte
+	s7 := [6]byte{1, 2, 3, 4, 5, 6}
+	fmt.Println(Reverse(s7))
+	s8 := [7]byte{1, 2, 3, 4, 5, 6, 7}
+	fmt.Println(Reverse(s8))
+
 	// Output:
 	// [6 5 4 3 2 1]
 	// [7 6 5 4 3 2 1]
 	// [f e d c b a]
 	// [g f e d c b a]
+	// [6 5 4 3 2 1]
+	// [7 6 5 4 3 2 1]
 	// [6 5 4 3 2 1]
 	// [7 6 5 4 3 2 1]
 	// [6 5 4 3 2 1]
