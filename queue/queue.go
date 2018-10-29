@@ -2,6 +2,8 @@
 //
 // You only have to implement the interface Queue. The package has two
 // implementations based on Channel and List.
+//
+// DEPRECATED!!!
 package queue
 
 import (
