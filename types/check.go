@@ -30,6 +30,8 @@ func CheckMapType(m map[string]interface{}, k, t string) (interface{}, error) {
 // if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapBool(m map[string]interface{}, key string) (v bool, err error) {
 	_v, err := CheckMapType(m, key, "bool")
 	if err == nil {
@@ -42,6 +44,8 @@ func MapBool(m map[string]interface{}, key string) (v bool, err error) {
 // value if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapString(m map[string]interface{}, key string) (v string, err error) {
 	_v, err := CheckMapType(m, key, "string")
 	if err == nil {
@@ -54,6 +58,8 @@ func MapString(m map[string]interface{}, key string) (v string, err error) {
 // or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapInt(m map[string]interface{}, key string) (v int, err error) {
 	_v, err := CheckMapType(m, key, "int")
 	if err == nil {
@@ -66,6 +72,8 @@ func MapInt(m map[string]interface{}, key string) (v int, err error) {
 // if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapInt8(m map[string]interface{}, key string) (v int8, err error) {
 	_v, err := CheckMapType(m, key, "int8")
 	if err == nil {
@@ -78,6 +86,8 @@ func MapInt8(m map[string]interface{}, key string) (v int8, err error) {
 // if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapInt16(m map[string]interface{}, key string) (v int16, err error) {
 	_v, err := CheckMapType(m, key, "int16")
 	if err == nil {
@@ -90,6 +100,8 @@ func MapInt16(m map[string]interface{}, key string) (v int16, err error) {
 // if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapInt32(m map[string]interface{}, key string) (v int32, err error) {
 	_v, err := CheckMapType(m, key, "int32")
 	if err == nil {
@@ -102,6 +114,8 @@ func MapInt32(m map[string]interface{}, key string) (v int32, err error) {
 // if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapInt64(m map[string]interface{}, key string) (v int64, err error) {
 	_v, err := CheckMapType(m, key, "int64")
 	if err == nil {
@@ -114,6 +128,8 @@ func MapInt64(m map[string]interface{}, key string) (v int64, err error) {
 // or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapUint(m map[string]interface{}, key string) (v uint, err error) {
 	_v, err := CheckMapType(m, key, "uint")
 	if err == nil {
@@ -126,6 +142,8 @@ func MapUint(m map[string]interface{}, key string) (v uint, err error) {
 // if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapUint8(m map[string]interface{}, key string) (v uint8, err error) {
 	_v, err := CheckMapType(m, key, "uint8")
 	if err == nil {
@@ -138,6 +156,8 @@ func MapUint8(m map[string]interface{}, key string) (v uint8, err error) {
 // value if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapUint16(m map[string]interface{}, key string) (v uint16, err error) {
 	_v, err := CheckMapType(m, key, "uint16")
 	if err == nil {
@@ -150,6 +170,8 @@ func MapUint16(m map[string]interface{}, key string) (v uint16, err error) {
 // value if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapUint32(m map[string]interface{}, key string) (v uint32, err error) {
 	_v, err := CheckMapType(m, key, "uint32")
 	if err == nil {
@@ -162,6 +184,8 @@ func MapUint32(m map[string]interface{}, key string) (v uint32, err error) {
 // value if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapUint64(m map[string]interface{}, key string) (v uint64, err error) {
 	_v, err := CheckMapType(m, key, "uint64")
 	if err == nil {
@@ -174,6 +198,8 @@ func MapUint64(m map[string]interface{}, key string) (v uint64, err error) {
 // value if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapFloat32(m map[string]interface{}, key string) (v float32, err error) {
 	_v, err := CheckMapType(m, key, "float32")
 	if err == nil {
@@ -186,6 +212,8 @@ func MapFloat32(m map[string]interface{}, key string) (v float32, err error) {
 // value if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapFloat64(m map[string]interface{}, key string) (v float64, err error) {
 	_v, err := CheckMapType(m, key, "float64")
 	if err == nil {
@@ -198,6 +226,8 @@ func MapFloat64(m map[string]interface{}, key string) (v float64, err error) {
 // complex64 value if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapComplex64(m map[string]interface{}, key string) (v complex64, err error) {
 	_v, err := CheckMapType(m, key, "complex64")
 	if err == nil {
@@ -210,6 +240,8 @@ func MapComplex64(m map[string]interface{}, key string) (v complex64, err error)
 // complex128 value if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapComplex128(m map[string]interface{}, key string) (v complex128, err error) {
 	_v, err := CheckMapType(m, key, "complex128")
 	if err == nil {
@@ -222,6 +254,8 @@ func MapComplex128(m map[string]interface{}, key string) (v complex128, err erro
 // the map[string]interface{} value if yes, or return an error if not.
 //
 // If m is nil, return an error.
+//
+// DEPRECATED!!!
 func MapMap(m map[string]interface{}, key string) (v map[string]interface{}, err error) {
 	_v, err := CheckMapType(m, key, "string2interface")
 	if err == nil {

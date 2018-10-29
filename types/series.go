@@ -14,6 +14,8 @@ var (
 )
 
 // Series is used to store the key-value in series.
+//
+// DEPRECATED!!!
 type Series interface {
 	// Delete deletes the value by the key.
 	// It does not delete the key-value pair in the parent.
