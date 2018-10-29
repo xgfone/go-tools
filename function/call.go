@@ -2,7 +2,6 @@ package function
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 )
 
@@ -47,13 +46,6 @@ func Valid(f interface{}, args ...interface{}) (vf reflect.Value, vargs []reflec
 
 // Call calls a function dynamically.
 func Call(f interface{}, args ...interface{}) (results []interface{}, err error) {
-	defer func() {
-		if _err := recover(); _err != nil {
-			err = fmt.Errorf("%v", _err)
-			results = nil
-		}
-	}()
-
 	vf, vargs, _err := Valid(f, args...)
 	if _err != nil {
 		return nil, _err
