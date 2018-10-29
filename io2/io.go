@@ -10,6 +10,8 @@ import (
 
 // Close implements the interface with the method Close(), which does not return
 // an error.
+//
+// DEPRECATED!!!
 type Close struct {
 	Value io.Closer
 }
@@ -20,6 +22,8 @@ func (c Close) Close() {
 }
 
 // NewClose returns an new Close.
+//
+// DEPRECATED!!!
 func NewClose(v io.Closer) Close {
 	return Close{Value: v}
 }

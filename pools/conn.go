@@ -26,6 +26,8 @@ func (c Close) Close() {
 
 // AddrTCPConnPool is the connection pool based on the address, that's, when you
 // need a connection, you only get the connection by the address.
+//
+// DEPRECATED!!!
 type AddrTCPConnPool struct {
 	lock *sync.Mutex
 
