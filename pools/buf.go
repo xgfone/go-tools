@@ -57,6 +57,7 @@ func (p BytesPool) Put(b []byte) {
 // BufferPool is the bytes.Buffer wrapper of sync.Pool
 type BufferPool struct {
 	pool *sync.Pool
+	size int
 }
 
 func makeBuffer(size int) (b *bytes.Buffer) {
@@ -75,19 +76,17 @@ func NewBufferPool(bufSize ...int) BufferPool {
 		size = bufSize[0]
 	}
 
-	bp := BufferPool{}
 	pool := &sync.Pool{New: func() interface{} {
 		return makeBuffer(size)
 	}}
-	bp.pool = pool
-	return bp
+	return BufferPool{pool: pool, size: size}
 }
 
 // Get returns a bytes.Buffer.
 func (p BufferPool) Get() *bytes.Buffer {
 	x := p.pool.Get()
 	if x == nil {
-		return makeBuffer(1024)
+		return makeBuffer(p.size)
 	}
 	return x.(*bytes.Buffer)
 }
