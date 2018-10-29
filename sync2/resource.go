@@ -12,6 +12,8 @@ var (
 )
 
 // ResourceLock is an interface about the resource lock.
+//
+// DEPRECATED!!!
 type ResourceLock interface {
 	// Lock locks the resource, which id is the resource id.
 	//
@@ -51,6 +53,8 @@ func (h hashResourceLock) Unlock(id string) {
 // the implementation uses the quadratic hash. The first hash uses 256 buckets,
 // which uses the last byte of the resource id as the hash key and has no lock.
 // So it maybe have a better performance.
+//
+// DEPRECATED!!!
 func NewHashResourceLock() ResourceLock {
 	r := make(hashResourceLock, 256)
 	for i := 0; i < 256; i++ {
@@ -62,11 +66,15 @@ func NewHashResourceLock() ResourceLock {
 // NewResourceLock is the alias of NewHashResourceLock.
 //
 // This is used to be compatible with the old.
+//
+// DEPRECATED!!!
 func NewResourceLock() ResourceLock {
 	return NewHashResourceLock()
 }
 
 // BaseResourceLock is a lock to lock a certain resource by the resource id.
+//
+// DEPRECATED!!!
 type BaseResourceLock struct {
 	locker     *sync.Mutex
 	resources  map[string]struct{}
@@ -75,6 +83,8 @@ type BaseResourceLock struct {
 }
 
 // NewBaseResourceLock returns a new BaseResourceLock.
+//
+// DEPRECATED!!!
 func NewBaseResourceLock() BaseResourceLock {
 	return BaseResourceLock{
 		locker:    new(sync.Mutex),
