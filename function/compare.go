@@ -10,6 +10,8 @@ import "strings"
 // or a struct implementing the interface of Comparer.
 //
 // Notice: if the types of v1 and v2 are not identical, it will panic.
+//
+// DEPRECATED!!!
 func Compare(v1, v2 interface{}) int {
 	if _v1, ok := v1.(Comparer); ok {
 		return _v1.Compare(v2)

@@ -16,6 +16,8 @@ var (
 // uint32, uint64.
 //
 // If the types of both is not the same, it will panic.
+//
+// DEPRECATED!!!
 func Max(v1, v2 interface{}) interface{} {
 	_v1 := reflect.ValueOf(v1)
 	_v2 := reflect.ValueOf(v2)
@@ -43,6 +45,8 @@ func Max(v1, v2 interface{}) interface{} {
 //
 // The type of the element in slice must be int, int8, int16, int32, int64,
 // uint, uint8, uint16, uint32, uint64. Or panic.
+//
+// DEPRECATED!!!
 func MaxInSlice(v interface{}) (max interface{}) {
 	if v == nil {
 		return
