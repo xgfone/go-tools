@@ -3,6 +3,7 @@
 package io2
 
 import (
+	"bufio"
 	"io"
 
 	"github.com/xgfone/go-tools/pools"
@@ -26,6 +27,19 @@ func (c Close) Close() {
 // DEPRECATED!!!
 func NewClose(v io.Closer) Close {
 	return Close{Value: v}
+}
+
+// ReadLine reads the content in the buffer by line.
+func ReadLine(r *bufio.Reader) (lines [][]byte, err error) {
+	var line []byte
+	isPrefix := true
+	for isPrefix && err == nil {
+		line, isPrefix, err = r.ReadLine()
+		if len(line) > 0 {
+			lines = append(lines, line)
+		}
+	}
+	return lines, err
 }
 
 // ReadN reads the data from io.Reader until n bytes or no incoming data

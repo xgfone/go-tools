@@ -70,6 +70,8 @@ func ToInt64(filePath string) (int64, error) {
 }
 
 // ReadLine reads the content in the buffer by line.
+//
+// DEPRECATED!!!
 func ReadLine(r *bufio.Reader) ([]byte, error) {
 	line, isPrefix, err := r.ReadLine()
 	for isPrefix && err == nil {
