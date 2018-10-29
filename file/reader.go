@@ -8,11 +8,15 @@ import (
 )
 
 // ToBytes reads a file by byte.
+//
+// DEPRECATED!!!
 func ToBytes(filePath string) ([]byte, error) {
 	return ioutil.ReadFile(filePath)
 }
 
 // ToString reads a file by string.
+//
+// DEPRECATED!!!
 func ToString(filePath string) (string, error) {
 	b, err := ioutil.ReadFile(filePath)
 	if err != nil {
@@ -22,6 +26,8 @@ func ToString(filePath string) (string, error) {
 }
 
 // ToTrimString is the same as ToString, but remove the tail spaces.
+//
+// DEPRECATED!!!
 func ToTrimString(filePath string) (string, error) {
 	str, err := ToString(filePath)
 	if err != nil {
@@ -32,6 +38,8 @@ func ToTrimString(filePath string) (string, error) {
 }
 
 // ToUint64 is the same as ToTrimString, but convert it to uint64.
+//
+// DEPRECATED!!!
 func ToUint64(filePath string) (uint64, error) {
 	content, err := ToTrimString(filePath)
 	if err != nil {
@@ -46,6 +54,8 @@ func ToUint64(filePath string) (uint64, error) {
 }
 
 // ToInt64 is the same as ToTrimString, but convert it to int64.
+//
+// DEPRECATED!!!
 func ToInt64(filePath string) (int64, error) {
 	content, err := ToTrimString(filePath)
 	if err != nil {
