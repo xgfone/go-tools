@@ -1,4 +1,6 @@
 // Package tags manages the tags in a struct.
+//
+// DEPRECATED!!!
 package tags
 
 import (
