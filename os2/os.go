@@ -8,6 +8,8 @@ import (
 )
 
 // Exit will call lifecycle.Stop() before calling os.Exit(code).
+//
+// DEPRECATED!!!
 func Exit(code int) {
 	lifecycle.Stop()
 	os.Exit(code)
