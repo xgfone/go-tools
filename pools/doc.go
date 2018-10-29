@@ -1,3 +1,3 @@
-// Package pools supplies some simple convenient pools, such as `BufPool`,
-// `ResourcePool`, `AddrTCPConnPool`, etc.
+// Package pools supplies some simple convenient pools, such as `BufferPool`,
+// `ResourcePool`, etc.
 package pools

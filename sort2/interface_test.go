@@ -2,13 +2,11 @@ package sort2
 
 import (
 	"fmt"
-
-	"github.com/xgfone/go-tools/function"
 )
 
-func ExampleInterfaceSlice() {
+func ExampleInterfaces() {
 	data1 := []interface{}{3, 2, 4, 1, 5}
-	InterfaceSlice(data1, function.LT)
+	Interfaces(data1, func(v1, v2 interface{}) bool { return v1.(int) < v2.(int) })
 	fmt.Println(data1)
 
 	// Output:

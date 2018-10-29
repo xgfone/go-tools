@@ -48,19 +48,13 @@ func ListenAndServe(addr string, handler http.Handler, tls ...string) error {
 	case 0:
 		return server.ListenAndServe()
 	case 2:
+		if tls[0] == "" && tls[1] == "" {
+			return server.ListenAndServe()
+		} else if tls[0] == "" || tls[1] == "" {
+			return fmt.Errorf("invalid CA certificate")
+		}
 		return server.ListenAndServeTLS(tls[0], tls[1])
 	default:
 		return fmt.Errorf("invalid CA certificate")
 	}
-}
-
-// ListenAndServeTLS is equal to http.ListenAndServeTLS, but calling the method
-// server.Shutdown(context.TODO()) to shutdown the HTTP server gracefully
-// when calling lifecycle.Stop().
-//
-// DEPRECATED!!! Please use ListenAndServe().
-func ListenAndServeTLS(addr, certFile, keyFile string, handler http.Handler) error {
-	server := http.Server{Addr: addr, Handler: handler}
-	lifecycle.Register(func() { server.Shutdown(context.TODO()) })
-	return server.ListenAndServeTLS(certFile, keyFile)
 }

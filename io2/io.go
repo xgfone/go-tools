@@ -1,5 +1,4 @@
-// Package io2 is the supplement of the standard library of `io`,
-// such as `Close`.
+// Package io2 is the supplement of the standard library of `io`.
 package io2
 
 import (
@@ -8,26 +7,6 @@ import (
 
 	"github.com/xgfone/go-tools/pools"
 )
-
-// Close implements the interface with the method Close(), which does not return
-// an error.
-//
-// DEPRECATED!!!
-type Close struct {
-	Value io.Closer
-}
-
-// Close implements the method Close().
-func (c Close) Close() {
-	c.Value.Close()
-}
-
-// NewClose returns an new Close.
-//
-// DEPRECATED!!!
-func NewClose(v io.Closer) Close {
-	return Close{Value: v}
-}
 
 // ReadLine reads the content in the buffer by line.
 func ReadLine(r *bufio.Reader) (lines [][]byte, err error) {
