@@ -1,4 +1,6 @@
 // Package handler is the handler collection of the logger.
+//
+// DEPRECATED!!!
 package handler
 
 import (
