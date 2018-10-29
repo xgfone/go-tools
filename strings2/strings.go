@@ -1,4 +1,6 @@
 // Package strings2 is the supplement of the standard library of strings.
+//
+// DEPRECATED!!!
 package strings2
 
 import (
