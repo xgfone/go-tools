@@ -1,5 +1,7 @@
 package sort2
 
+import "sort"
+
 type interfaceSlice struct {
 	data []interface{}
 	less func(interface{}, interface{}) bool
@@ -31,11 +33,8 @@ func (s interfaceSlice) Swap(i, j int) {
 // function LT in the sub-package function, that's, function.LT. See example.
 //
 // If giving the second argument and it's true, sort the data in reverse.
-func InterfaceSlice(data []interface{},
-	less func(first, second interface{}) bool, reverse ...bool) {
-
+func InterfaceSlice(data []interface{}, less func(first, second interface{}) bool) {
 	if len(data) > 1 {
-		s := interfaceSlice{data: data, less: less}
-		Sort(s, reverse...)
+		sort.Sort(interfaceSlice{data: data, less: less})
 	}
 }

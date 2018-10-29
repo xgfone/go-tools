@@ -19,6 +19,8 @@ func init() {
 }
 
 // Kv represents a key-value pair.
+//
+// DEPRECATED!!!
 type Kv struct {
 	Key   interface{}
 	Value interface{}
@@ -28,6 +30,8 @@ type Kv struct {
 //
 // Notice: The method Less will use the global function Less to compare the two
 // keys.
+//
+// DEPRECATED!!!
 type KvSliceByKey []Kv
 
 func (kv KvSliceByKey) Len() int {
@@ -48,6 +52,8 @@ func (kv KvSliceByKey) Swap(i, j int) {
 //
 // Notice: The method Less will use the global function Less to compare the two
 // values.
+//
+// DEPRECATED!!!
 type KvSliceByValue []Kv
 
 func (kv KvSliceByValue) Len() int {
@@ -67,6 +73,8 @@ func (kv KvSliceByValue) Swap(i, j int) {
 // Sort is the union of sort.Sort and sort.Reverse.
 //
 // if giving the second argument and it's true, it will sort in reverse order.
+//
+// DEPRECATED!!!
 func Sort(kv sort.Interface, reverse ...bool) {
 	if len(reverse) > 0 && reverse[0] {
 		kv = sort.Reverse(kv)
@@ -75,6 +83,8 @@ func Sort(kv sort.Interface, reverse ...bool) {
 }
 
 // MapToKvSliceByKey converts map[string]interface{} to KvSliceByKey.
+//
+// DEPRECATED!!!
 func MapToKvSliceByKey(m map[string]interface{}) KvSliceByKey {
 	if len(m) == 0 {
 		return nil
@@ -90,6 +100,8 @@ func MapToKvSliceByKey(m map[string]interface{}) KvSliceByKey {
 }
 
 // MapStringToKvSliceByKey converts map[string]string to KvSliceByKey.
+//
+// DEPRECATED!!!
 func MapStringToKvSliceByKey(m map[string]string) KvSliceByKey {
 	if len(m) == 0 {
 		return nil
@@ -105,6 +117,8 @@ func MapStringToKvSliceByKey(m map[string]string) KvSliceByKey {
 }
 
 // MapToKvSliceByValue converts map[string]interface{} to KvSliceByValue.
+//
+// DEPRECATED!!!
 func MapToKvSliceByValue(m map[string]interface{}) KvSliceByValue {
 	if len(m) == 0 {
 		return nil
@@ -120,6 +134,8 @@ func MapToKvSliceByValue(m map[string]interface{}) KvSliceByValue {
 }
 
 // MapStringToKvSliceByValue converts map[string]string to KvSliceByValue.
+//
+// DEPRECATED!!!
 func MapStringToKvSliceByValue(m map[string]string) KvSliceByValue {
 	if len(m) == 0 {
 		return nil
