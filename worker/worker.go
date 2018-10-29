@@ -1,4 +1,6 @@
 // Package worker is a worker pool with the dispatcher based on channel.
+//
+// DEPRECATED!!!
 package worker
 
 import (
