@@ -86,3 +86,38 @@ func Compare(first, second interface{}) int {
 		panic(fmt.Errorf("unsupported type '%T'", first))
 	}
 }
+
+// EQ reports whether the two values are equal.
+//
+// It's the convenient function of Compare, and will panic if there is an error.
+func EQ(first, second interface{}) bool {
+	return Compare(first, second) == 0
+}
+
+// LT reports whether first is less than second.
+//
+// It's the convenient function of Compare, and will panic if there is an error.
+func LT(first, second interface{}) bool {
+	return Compare(first, second) < 0
+}
+
+// GT reports whether first is greater than second.
+//
+// It's the convenient function of Compare, and will panic if there is an error.
+func GT(first, second interface{}) bool {
+	return Compare(first, second) > 0
+}
+
+// LE reports whether first is less than or equal to second.
+//
+// It's the convenient function of Compare, and will panic if there is an error.
+func LE(first, second interface{}) bool {
+	return Compare(first, second) <= 0
+}
+
+// GE reports whether first is greater than or equal to second.
+//
+// It's the convenient function of Compare, and will panic if there is an error.
+func GE(first, second interface{}) bool {
+	return Compare(first, second) >= 0
+}
