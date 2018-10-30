@@ -76,13 +76,14 @@ func IsZero(v interface{}) bool {
 // VerifyFunc is a function to verifty whether the type of a value is the given
 // type, the first argument of which is the value, and the second of which is
 // the given type.
-type VerifyFunc func(interface{}, string) bool
+type VerifyFunc func(value interface{}, _type string) bool
 
 var (
 	typeMap = make(map[string]VerifyFunc)
 )
 
 func init() {
+	RegisterVerifyFunc("nil", verifyBasicBuiltinType)
 	RegisterVerifyFunc("zero", verifyBasicBuiltinType)
 	RegisterVerifyFunc("bool", verifyBasicBuiltinType)
 	RegisterVerifyFunc("string", verifyBasicBuiltinType)
@@ -143,6 +144,8 @@ func verifyBasicBuiltinType(v interface{}, t string) (ok bool) {
 	switch t {
 	case "zero":
 		return IsZero(v)
+	case "nil":
+		ok = v == nil
 	case "bool":
 		_, ok = v.(bool)
 	case "string":
