@@ -236,6 +236,8 @@ func MustToMapValues(v interface{}) []interface{} {
 // For other types, if the value is ZERO of the type, it's false. Or it's true.
 func ToBool(v interface{}) (bool, error) {
 	switch _v := v.(type) {
+	case bool:
+		return _v, nil
 	case string:
 		switch _v {
 		case "t", "T", "1", "on", "On", "ON", "true", "True", "TRUE":
@@ -260,22 +262,41 @@ func MustToBool(v interface{}) bool {
 
 // ToInt64 does the best to convert any certain value to int64.
 func ToInt64(_v interface{}) (v int64, err error) {
-	switch _v.(type) {
-	case nil:
-	case complex64, complex128:
-		v = int64(real(reflect.ValueOf(_v).Complex()))
+	switch t := _v.(type) {
 	case bool:
-		v = int64(bool2Int64(_v.(bool)))
-	case int, int8, int16, int32, int64:
-		v = reflect.ValueOf(_v).Int()
-	case uint, uint8, uint16, uint32, uint64:
-		v = int64(reflect.ValueOf(_v).Uint())
-	case float32, float64:
-		v = int64(reflect.ValueOf(_v).Float())
+		v = bool2Int64(t)
 	case string:
-		return strconv.ParseInt(_v.(string), 10, 64)
+		v, err = strconv.ParseInt(t, 10, 64)
+	case int:
+		v = int64(t)
+	case int8:
+		v = int64(t)
+	case int16:
+		v = int64(t)
+	case int32:
+		v = int64(t)
+	case int64:
+		v = t
+	case uint:
+		v = int64(t)
+	case uint8:
+		v = int64(t)
+	case uint16:
+		v = int64(t)
+	case uint32:
+		v = int64(t)
+	case uint64:
+		v = int64(t)
+	case float32:
+		v = int64(t)
+	case float64:
+		v = int64(t)
+	case complex64:
+		v = int64(real(t))
+	case complex128:
+		v = int64(real(t))
 	default:
-		err = fmt.Errorf("unknown type of %t", _v)
+		err = fmt.Errorf("unknown type of %T", _v)
 	}
 	return
 }
@@ -291,22 +312,41 @@ func MustToInt64(v interface{}) int64 {
 
 // ToUint64 does the best to convert any certain value to uint64.
 func ToUint64(_v interface{}) (v uint64, err error) {
-	switch _v.(type) {
-	case nil:
-	case complex64, complex128:
-		v = uint64(real(reflect.ValueOf(_v).Complex()))
+	switch t := _v.(type) {
 	case bool:
-		v = uint64(bool2Int64(_v.(bool)))
-	case int, int8, int16, int32, int64:
-		v = reflect.ValueOf(_v).Uint()
-	case uint, uint8, uint16, uint32, uint64:
-		v = uint64(reflect.ValueOf(_v).Uint())
-	case float32, float64:
-		v = uint64(reflect.ValueOf(_v).Float())
+		v = uint64(bool2Int64(t))
 	case string:
-		return strconv.ParseUint(_v.(string), 10, 64)
+		v, err = strconv.ParseUint(t, 10, 64)
+	case int:
+		v = uint64(t)
+	case int8:
+		v = uint64(t)
+	case int16:
+		v = uint64(t)
+	case int32:
+		v = uint64(t)
+	case int64:
+		v = uint64(t)
+	case uint:
+		v = uint64(t)
+	case uint8:
+		v = uint64(t)
+	case uint16:
+		v = uint64(t)
+	case uint32:
+		v = uint64(t)
+	case uint64:
+		v = t
+	case float32:
+		v = uint64(t)
+	case float64:
+		v = uint64(t)
+	case complex64:
+		v = uint64(real(t))
+	case complex128:
+		v = uint64(real(t))
 	default:
-		err = fmt.Errorf("unknown type of %t", _v)
+		err = fmt.Errorf("unknown type of %T", _v)
 	}
 	return
 }
@@ -322,18 +362,25 @@ func MustToUint64(v interface{}) uint64 {
 
 // ToString does the best to convert any certain value to string.
 func ToString(_v interface{}) (v string, err error) {
-	switch _v.(type) {
+	switch t := _v.(type) {
 	case nil:
 	case string:
-		v = _v.(string)
+		v = t
 	case []byte:
-		v = string(_v.([]byte))
-	case bool, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
-		v = fmt.Sprintf("%d", _v)
+		v = string(t)
+	case bool:
+		if t {
+			v = "true"
+		} else {
+			v = "false"
+		}
+	case int, int8, int16, int32, int64,
+		uint, uint8, uint16, uint32, uint64:
+		v = fmt.Sprintf("%d", t)
 	case float32, float64:
-		v = fmt.Sprintf("%f", _v)
+		v = fmt.Sprintf("%f", t)
 	default:
-		err = fmt.Errorf("unknown type of %t", _v)
+		err = fmt.Errorf("unknown type of %T", _v)
 	}
 	return
 }
@@ -349,22 +396,41 @@ func MustToString(v interface{}) string {
 
 // ToFloat64 does the best to convert any certain value to float64.
 func ToFloat64(_v interface{}) (v float64, err error) {
-	switch _v.(type) {
-	case nil:
-	case complex64, complex128:
-		v = float64(real(reflect.ValueOf(_v).Complex()))
+	switch t := _v.(type) {
 	case bool:
-		v = float64(bool2Int64(_v.(bool)))
-	case int, int8, int16, int32, int64:
-		v = float64(reflect.ValueOf(_v).Int())
-	case uint, uint8, uint16, uint32, uint64:
-		v = float64(reflect.ValueOf(_v).Uint())
-	case float32, float64:
-		v = reflect.ValueOf(_v).Float()
+		v = float64(bool2Int64(t))
 	case string:
-		return strconv.ParseFloat(_v.(string), 64)
+		v, err = strconv.ParseFloat(t, 64)
+	case int:
+		v = float64(t)
+	case int8:
+		v = float64(t)
+	case int16:
+		v = float64(t)
+	case int32:
+		v = float64(t)
+	case int64:
+		v = float64(t)
+	case uint:
+		v = float64(t)
+	case uint8:
+		v = float64(t)
+	case uint16:
+		v = float64(t)
+	case uint32:
+		v = float64(t)
+	case uint64:
+		v = float64(t)
+	case float32:
+		v = float64(t)
+	case float64:
+		v = t
+	case complex64:
+		v = float64(real(t))
+	case complex128:
+		v = real(t)
 	default:
-		err = fmt.Errorf("unknown type of %t", _v)
+		err = fmt.Errorf("unknown type of %T", _v)
 	}
 	return
 }
@@ -380,20 +446,26 @@ func MustToFloat64(v interface{}) float64 {
 
 // ToComplex128 does the best to convert any certain value to complex128.
 func ToComplex128(_v interface{}) (v complex128, err error) {
-	switch _v.(type) {
-	case nil:
-	case complex64, complex128:
-		v = complex128(reflect.ValueOf(_v).Complex())
+	switch t := _v.(type) {
+	case complex64:
+		v = complex128(t)
+	case complex128:
+		v = t
+	case float32:
+		v = complex(float64(t), 0)
+	case float64:
+		v = complex(t, 0)
 	case bool:
-		v = complex(float64(bool2Int64(_v.(bool))), 0)
-	case int, int8, int16, int32, int64:
-		v = complex(float64(reflect.ValueOf(_v).Int()), 0)
-	case uint, uint8, uint16, uint32, uint64:
-		v = complex(float64(reflect.ValueOf(_v).Uint()), 0)
-	case float32, float64:
-		v = complex(reflect.ValueOf(_v).Float(), 0)
+		if t {
+			v = complex(1, 0)
+		} else {
+			v = complex(0, 0)
+		}
+	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
+		f, _ := ToFloat64(_v)
+		v = complex(f, 0)
 	default:
-		err = fmt.Errorf("unknown type of %t", _v)
+		err = fmt.Errorf("unknown type of %T", _v)
 	}
 	return
 }

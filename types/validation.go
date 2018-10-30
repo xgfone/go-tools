@@ -253,6 +253,7 @@ func verifyMapType(v interface{}, t string) (ok bool) {
 //     t(string)           Go Type / Function Call
 //     -------------------------------------------
 //     "zero"              IsZero(v)
+//     "nil"               nil
 //     "bool"              bool
 //     "string"            string
 //     "byte"              byte
