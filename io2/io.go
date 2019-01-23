@@ -33,7 +33,7 @@ func ReadN(r io.Reader, n int64) (v []byte, err error) {
 // This function is DEPRECATED and may be removed in the next version.
 // So you can use ReadNWriter instead.
 func ReadNBuffer(buf *bytes.Buffer, r io.Reader, n int64) error {
-	return ReadNBuffer(buf, r, n)
+	return ReadNWriter(buf, r, n)
 }
 
 // ReadNWriter reads n bytes to the writer w from the reader r.
