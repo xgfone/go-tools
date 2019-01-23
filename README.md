@@ -23,6 +23,7 @@ go test github.com/xgfone/go-tools/...
 subpackage   |   notice
 -------------|-----------
 cache        | Supply some caches, such as `LRUCache`. Notice: LRUCache is copied from `github.com/youtube/vitess/go/cache`.
+errors       | An error type implementation based on the type inheritance.
 execution    | execution executes a command line program in a new process and returns an output.
 file         | Some convenient functions about the file operation.
 function     | Collect some convenient funtions, for example, calling a function or method dynamically, comparing two values, getting a integer range, determining whether a value is in a map or slice, etc.
