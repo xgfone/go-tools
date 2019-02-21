@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"time"
 )
 
 var (
@@ -189,6 +190,25 @@ func ToMapValues(v interface{}) ([]interface{}, error) {
 		results[i] = _v.MapIndex(key).Interface()
 	}
 	return results, nil
+}
+
+// ToTime does the best to convert any certain value to time.Time.
+//
+// Notice: the layout is time.RFC3339Nano by default.
+func ToTime(v interface{}, layout ...string) (time.Time, error) {
+	switch _v := v.(type) {
+	case nil:
+		return time.Time{}, nil
+	case time.Time:
+		return _v, nil
+	case string:
+		if len(layout) > 0 && layout[0] != "" {
+			return time.Parse(layout[0], _v)
+		}
+		return time.Parse(time.RFC3339Nano, _v)
+	default:
+		return time.Time{}, fmt.Errorf("unknown type '%T'", v)
+	}
 }
 
 // ToBool does the best to convert any certain value to bool.
@@ -449,6 +469,15 @@ func MustToMapKeys(v interface{}) []string {
 // MustToMapValues is equal to ToMapValues, but panic if there is an error.
 func MustToMapValues(v interface{}) []interface{} {
 	_v, err := ToMapValues(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
+// MustToTime is equal to ToTime, but panic if there is an error.
+func MustToTime(v interface{}, layout ...string) time.Time {
+	_v, err := ToTime(v, layout...)
 	if err != nil {
 		panic(err)
 	}
