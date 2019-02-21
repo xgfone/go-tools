@@ -418,6 +418,8 @@ func ToUint64(_v interface{}) (v uint64, err error) {
 }
 
 // ToString does the best to convert any certain value to string.
+//
+// For time.Time, it will use time.RFC3339Nano to format it.
 func ToString(_v interface{}) (v string, err error) {
 	switch t := _v.(type) {
 	case nil:
@@ -431,11 +433,36 @@ func ToString(_v interface{}) (v string, err error) {
 		} else {
 			v = "false"
 		}
-	case int, int8, int16, int32, int64,
-		uint, uint8, uint16, uint32, uint64:
-		v = fmt.Sprintf("%d", t)
-	case float32, float64:
-		v = fmt.Sprintf("%f", t)
+	case int:
+		v = strconv.FormatInt(int64(t), 10)
+	case int8:
+		v = strconv.FormatInt(int64(t), 10)
+	case int16:
+		v = strconv.FormatInt(int64(t), 10)
+	case int32:
+		v = strconv.FormatInt(int64(t), 10)
+	case int64:
+		v = strconv.FormatInt(t, 10)
+	case uint:
+		v = strconv.FormatUint(uint64(t), 10)
+	case uint8:
+		v = strconv.FormatUint(uint64(t), 10)
+	case uint16:
+		v = strconv.FormatUint(uint64(t), 10)
+	case uint32:
+		v = strconv.FormatUint(uint64(t), 10)
+	case uint64:
+		v = strconv.FormatUint(t, 10)
+	case float32:
+		v = strconv.FormatFloat(float64(t), 'f', -1, 32)
+	case float64:
+		v = strconv.FormatFloat(t, 'f', -1, 64)
+	case error:
+		v = t.Error()
+	case time.Time:
+		v = t.Format(time.RFC3339Nano)
+	case fmt.Stringer:
+		v = t.String()
 	default:
 		err = fmt.Errorf("unknown type of %T", _v)
 	}
