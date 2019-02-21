@@ -236,6 +236,8 @@ func MustToMapValues(v interface{}) []interface{} {
 // For other types, if the value is ZERO of the type, it's false. Or it's true.
 func ToBool(v interface{}) (bool, error) {
 	switch _v := v.(type) {
+	case nil:
+		return false, nil
 	case bool:
 		return _v, nil
 	case string:
@@ -263,6 +265,7 @@ func MustToBool(v interface{}) bool {
 // ToInt64 does the best to convert any certain value to int64.
 func ToInt64(_v interface{}) (v int64, err error) {
 	switch t := _v.(type) {
+	case nil:
 	case bool:
 		v = bool2Int64(t)
 	case string:
@@ -313,6 +316,7 @@ func MustToInt64(v interface{}) int64 {
 // ToUint64 does the best to convert any certain value to uint64.
 func ToUint64(_v interface{}) (v uint64, err error) {
 	switch t := _v.(type) {
+	case nil:
 	case bool:
 		v = uint64(bool2Int64(t))
 	case string:
@@ -397,6 +401,7 @@ func MustToString(v interface{}) string {
 // ToFloat64 does the best to convert any certain value to float64.
 func ToFloat64(_v interface{}) (v float64, err error) {
 	switch t := _v.(type) {
+	case nil:
 	case bool:
 		v = float64(bool2Int64(t))
 	case string:
@@ -447,6 +452,7 @@ func MustToFloat64(v interface{}) float64 {
 // ToComplex128 does the best to convert any certain value to complex128.
 func ToComplex128(_v interface{}) (v complex128, err error) {
 	switch t := _v.(type) {
+	case nil:
 	case complex64:
 		v = complex128(t)
 	case complex128:
