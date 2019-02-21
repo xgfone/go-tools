@@ -30,6 +30,7 @@ function     | Collect some convenient funtions, for example, calling a function
 io2          | The supplement of the standard library of `io`.
 lifecycle    | The manager of the lifecycle of some apps in a program.
 net2         | The supplement of the standard library `net`, such as some helpers about net.
+option       | Supply a type to represent the optional value referring to Option in Rust.
 pools        | Some simple convenient pools, such as `BytesPool`, `BufferPool`, `ResourcePool`, etc.
 signal2      | The supplement of the standard library of `signal`, such as `HandleSignal`.
 sort2        | The supplement of the standard library of `sort`.
