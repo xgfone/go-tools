@@ -64,15 +64,6 @@ func ToSlice(v interface{}) ([]interface{}, error) {
 	return results, nil
 }
 
-// MustToSlice is equal to ToSlice, but panic if there is an error.
-func MustToSlice(v interface{}) []interface{} {
-	_v, err := ToSlice(v)
-	if err != nil {
-		panic(err)
-	}
-	return _v
-}
-
 // ToMap converts any map type that the key is string to map[string]interface{}.
 //
 // Return nil and an error if v is not a map type or its key is not the string
@@ -104,15 +95,6 @@ func ToMap(v interface{}) (map[string]interface{}, error) {
 		results[key.String()] = _v.MapIndex(key).Interface()
 	}
 	return results, nil
-}
-
-// MustToMap is equal to ToMap, but panic if there is an error.
-func MustToMap(v interface{}) map[string]interface{} {
-	_v, err := ToMap(v)
-	if err != nil {
-		panic(err)
-	}
-	return _v
 }
 
 // ToMapKeys returns all the keys of a map.
@@ -164,15 +146,6 @@ func ToMapKeys(v interface{}) ([]string, error) {
 	return results, nil
 }
 
-// MustToMapKeys is equal to ToMapKeys, but panic if there is an error.
-func MustToMapKeys(v interface{}) []string {
-	_v, err := ToMapKeys(v)
-	if err != nil {
-		panic(err)
-	}
-	return _v
-}
-
 // ToMapValues returns all the values of a map.
 //
 // If the value is not a map, it returns an error.
@@ -218,15 +191,6 @@ func ToMapValues(v interface{}) ([]interface{}, error) {
 	return results, nil
 }
 
-// MustToMapValues is equal to ToMapValues, but panic if there is an error.
-func MustToMapValues(v interface{}) []interface{} {
-	_v, err := ToMapValues(v)
-	if err != nil {
-		panic(err)
-	}
-	return _v
-}
-
 // ToBool does the best to convert any certain value to bool.
 //
 // When the value is string, for "t", "T", "1", "on", "On", "ON", "true",
@@ -251,15 +215,6 @@ func ToBool(v interface{}) (bool, error) {
 		}
 	}
 	return !IsZero(v), nil
-}
-
-// MustToBool is equal to ToBool, but panic if there is an error.
-func MustToBool(v interface{}) bool {
-	_v, err := ToBool(v)
-	if err != nil {
-		panic(err)
-	}
-	return _v
 }
 
 // ToInt64 does the best to convert any certain value to int64.
@@ -304,15 +259,6 @@ func ToInt64(_v interface{}) (v int64, err error) {
 	return
 }
 
-// MustToInt64 is equal to ToInt64, but panic if there is an error.
-func MustToInt64(v interface{}) int64 {
-	_v, err := ToInt64(v)
-	if err != nil {
-		panic(err)
-	}
-	return _v
-}
-
 // ToUint64 does the best to convert any certain value to uint64.
 func ToUint64(_v interface{}) (v uint64, err error) {
 	switch t := _v.(type) {
@@ -355,15 +301,6 @@ func ToUint64(_v interface{}) (v uint64, err error) {
 	return
 }
 
-// MustToUint64 is equal to ToUint64, but panic if there is an error.
-func MustToUint64(v interface{}) uint64 {
-	_v, err := ToUint64(v)
-	if err != nil {
-		panic(err)
-	}
-	return _v
-}
-
 // ToString does the best to convert any certain value to string.
 func ToString(_v interface{}) (v string, err error) {
 	switch t := _v.(type) {
@@ -387,15 +324,6 @@ func ToString(_v interface{}) (v string, err error) {
 		err = fmt.Errorf("unknown type of %T", _v)
 	}
 	return
-}
-
-// MustToString is equal to ToString, but panic if there is an error.
-func MustToString(v interface{}) string {
-	_v, err := ToString(v)
-	if err != nil {
-		panic(err)
-	}
-	return _v
 }
 
 // ToFloat64 does the best to convert any certain value to float64.
@@ -440,15 +368,6 @@ func ToFloat64(_v interface{}) (v float64, err error) {
 	return
 }
 
-// MustToFloat64 is equal to ToFloat64, but panic if there is an error.
-func MustToFloat64(v interface{}) float64 {
-	_v, err := ToFloat64(v)
-	if err != nil {
-		panic(err)
-	}
-	return _v
-}
-
 // ToComplex128 does the best to convert any certain value to complex128.
 func ToComplex128(_v interface{}) (v complex128, err error) {
 	switch t := _v.(type) {
@@ -476,6 +395,111 @@ func ToComplex128(_v interface{}) (v complex128, err error) {
 	return
 }
 
+// ToInt does the best to convert any certain value to int.
+func ToInt(v interface{}) (int, error) {
+	_v, err := ToInt64(v)
+	return int(_v), err
+}
+
+// ToUint does the best to convert any certain value to uint.
+func ToUint(v interface{}) (uint, error) {
+	_v, err := ToUint64(v)
+	return uint(_v), err
+}
+
+// ToInt32 does the best to convert any certain value to int32.
+func ToInt32(v interface{}) (int32, error) {
+	_v, err := ToInt64(v)
+	return int32(_v), err
+}
+
+// ToUint32 does the best to convert any certain value to uint32.
+func ToUint32(v interface{}) (uint32, error) {
+	_v, err := ToUint64(v)
+	return uint32(_v), err
+}
+
+// MustToSlice is equal to ToSlice, but panic if there is an error.
+func MustToSlice(v interface{}) []interface{} {
+	_v, err := ToSlice(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
+// MustToMap is equal to ToMap, but panic if there is an error.
+func MustToMap(v interface{}) map[string]interface{} {
+	_v, err := ToMap(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
+// MustToMapKeys is equal to ToMapKeys, but panic if there is an error.
+func MustToMapKeys(v interface{}) []string {
+	_v, err := ToMapKeys(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
+// MustToMapValues is equal to ToMapValues, but panic if there is an error.
+func MustToMapValues(v interface{}) []interface{} {
+	_v, err := ToMapValues(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
+// MustToBool is equal to ToBool, but panic if there is an error.
+func MustToBool(v interface{}) bool {
+	_v, err := ToBool(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
+// MustToInt64 is equal to ToInt64, but panic if there is an error.
+func MustToInt64(v interface{}) int64 {
+	_v, err := ToInt64(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
+// MustToUint64 is equal to ToUint64, but panic if there is an error.
+func MustToUint64(v interface{}) uint64 {
+	_v, err := ToUint64(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
+// MustToString is equal to ToString, but panic if there is an error.
+func MustToString(v interface{}) string {
+	_v, err := ToString(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
+// MustToFloat64 is equal to ToFloat64, but panic if there is an error.
+func MustToFloat64(v interface{}) float64 {
+	_v, err := ToFloat64(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
 // MustToComplex128 is equal to ToComplex128, but panic if there is an error.
 func MustToComplex128(v interface{}) complex128 {
 	_v, err := ToComplex128(v)
@@ -483,12 +507,6 @@ func MustToComplex128(v interface{}) complex128 {
 		panic(err)
 	}
 	return _v
-}
-
-// ToInt does the best to convert any certain value to int.
-func ToInt(v interface{}) (int, error) {
-	_v, err := ToInt64(v)
-	return int(_v), err
 }
 
 // MustToInt is equal to ToInt, but panic if there is an error.
@@ -500,12 +518,6 @@ func MustToInt(v interface{}) int {
 	return _v
 }
 
-// ToUint does the best to convert any certain value to uint.
-func ToUint(v interface{}) (uint, error) {
-	_v, err := ToUint64(v)
-	return uint(_v), err
-}
-
 // MustToUint is equal to ToUint, but panic if there is an error.
 func MustToUint(v interface{}) uint {
 	_v, err := ToUint(v)
@@ -515,12 +527,6 @@ func MustToUint(v interface{}) uint {
 	return _v
 }
 
-// ToInt32 does the best to convert any certain value to int32.
-func ToInt32(v interface{}) (int32, error) {
-	_v, err := ToInt64(v)
-	return int32(_v), err
-}
-
 // MustToInt32 is equal to ToInt32, but panic if there is an error.
 func MustToInt32(v interface{}) int32 {
 	_v, err := ToInt32(v)
@@ -528,12 +534,6 @@ func MustToInt32(v interface{}) int32 {
 		panic(err)
 	}
 	return _v
-}
-
-// ToUint32 does the best to convert any certain value to uint32.
-func ToUint32(v interface{}) (uint32, error) {
-	_v, err := ToUint64(v)
-	return uint32(_v), err
 }
 
 // MustToUint32 is equal to ToUint32, but panic if there is an error.
