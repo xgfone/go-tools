@@ -24,16 +24,8 @@ func ReadLine(r *bufio.Reader) (lines [][]byte, err error) {
 // if n is equal to or less than 0.
 func ReadN(r io.Reader, n int64) (v []byte, err error) {
 	buf := bytes.NewBuffer(nil)
-	err = ReadNBuffer(buf, r, n)
+	err = ReadNWriter(buf, r, n)
 	return buf.Bytes(), err
-}
-
-// ReadNBuffer is the alias of ReadNWriter except for the type of *bytes.Buffer.
-//
-// This function is DEPRECATED and may be removed in the next version.
-// So you can use ReadNWriter instead.
-func ReadNBuffer(buf *bytes.Buffer, r io.Reader, n int64) error {
-	return ReadNWriter(buf, r, n)
 }
 
 // ReadNWriter reads n bytes to the writer w from the reader r.
