@@ -1,5 +1,10 @@
 package option
 
+// Scanner is an interface to parse src and assign to iteself.
+type Scanner interface {
+	Scan(src interface{}) error
+}
+
 // Interface is an common Option interface, which is used to denote all the types of Option.
 type Interface interface {
 	IsSome() bool
