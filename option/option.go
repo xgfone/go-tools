@@ -48,8 +48,7 @@ func (o *Option) Reset(value interface{}) {
 	o.value = value
 }
 
-// ConvertTo converts the value to the inner by convert, which `convert` will
-// convert `value` then assign the result to the inner.
+// ConvertTo converts the value by convert then assigns the result to the inner.
 func (o *Option) ConvertTo(value interface{}, convert func(interface{}) (interface{}, error)) error {
 	v, err := convert(value)
 	if err == nil {
