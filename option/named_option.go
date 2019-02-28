@@ -4,7 +4,7 @@ import "fmt"
 
 // NamedOption represents a named Option.
 type NamedOption struct {
-	Option
+	*Option
 
 	name string
 }
