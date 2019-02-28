@@ -6,15 +6,15 @@ import (
 
 // BoolOption is an Option of the bool type.
 type BoolOption struct {
-	Interface
+	Option
 }
 
 // NewBoolOption returns a new BoolOption.
-func NewBoolOption(o Interface) BoolOption {
+func NewBoolOption(o Option) BoolOption {
 	if o == nil {
 		o = None()
 	}
-	return BoolOption{Interface: o}
+	return BoolOption{Option: o}
 }
 
 // Scan converts src as bool to the inner value.
@@ -24,15 +24,15 @@ func (o BoolOption) Scan(src interface{}) error {
 
 // StringOption is an Option of the string type.
 type StringOption struct {
-	Interface
+	Option
 }
 
 // NewStringOption returns a new StringOption.
-func NewStringOption(o Interface) StringOption {
+func NewStringOption(o Option) StringOption {
 	if o == nil {
 		o = None()
 	}
-	return StringOption{Interface: o}
+	return StringOption{Option: o}
 }
 
 // Scan converts src as string to the inner value.
@@ -42,15 +42,15 @@ func (o StringOption) Scan(src interface{}) error {
 
 // IntOption is an Option of the int type.
 type IntOption struct {
-	Interface
+	Option
 }
 
 // NewIntOption returns a new IntOption.
-func NewIntOption(o Interface) IntOption {
+func NewIntOption(o Option) IntOption {
 	if o == nil {
 		o = None()
 	}
-	return IntOption{Interface: o}
+	return IntOption{Option: o}
 }
 
 // Scan converts src as int to the inner value.
@@ -60,15 +60,15 @@ func (o IntOption) Scan(src interface{}) error {
 
 // Int8Option is an Option of the int8 type.
 type Int8Option struct {
-	Interface
+	Option
 }
 
 // NewInt8Option returns a new Int8Option.
-func NewInt8Option(o Interface) Int8Option {
+func NewInt8Option(o Option) Int8Option {
 	if o == nil {
 		o = None()
 	}
-	return Int8Option{Interface: o}
+	return Int8Option{Option: o}
 }
 
 // Scan converts src as int8 to the inner value.
@@ -82,15 +82,15 @@ func (o Int8Option) Scan(src interface{}) error {
 
 // Int16Option is an Option of the int16 type.
 type Int16Option struct {
-	Interface
+	Option
 }
 
 // NewInt16Option returns a new Int16Option.
-func NewInt16Option(o Interface) Int16Option {
+func NewInt16Option(o Option) Int16Option {
 	if o == nil {
 		o = None()
 	}
-	return Int16Option{Interface: o}
+	return Int16Option{Option: o}
 }
 
 // Scan converts src as int16 to the inner value.
@@ -104,15 +104,15 @@ func (o Int16Option) Scan(src interface{}) error {
 
 // Int32Option is an Option of the int32 type.
 type Int32Option struct {
-	Interface
+	Option
 }
 
 // NewInt32Option returns a new Int32Option.
-func NewInt32Option(o Interface) Int32Option {
+func NewInt32Option(o Option) Int32Option {
 	if o == nil {
 		o = None()
 	}
-	return Int32Option{Interface: o}
+	return Int32Option{Option: o}
 }
 
 // Scan converts src as int32 to the inner value.
@@ -122,15 +122,15 @@ func (o Int32Option) Scan(src interface{}) error {
 
 // Int64Option is an Option of the int64 type.
 type Int64Option struct {
-	Interface
+	Option
 }
 
 // NewInt64Option returns a new Int64Option.
-func NewInt64Option(o Interface) Int64Option {
+func NewInt64Option(o Option) Int64Option {
 	if o == nil {
 		o = None()
 	}
-	return Int64Option{Interface: o}
+	return Int64Option{Option: o}
 }
 
 // Scan converts src as int64 to the inner value.
@@ -140,15 +140,15 @@ func (o Int64Option) Scan(src interface{}) error {
 
 // UintOption is an Option of the uint type.
 type UintOption struct {
-	Interface
+	Option
 }
 
 // NewUintOption returns a new UintOption.
-func NewUintOption(o Interface) UintOption {
+func NewUintOption(o Option) UintOption {
 	if o == nil {
 		o = None()
 	}
-	return UintOption{Interface: o}
+	return UintOption{Option: o}
 }
 
 // Scan converts src as uint to the inner value.
@@ -158,15 +158,15 @@ func (o UintOption) Scan(src interface{}) error {
 
 // Uint8Option is an Option of the uint8 type.
 type Uint8Option struct {
-	Interface
+	Option
 }
 
 // NewUint8Option returns a new Uint8Option.
-func NewUint8Option(o Interface) Uint8Option {
+func NewUint8Option(o Option) Uint8Option {
 	if o == nil {
 		o = None()
 	}
-	return Uint8Option{Interface: o}
+	return Uint8Option{Option: o}
 }
 
 // Scan converts src as uint8 to the inner value.
@@ -180,15 +180,15 @@ func (o Uint8Option) Scan(src interface{}) error {
 
 // Uint16Option is an Option of the uint16 type.
 type Uint16Option struct {
-	Interface
+	Option
 }
 
 // NewUint16Option returns a new Uint16Option.
-func NewUint16Option(o Interface) Uint16Option {
+func NewUint16Option(o Option) Uint16Option {
 	if o == nil {
 		o = None()
 	}
-	return Uint16Option{Interface: o}
+	return Uint16Option{Option: o}
 }
 
 // Scan converts src as uint16 to the inner value.
@@ -202,15 +202,15 @@ func (o Uint16Option) Scan(src interface{}) error {
 
 // Uint32Option is an Option of the uint32 type.
 type Uint32Option struct {
-	Interface
+	Option
 }
 
 // NewUint32Option returns a new Uint32Option.
-func NewUint32Option(o Interface) Uint32Option {
+func NewUint32Option(o Option) Uint32Option {
 	if o == nil {
 		o = None()
 	}
-	return Uint32Option{Interface: o}
+	return Uint32Option{Option: o}
 }
 
 // Scan converts src as uint32 to the inner value.
@@ -220,15 +220,15 @@ func (o Uint32Option) Scan(src interface{}) error {
 
 // Uint64Option is an Option of the uint64 type.
 type Uint64Option struct {
-	Interface
+	Option
 }
 
 // NewUint64Option returns a new Uint64Option.
-func NewUint64Option(o Interface) Uint64Option {
+func NewUint64Option(o Option) Uint64Option {
 	if o == nil {
 		o = None()
 	}
-	return Uint64Option{Interface: o}
+	return Uint64Option{Option: o}
 }
 
 // Scan converts src as uint64 to the inner value.
@@ -238,15 +238,15 @@ func (o Uint64Option) Scan(src interface{}) error {
 
 // Float64Option is an Option of the float64 type.
 type Float64Option struct {
-	Interface
+	Option
 }
 
 // NewFloat64Option returns a new Float64Option.
-func NewFloat64Option(o Interface) Float64Option {
+func NewFloat64Option(o Option) Float64Option {
 	if o == nil {
 		o = None()
 	}
-	return Float64Option{Interface: o}
+	return Float64Option{Option: o}
 }
 
 // Scan converts src as float64 to the inner value.

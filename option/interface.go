@@ -1,7 +1,7 @@
 package option
 
-// Interface is an common Option interface, which is used to denote all the types of Option.
-type Interface interface {
+// Option is an interface which is used to denote the Option type.
+type Option interface {
 	IsSome() bool
 	IsNone() bool
 
@@ -18,6 +18,10 @@ type Interface interface {
 	Reset(value interface{})
 
 	// Scan parses src and assigns to iteself.
+	//
+	// Notice: Because missing the type information, the default implementation
+	// does not convert src, only assign it to the inner value. But you can
+	// rewrite it, such as BoolOption, StringOption, IntOption, etc.
 	Scan(src interface{}) error
 
 	// ConvertTo converts the value by convert then assigns the result to the inner.

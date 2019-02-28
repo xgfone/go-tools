@@ -4,7 +4,7 @@ import "fmt"
 
 // NamedOption represents a named Option.
 type NamedOption struct {
-	Interface
+	Option
 
 	name string
 }
@@ -12,11 +12,11 @@ type NamedOption struct {
 // NewNamedOption returns a new NamedOption based on option.
 //
 // If option is nil, it is None() by default.
-func NewNamedOption(name string, option Interface) NamedOption {
+func NewNamedOption(name string, option Option) NamedOption {
 	if option == nil {
 		option = None()
 	}
-	return NamedOption{name: name, Interface: option}
+	return NamedOption{name: name, Option: option}
 }
 
 // NamedSome returns an NamedOption named name.
@@ -38,7 +38,7 @@ func (o NamedOption) Name() string {
 
 // String implements the interface fmt.Stringer.
 func (o NamedOption) String() string {
-	return fmt.Sprintf("Option(name='%s', value=%v)", o.name, o.Interface.Value())
+	return fmt.Sprintf("Option(name='%s', value=%v)", o.name, o.Option.Value())
 }
 
 // Named returns a proxy to generate some named options with the same name n.

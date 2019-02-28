@@ -61,7 +61,7 @@ func TestStringOption(t *testing.T) {
 }
 
 func TestInterface(t *testing.T) {
-	opts := []Interface{
+	opts := []Option{
 		NewBoolOption(None()),
 		NewInt64Option(None()),
 		NewFloat64Option(None()),
