@@ -151,6 +151,16 @@ func (o Option) Uint64() uint64 {
 	return o.value.(uint64)
 }
 
+// Float32 returns the inner float32 value. Or panic.
+func (o Option) Float32() float32 {
+	return o.value.(float32)
+}
+
+// Float64 returns the inner float64 value. Or panic.
+func (o Option) Float64() float64 {
+	return o.value.(float64)
+}
+
 // Strs returns the inner []string value. Or panic.
 func (o Option) Strs() []string {
 	return o.value.([]string)
