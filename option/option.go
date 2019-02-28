@@ -48,6 +48,14 @@ func (o *Option) Reset(value interface{}) {
 	o.value = value
 }
 
+// Scan parses src and assigns to iteself.
+//
+// Notice: it does not convert src, only assign it to the inner value.
+func (o *Option) Scan(src interface{}) error {
+	o.value = src
+	return nil
+}
+
 // ConvertTo converts the value by convert then assigns the result to the inner.
 func (o *Option) ConvertTo(value interface{}, convert func(interface{}) (interface{}, error)) error {
 	v, err := convert(value)

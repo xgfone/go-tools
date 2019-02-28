@@ -1,10 +1,5 @@
 package option
 
-// Scanner is an interface to parse src and assign to iteself.
-type Scanner interface {
-	Scan(src interface{}) error
-}
-
 // Interface is an common Option interface, which is used to denote all the types of Option.
 type Interface interface {
 	IsSome() bool
@@ -21,6 +16,9 @@ type Interface interface {
 
 	// Reset resets the inner value to value.
 	Reset(value interface{})
+
+	// Scan parses src and assigns to iteself.
+	Scan(src interface{}) error
 
 	// ConvertTo converts the value by convert then assigns the result to the inner.
 	ConvertTo(value interface{}, convert func(interface{}) (interface{}, error)) error
