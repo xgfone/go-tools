@@ -3,6 +3,7 @@ package lifecycle
 
 import (
 	"errors"
+	"os"
 	"reflect"
 	"sync"
 	"sync/atomic"
@@ -126,4 +127,11 @@ func (m *Manager) wait() {
 	<-exit // Wait that the manager stops.
 	// Here can do some cleanup works.
 	finished <- struct{}{} // Notify the manager that the task finished.
+}
+
+// Exit executes the stop functions and exit the program with the code
+// by calling os.Exit(code).
+func (m *Manager) Exit(code int) {
+	m.Stop()
+	os.Exit(code)
 }

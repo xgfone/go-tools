@@ -48,3 +48,8 @@ func RunForever() {
 func Wait() {
 	defaultManager.Wait()
 }
+
+// Exit calls the method Exit of the default global manager.
+func Exit(code int) {
+	defaultManager.Exit(code)
+}
