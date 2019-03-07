@@ -25,7 +25,7 @@ func ExampleManager() {
 	}()
 
 	fmt.Println("The program is ready to exit ...")
-	lcm.Stop() // Apps clean
+	go lcm.Stop() // Apps clean
 	lcm.Wait()
 	fmt.Println("The program exited")
 

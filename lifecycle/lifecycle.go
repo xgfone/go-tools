@@ -33,21 +33,6 @@ func NewManager() *Manager {
 	}
 }
 
-func (m *Manager) getCallbacks() []func() {
-	m.lock.RLock()
-	cb := make([]func(), 0, len(m.callbacks))
-	copy(cb, m.callbacks)
-	m.lock.RUnlock()
-	return cb
-}
-
-func (m *Manager) addCallbacks(cb ...func()) *Manager {
-	m.lock.Lock()
-	m.callbacks = append(m.callbacks, cb...)
-	m.lock.Unlock()
-	return m
-}
-
 // RegisterChannel is same as Register, but using the channel, not the callback.
 //
 // The parameter out is used to notice the app to end. And in is used to notice
@@ -75,7 +60,11 @@ func (m *Manager) Register(functions ...func()) *Manager {
 	if m.IsStop() {
 		panic(ErrStopped)
 	}
-	return m.addCallbacks(functions...)
+
+	m.lock.Lock()
+	m.callbacks = append(m.callbacks, functions...)
+	m.lock.Unlock()
+	return m
 }
 
 // Stop terminates and cleans all the apps.
@@ -85,9 +74,11 @@ func (m *Manager) Register(functions ...func()) *Manager {
 // call the cleaning function of the next app.
 func (m *Manager) Stop() {
 	if atomic.CompareAndSwapInt32(&m.stoped, 0, 1) {
-		functions := m.getCallbacks()
-		for _len := len(functions) - 1; _len >= 0; _len-- {
-			callFuncAndIgnorePanic(functions[_len])
+		m.lock.RLock()
+		defer m.lock.RUnlock()
+
+		for _len := len(m.callbacks) - 1; _len >= 0; _len-- {
+			callFuncAndIgnorePanic(m.callbacks[_len])
 		}
 		m.shouldStop <- struct{}{}
 	}
@@ -116,17 +107,22 @@ func (m *Manager) RunForever() {
 
 // Wait will wait that the manager stops.
 func (m *Manager) Wait() {
-	if IsStop() {
+	m.lock.Lock()
+
+	if m.IsStop() {
+		m.lock.Unlock()
 		return
 	}
 
-	m.wait()
-}
+	callbacks := make([]func(), len(m.callbacks)+1)
+	copy(callbacks[1:], m.callbacks)
+	m.callbacks = callbacks
 
-func (m *Manager) wait() {
 	exit := make(chan struct{}, 1)
 	finished := make(chan struct{}, 1)
-	m.addCallbacks(func() { exit <- struct{}{}; <-finished })
+	m.callbacks[0] = func() { exit <- struct{}{}; <-finished }
+
+	m.lock.Unlock()
 
 	<-exit // Wait that the manager stops.
 	// Here can do some cleanup works.
