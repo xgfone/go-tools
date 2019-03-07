@@ -33,6 +33,9 @@ var (
 
 	// ErrKindNotExist is returned when a certain kind does not exist.
 	ErrKindNotExist = fmt.Errorf("no kind")
+
+	// ErrUnknownType is returned when not to identify a data type.
+	ErrUnknownType = fmt.Errorf("unknown type")
 )
 
 var converters = make(map[Kind]func(interface{}) (interface{}, error))
@@ -317,7 +320,7 @@ func ToTime(v interface{}, layout ...string) (time.Time, error) {
 		}
 		return time.Parse(time.RFC3339Nano, _v)
 	default:
-		return time.Time{}, fmt.Errorf("unknown type '%T'", v)
+		return time.Time{}, ErrUnknownType
 	}
 }
 
@@ -385,7 +388,7 @@ func ToInt64(_v interface{}) (v int64, err error) {
 	case complex128:
 		v = int64(real(t))
 	default:
-		err = fmt.Errorf("unknown type of %T", _v)
+		err = ErrUnknownType
 	}
 	return
 }
@@ -427,7 +430,7 @@ func ToUint64(_v interface{}) (v uint64, err error) {
 	case complex128:
 		v = uint64(real(t))
 	default:
-		err = fmt.Errorf("unknown type of %T", _v)
+		err = ErrUnknownType
 	}
 	return
 }
@@ -479,7 +482,7 @@ func ToString(_v interface{}) (v string, err error) {
 	case fmt.Stringer:
 		v = t.String()
 	default:
-		err = fmt.Errorf("unknown type of %T", _v)
+		err = ErrUnknownType
 	}
 	return
 }
@@ -521,7 +524,7 @@ func ToFloat64(_v interface{}) (v float64, err error) {
 	case complex128:
 		v = real(t)
 	default:
-		err = fmt.Errorf("unknown type of %T", _v)
+		err = ErrUnknownType
 	}
 	return
 }
@@ -548,7 +551,7 @@ func ToComplex128(_v interface{}) (v complex128, err error) {
 		f, _ := ToFloat64(_v)
 		v = complex(f, 0)
 	default:
-		err = fmt.Errorf("unknown type of %T", _v)
+		err = ErrUnknownType
 	}
 	return
 }
