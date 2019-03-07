@@ -550,6 +550,30 @@ func ToUint(v interface{}) (uint, error) {
 	return uint(_v), err
 }
 
+// ToInt8 does the best to convert any certain value to int8.
+func ToInt8(v interface{}) (int8, error) {
+	_v, err := ToInt64(v)
+	return int8(_v), err
+}
+
+// ToUint8 does the best to convert any certain value to uint8.
+func ToUint8(v interface{}) (uint8, error) {
+	_v, err := ToUint64(v)
+	return uint8(_v), err
+}
+
+// ToInt16 does the best to convert any certain value to int16.
+func ToInt16(v interface{}) (int16, error) {
+	_v, err := ToInt64(v)
+	return int16(_v), err
+}
+
+// ToUint16 does the best to convert any certain value to uint16.
+func ToUint16(v interface{}) (uint16, error) {
+	_v, err := ToUint64(v)
+	return uint16(_v), err
+}
+
 // ToInt32 does the best to convert any certain value to int32.
 func ToInt32(v interface{}) (int32, error) {
 	_v, err := ToInt64(v)
