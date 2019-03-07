@@ -704,6 +704,42 @@ func MustToUint(v interface{}) uint {
 	return _v
 }
 
+// MustToInt8 is equal to ToInt8, but panic if there is an error.
+func MustToInt8(v interface{}) int8 {
+	_v, err := ToInt8(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
+// MustToUint8 is equal to ToUint8, but panic if there is an error.
+func MustToUint8(v interface{}) uint8 {
+	_v, err := ToUint8(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
+// MustToInt16 is equal to ToInt16, but panic if there is an error.
+func MustToInt16(v interface{}) int16 {
+	_v, err := ToInt16(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
+// MustToUint16 is equal to ToUint16, but panic if there is an error.
+func MustToUint16(v interface{}) uint16 {
+	_v, err := ToUint16(v)
+	if err != nil {
+		panic(err)
+	}
+	return _v
+}
+
 // MustToInt32 is equal to ToInt32, but panic if there is an error.
 func MustToInt32(v interface{}) int32 {
 	_v, err := ToInt32(v)
