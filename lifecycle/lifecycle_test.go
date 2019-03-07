@@ -26,14 +26,15 @@ func ExampleManager() {
 
 	fmt.Println("The program is ready to exit ...")
 	lcm.Stop() // Apps clean
+	lcm.Wait()
 	fmt.Println("The program exited")
 
 	// Output:
 	// Register the clean functions of apps
 	// Apps do something ...
 	// The program is ready to exit ...
-	// Clean and wait app1 to end
-	// Clean and wait app2 to end
 	// Clean and wait app3 to end
+	// Clean and wait app2 to end
+	// Clean and wait app1 to end
 	// The program exited
 }

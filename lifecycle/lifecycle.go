@@ -85,8 +85,9 @@ func (m *Manager) Register(functions ...func()) *Manager {
 // call the cleaning function of the next app.
 func (m *Manager) Stop() {
 	if atomic.CompareAndSwapInt32(&m.stoped, 0, 1) {
-		for _, f := range m.getCallbacks() {
-			callFuncAndIgnorePanic(f)
+		functions := m.getCallbacks()
+		for _len := len(functions) - 1; _len >= 0; _len-- {
+			callFuncAndIgnorePanic(functions[_len])
 		}
 		m.shouldStop <- struct{}{}
 	}
@@ -96,7 +97,10 @@ func callFuncAndIgnorePanic(f func()) {
 	defer func() {
 		recover()
 	}()
-	f()
+
+	if f != nil {
+		f()
+	}
 }
 
 // IsStop returns true if the manager has been stoped, or false.
