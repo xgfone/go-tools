@@ -1,3 +1,4 @@
+// Package tag is used to find and get the tags in a struct.
 package tag
 
 import (

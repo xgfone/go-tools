@@ -1,3 +1,5 @@
+// Package errors supplies an error type implementation based on
+// the type inheritance.
 package errors
 
 import (
