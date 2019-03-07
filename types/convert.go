@@ -309,9 +309,10 @@ func ToTime(v interface{}, layout ...string) (time.Time, error) {
 
 // ToBool does the best to convert any certain value to bool.
 //
-// When the value is string, for "t", "T", "1", "on", "On", "ON", "true",
-// "True", "TRUE", it's true, for "f", "F", "0", "off", "Off", "OFF", "false",
-// "False", "FALSE", "", it's false.
+// For the string, the true value is
+//   "t", "T", "1", "on", "On", "ON", "true", "True", "TRUE", "yes", "Yes", "YES"
+// the false value is
+//   "f", "F", "0", "off", "Off", "OFF", "false", "False", "FALSE", "no", "No", "NO", ""
 //
 // For other types, if the value is ZERO of the type, it's false. Or it's true.
 func ToBool(v interface{}) (bool, error) {
@@ -322,9 +323,9 @@ func ToBool(v interface{}) (bool, error) {
 		return _v, nil
 	case string:
 		switch _v {
-		case "t", "T", "1", "on", "On", "ON", "true", "True", "TRUE":
+		case "t", "T", "1", "on", "On", "ON", "true", "True", "TRUE", "yes", "Yes", "YES":
 			return true, nil
-		case "f", "F", "0", "off", "Off", "OFF", "false", "False", "FALSE", "":
+		case "f", "F", "0", "off", "Off", "OFF", "false", "False", "FALSE", "no", "No", "NO", "":
 			return false, nil
 		default:
 			return false, fmt.Errorf("unrecognized bool string: %s", _v)
