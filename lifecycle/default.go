@@ -7,8 +7,8 @@ func init() {
 }
 
 // Register registers the argument to the global default one.
-func Register(f func()) *Manager {
-	return defaultManager.Register(f)
+func Register(functions ...func()) *Manager {
+	return defaultManager.Register(functions...)
 }
 
 // RegisterChannel registers the argument to the global default one.

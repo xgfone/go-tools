@@ -5,11 +5,12 @@ import (
 	"errors"
 	"reflect"
 	"sync"
+	"sync/atomic"
 )
 
 var (
 	// ErrStopped is a stop error.
-	ErrStopped = errors.New("The manager has been stopped")
+	ErrStopped = errors.New("The lifecycle manager has been stopped")
 
 	// ErrSameArgs is a arguments error.
 	ErrSameArgs = errors.New("The arguments is the same")
@@ -17,8 +18,8 @@ var (
 
 // Manager manage the lifecycle of some apps in a program.
 type Manager struct {
-	sync.Mutex
-	stoped     bool
+	lock       sync.RWMutex
+	stoped     int32
 	callbacks  []func()
 	shouldStop chan struct{}
 }
@@ -29,6 +30,21 @@ func NewManager() *Manager {
 		callbacks:  make([]func(), 0, 8),
 		shouldStop: make(chan struct{}, 1),
 	}
+}
+
+func (m *Manager) getCallbacks() []func() {
+	m.lock.RLock()
+	cb := make([]func(), 0, len(m.callbacks))
+	copy(cb, m.callbacks)
+	m.lock.RUnlock()
+	return cb
+}
+
+func (m *Manager) addCallbacks(cb ...func()) *Manager {
+	m.lock.Lock()
+	m.callbacks = append(m.callbacks, cb...)
+	m.lock.Unlock()
+	return m
 }
 
 // RegisterChannel is same as Register, but using the channel, not the callback.
@@ -54,16 +70,11 @@ func (m *Manager) RegisterChannel(out chan<- interface{}, in <-chan interface{})
 //
 // When calling Stop(), the callback function will be called in turn
 // by the order that they are registered.
-func (m *Manager) Register(f func()) *Manager {
-	m.Lock()
-	defer m.Unlock()
-
-	if m.stoped {
+func (m *Manager) Register(functions ...func()) *Manager {
+	if m.IsStop() {
 		panic(ErrStopped)
 	}
-
-	m.callbacks = append(m.callbacks, f)
-	return m
+	return m.addCallbacks(functions...)
 }
 
 // Stop terminates and cleans all the apps.
@@ -72,20 +83,12 @@ func (m *Manager) Register(f func()) *Manager {
 // If the cleaning function of a certain app panics, ignore it and continue to
 // call the cleaning function of the next app.
 func (m *Manager) Stop() {
-	m.Lock()
-	defer m.Unlock()
-
-	if m.stoped {
-		return
+	if atomic.CompareAndSwapInt32(&m.stoped, 0, 1) {
+		for _, f := range m.getCallbacks() {
+			callFuncAndIgnorePanic(f)
+		}
+		m.shouldStop <- struct{}{}
 	}
-	m.stoped = true
-
-	for _, f := range m.callbacks {
-		// f()
-		callFuncAndIgnorePanic(f)
-	}
-
-	m.shouldStop <- struct{}{}
 }
 
 func callFuncAndIgnorePanic(f func()) {
@@ -96,11 +99,8 @@ func callFuncAndIgnorePanic(f func()) {
 }
 
 // IsStop returns true if the manager has been stoped, or false.
-func (m *Manager) IsStop() (yes bool) {
-	m.Lock()
-	yes = m.stoped
-	m.Unlock()
-	return
+func (m *Manager) IsStop() bool {
+	return atomic.LoadInt32(&m.stoped) != 0
 }
 
 // RunForever is the same as m.Wait(), but it should be called in main goroutine
@@ -119,9 +119,9 @@ func (m *Manager) Wait() {
 }
 
 func (m *Manager) wait() {
-	exit := make(chan interface{}, 1)
-	finished := make(chan interface{}, 1)
-	m.RegisterChannel(exit, finished)
+	exit := make(chan struct{}, 1)
+	finished := make(chan struct{}, 1)
+	m.addCallbacks(func() { exit <- struct{}{}; <-finished })
 
 	<-exit // Wait that the manager stops.
 	// Here can do some cleanup works.
