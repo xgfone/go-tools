@@ -76,8 +76,13 @@ func init() {
 	RegisterConverter(Uint64, func(v interface{}) (interface{}, error) { return ToUint64(v) })
 	RegisterConverter(Float64, func(v interface{}) (interface{}, error) { return ToFloat64(v) })
 	RegisterConverter(String, func(v interface{}) (interface{}, error) { return ToString(v) })
-	RegisterConverter(Time, func(v interface{}) (interface{}, error) { return ToTime(v, "2006-01-02 15:04:05") })
 	RegisterConverter(RFC3339Time, func(v interface{}) (interface{}, error) { return ToTime(v, time.RFC3339) })
+	RegisterConverter(Time, func(v interface{}) (interface{}, error) {
+		if s, _ := v.(string); s == "0000-00-00 00:00:00" {
+			return time.Time{}, nil
+		}
+		return ToTime(v, "2006-01-02 15:04:05")
+	})
 }
 
 // RegisterConverter registers a converter of the kind k.
