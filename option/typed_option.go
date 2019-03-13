@@ -16,6 +16,7 @@ package option
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/xgfone/go-tools/types"
 )
@@ -379,6 +380,65 @@ func (o Float64Option) Scan(src interface{}) error {
 func (o Float64Option) UnmarshalJSON(src []byte) (err error) {
 	var v float64
 	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
+}
+
+// TimeOption is an Option of the time.Time type.
+type TimeOption struct {
+	Option
+}
+
+// NewTimeOption returns a new TimeOption.
+func NewTimeOption(o Option) TimeOption {
+	if o == nil {
+		o = None()
+	}
+	return TimeOption{Option: o}
+}
+
+// Scan converts src as float64 to the inner value.
+func (o TimeOption) Scan(src interface{}) error {
+	return o.ConvertTo(src, func(v interface{}) (interface{}, error) {
+		switch _v := v.(type) {
+		case []byte:
+			switch s := string(_v); s {
+			case "0000-00-00 00:00:00":
+				return time.Time{}, nil
+			default:
+				v = s
+			}
+		case string:
+			if _v == "0000-00-00 00:00:00" {
+				return time.Time{}, nil
+			}
+		}
+		return types.ToTime(v, "2006-01-02 15:04:05")
+	})
+}
+
+var zeroTime = []byte("0000-00-00 00:00:00")
+
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o TimeOption) UnmarshalJSON(src []byte) (err error) {
+	if _len := len(zeroTime); len(src) >= _len {
+		equal := true
+		for i := 0; i < _len; i++ {
+			if zeroTime[i] != src[i] {
+				equal = false
+				break
+			}
+		}
+
+		if equal {
+			o.Reset(time.Time{})
+			return
+		}
+	}
+
+	v, err := time.Parse("2006-01-02 15:04:05", string(src))
+	if err == nil {
 		o.Reset(v)
 	}
 	return
