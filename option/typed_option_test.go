@@ -15,6 +15,7 @@
 package option
 
 import (
+	"strconv"
 	"testing"
 )
 
@@ -57,6 +58,12 @@ func TestFloat64Option(t *testing.T) {
 		t.Error(err)
 	} else if !b.IsFloat64() || b.Float64() != 1.2 {
 		t.Error(b.Value())
+	}
+
+	if err := b.UnmarshalJSON(strconv.AppendFloat(nil, 2.0, 'f', -1, 64)); err != nil {
+		t.Error(err)
+	} else if b.Float64() != 2.0 {
+		t.Error(b.Float64())
 	}
 }
 

@@ -15,6 +15,8 @@
 package option
 
 import (
+	"encoding/json"
+
 	"github.com/xgfone/go-tools/types"
 )
 
@@ -36,6 +38,15 @@ func (o BoolOption) Scan(src interface{}) error {
 	return o.ConvertTo(src, func(v interface{}) (interface{}, error) { return types.ToBool(v) })
 }
 
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o BoolOption) UnmarshalJSON(src []byte) (err error) {
+	var v bool
+	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
+}
+
 // StringOption is an Option of the string type.
 type StringOption struct {
 	Option
@@ -54,6 +65,12 @@ func (o StringOption) Scan(src interface{}) error {
 	return o.ConvertTo(src, func(v interface{}) (interface{}, error) { return types.ToString(v) })
 }
 
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o StringOption) UnmarshalJSON(src []byte) (err error) {
+	o.Reset(string(src))
+	return
+}
+
 // IntOption is an Option of the int type.
 type IntOption struct {
 	Option
@@ -70,6 +87,15 @@ func NewIntOption(o Option) IntOption {
 // Scan converts src as int to the inner value.
 func (o IntOption) Scan(src interface{}) error {
 	return o.ConvertTo(src, func(v interface{}) (interface{}, error) { return types.ToInt(v) })
+}
+
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o IntOption) UnmarshalJSON(src []byte) (err error) {
+	var v int
+	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
 }
 
 // Int8Option is an Option of the int8 type.
@@ -94,6 +120,15 @@ func (o Int8Option) Scan(src interface{}) error {
 	return err
 }
 
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o Int8Option) UnmarshalJSON(src []byte) (err error) {
+	var v int8
+	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
+}
+
 // Int16Option is an Option of the int16 type.
 type Int16Option struct {
 	Option
@@ -116,6 +151,15 @@ func (o Int16Option) Scan(src interface{}) error {
 	return err
 }
 
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o Int16Option) UnmarshalJSON(src []byte) (err error) {
+	var v int16
+	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
+}
+
 // Int32Option is an Option of the int32 type.
 type Int32Option struct {
 	Option
@@ -132,6 +176,15 @@ func NewInt32Option(o Option) Int32Option {
 // Scan converts src as int32 to the inner value.
 func (o Int32Option) Scan(src interface{}) error {
 	return o.ConvertTo(src, func(v interface{}) (interface{}, error) { return types.ToInt32(v) })
+}
+
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o Int32Option) UnmarshalJSON(src []byte) (err error) {
+	var v int32
+	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
 }
 
 // Int64Option is an Option of the int64 type.
@@ -152,6 +205,15 @@ func (o Int64Option) Scan(src interface{}) error {
 	return o.ConvertTo(src, func(v interface{}) (interface{}, error) { return types.ToInt64(v) })
 }
 
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o Int64Option) UnmarshalJSON(src []byte) (err error) {
+	var v int64
+	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
+}
+
 // UintOption is an Option of the uint type.
 type UintOption struct {
 	Option
@@ -168,6 +230,15 @@ func NewUintOption(o Option) UintOption {
 // Scan converts src as uint to the inner value.
 func (o UintOption) Scan(src interface{}) error {
 	return o.ConvertTo(src, func(v interface{}) (interface{}, error) { return types.ToUint(v) })
+}
+
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o UintOption) UnmarshalJSON(src []byte) (err error) {
+	var v uint
+	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
 }
 
 // Uint8Option is an Option of the uint8 type.
@@ -192,6 +263,15 @@ func (o Uint8Option) Scan(src interface{}) error {
 	return err
 }
 
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o Uint8Option) UnmarshalJSON(src []byte) (err error) {
+	var v uint8
+	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
+}
+
 // Uint16Option is an Option of the uint16 type.
 type Uint16Option struct {
 	Option
@@ -214,6 +294,15 @@ func (o Uint16Option) Scan(src interface{}) error {
 	return err
 }
 
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o Uint16Option) UnmarshalJSON(src []byte) (err error) {
+	var v uint16
+	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
+}
+
 // Uint32Option is an Option of the uint32 type.
 type Uint32Option struct {
 	Option
@@ -230,6 +319,15 @@ func NewUint32Option(o Option) Uint32Option {
 // Scan converts src as uint32 to the inner value.
 func (o Uint32Option) Scan(src interface{}) error {
 	return o.ConvertTo(src, func(v interface{}) (interface{}, error) { return types.ToUint32(v) })
+}
+
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o Uint32Option) UnmarshalJSON(src []byte) (err error) {
+	var v uint32
+	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
 }
 
 // Uint64Option is an Option of the uint64 type.
@@ -250,6 +348,15 @@ func (o Uint64Option) Scan(src interface{}) error {
 	return o.ConvertTo(src, func(v interface{}) (interface{}, error) { return types.ToUint64(v) })
 }
 
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o Uint64Option) UnmarshalJSON(src []byte) (err error) {
+	var v uint64
+	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
+}
+
 // Float64Option is an Option of the float64 type.
 type Float64Option struct {
 	Option
@@ -266,4 +373,13 @@ func NewFloat64Option(o Option) Float64Option {
 // Scan converts src as float64 to the inner value.
 func (o Float64Option) Scan(src interface{}) error {
 	return o.ConvertTo(src, func(v interface{}) (interface{}, error) { return types.ToFloat64(v) })
+}
+
+// UnmarshalJSON implements the interface json.Unmarshaler.
+func (o Float64Option) UnmarshalJSON(src []byte) (err error) {
+	var v float64
+	if err = json.Unmarshal(src, &v); err == nil {
+		o.Reset(v)
+	}
+	return
 }
