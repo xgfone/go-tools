@@ -329,6 +329,26 @@ func ToTime(v interface{}, layout ...string) (time.Time, error) {
 	}
 }
 
+// ToLocalTime does the best to convert any certain value to time.Time
+// by time.ParseInLocation(layout, v, time.Local).
+//
+// Notice: the layout is time.RFC3339Nano by default.
+func ToLocalTime(v interface{}, layout ...string) (time.Time, error) {
+	switch _v := v.(type) {
+	case nil:
+		return time.Time{}, nil
+	case time.Time:
+		return _v, nil
+	case string:
+		if len(layout) > 0 && layout[0] != "" {
+			return time.ParseInLocation(layout[0], _v, time.Local)
+		}
+		return time.ParseInLocation(time.RFC3339Nano, _v, time.Local)
+	default:
+		return time.Time{}, ErrUnknownType
+	}
+}
+
 // ToBool does the best to convert any certain value to bool.
 //
 // For the string, the true value is
