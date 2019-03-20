@@ -15,7 +15,9 @@
 package option
 
 import (
+	"strconv"
 	"testing"
+	"time"
 )
 
 func TestBoolOption(t *testing.T) {
@@ -58,6 +60,12 @@ func TestFloat64Option(t *testing.T) {
 	} else if !b.IsFloat64() || b.Float64() != 1.2 {
 		t.Error(b.Value())
 	}
+
+	if err := b.UnmarshalJSON(strconv.AppendFloat(nil, 2.0, 'f', -1, 64)); err != nil {
+		t.Error(err)
+	} else if b.Float64() != 2.0 {
+		t.Error(b.Float64())
+	}
 }
 
 func TestStringOption(t *testing.T) {
@@ -98,5 +106,27 @@ func TestNamedTypedOption(t *testing.T) {
 		t.Error(err)
 	} else if !opt.IsBool() || !opt.Bool() {
 		t.Error(opt)
+	}
+}
+
+func TestTimeOption(t *testing.T) {
+	b := NewTimeOption(None())
+
+	if err := b.Scan("2019-05-13 22:57:42"); err != nil {
+		t.Error(err)
+	} else if b.Value().(time.Time).Format("2006-01-02 15:04:05") != "2019-05-13 22:57:42" {
+		t.Error(b.Value())
+	}
+
+	if err := b.UnmarshalJSON([]byte("2019-05-13 22:57:43")); err != nil {
+		t.Error(err)
+	} else if b.Value().(time.Time).Format("2006-01-02 15:04:05") != "2019-05-13 22:57:43" {
+		t.Error(b.Value())
+	}
+
+	if err := b.UnmarshalJSON([]byte("0000-00-00 00:00:00")); err != nil {
+		t.Error(err)
+	} else if b.Value().(time.Time) != (time.Time{}) {
+		t.Error(b.Value())
 	}
 }

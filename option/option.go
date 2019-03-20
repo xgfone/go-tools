@@ -16,6 +16,7 @@
 package option
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -33,11 +34,17 @@ type option struct {
 // Some returns an Option.
 //
 // If v is nil, it will be a None value.
+//
+// The default option has also implemented the interfaces:
+//    json.Marshaler
 func Some(v interface{}) Option {
 	return &option{value: v}
 }
 
 // None is equal to Some(nil).
+//
+// The default option has also implemented the interfaces:
+//    json.Marshaler
 func None() Option {
 	return Some(nil)
 }
@@ -77,6 +84,11 @@ func (o *option) ConvertTo(value interface{}, convert func(interface{}) (interfa
 		o.value = v
 	}
 	return err
+}
+
+// MarshalJSON implements the interface json.Marshaler.
+func (o *option) MarshalJSON() ([]byte, error) {
+	return json.Marshal(o.value)
 }
 
 // Some returns the inner value, but panic if it's a None.

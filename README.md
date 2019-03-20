@@ -1,7 +1,7 @@
 # go-tools
 A utility tool library of Golang.
 
-The current version is **`v4`**. See [Doc](https://godoc.org/github.com/xgfone/go-tools).
+The current version is **`v5`**. See [Doc](https://godoc.org/github.com/xgfone/go-tools).
 
 ## Announcement
 These packages only depend on the standard libraries, not any third-part packages. `Go1.7+` will be supported.
