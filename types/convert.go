@@ -324,6 +324,11 @@ func ToTime(v interface{}, layout ...string) (time.Time, error) {
 			return time.Parse(layout[0], _v)
 		}
 		return time.Parse(time.RFC3339Nano, _v)
+	case []byte:
+		if len(layout) > 0 && layout[0] != "" {
+			return time.Parse(layout[0], string(_v))
+		}
+		return time.Parse(time.RFC3339Nano, string(_v))
 	default:
 		return time.Time{}, ErrUnknownType
 	}
@@ -344,6 +349,11 @@ func ToLocalTime(v interface{}, layout ...string) (time.Time, error) {
 			return time.ParseInLocation(layout[0], _v, time.Local)
 		}
 		return time.ParseInLocation(time.RFC3339Nano, _v, time.Local)
+	case []byte:
+		if len(layout) > 0 && layout[0] != "" {
+			return time.ParseInLocation(layout[0], string(_v), time.Local)
+		}
+		return time.ParseInLocation(time.RFC3339Nano, string(_v), time.Local)
 	default:
 		return time.Time{}, ErrUnknownType
 	}
