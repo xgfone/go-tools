@@ -52,7 +52,7 @@ func NewManager() *Manager {
 // The parameter out is used to notice the app to end. And in is used to notice
 // the manager that the app has cleaned and ended successfully.
 //
-// NOTICE: the tow parameters must not be a same channel.
+// NOTICE: the two parameters must not be a same channel.
 //
 // Exmaple: See the wait method.
 func (m *Manager) RegisterChannel(out chan<- interface{}, in <-chan interface{}) *Manager {
@@ -77,6 +77,22 @@ func (m *Manager) Register(functions ...func()) *Manager {
 
 	m.lock.Lock()
 	m.callbacks = append(m.callbacks, functions...)
+	m.lock.Unlock()
+	return m
+}
+
+// PrefixRegister is the same as Register, but adding the callback function
+// before others.
+func (m *Manager) PrefixRegister(functions ...func()) *Manager {
+	if m.IsStop() {
+		panic(ErrStopped)
+	}
+
+	callbacks := append([]func(){}, functions...)
+
+	m.lock.Lock()
+	callbacks = append(callbacks, m.callbacks...)
+	m.callbacks = callbacks
 	m.lock.Unlock()
 	return m
 }
@@ -122,20 +138,14 @@ func (m *Manager) RunForever() {
 // Wait will wait that the manager stops.
 func (m *Manager) Wait() {
 	m.lock.Lock()
-
 	if m.IsStop() {
 		m.lock.Unlock()
 		return
 	}
 
-	callbacks := make([]func(), len(m.callbacks)+1)
-	copy(callbacks[1:], m.callbacks)
-	m.callbacks = callbacks
-
 	exit := make(chan struct{}, 1)
 	finished := make(chan struct{}, 1)
-	m.callbacks[0] = func() { exit <- struct{}{}; <-finished }
-
+	m.callbacks = append([]func(){func() { exit <- struct{}{}; <-finished }}, m.callbacks...)
 	m.lock.Unlock()
 
 	<-exit // Wait that the manager stops.
