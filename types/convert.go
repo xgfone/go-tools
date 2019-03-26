@@ -377,6 +377,15 @@ func ToBool(v interface{}) (bool, error) {
 		return false, nil
 	case bool:
 		return _v, nil
+	case []byte:
+		switch s := string(_v); s {
+		case "t", "T", "1", "on", "On", "ON", "true", "True", "TRUE", "yes", "Yes", "YES":
+			return true, nil
+		case "f", "F", "0", "off", "Off", "OFF", "false", "False", "FALSE", "no", "No", "NO", "":
+			return false, nil
+		default:
+			return false, fmt.Errorf("unrecognized bool string: %s", s)
+		}
 	case string:
 		switch _v {
 		case "t", "T", "1", "on", "On", "ON", "true", "True", "TRUE", "yes", "Yes", "YES":
@@ -396,6 +405,8 @@ func ToInt64(_v interface{}) (v int64, err error) {
 	case nil:
 	case bool:
 		v = bool2Int64(t)
+	case []byte:
+		v, err = strconv.ParseInt(string(t), 10, 64)
 	case string:
 		v, err = strconv.ParseInt(t, 10, 64)
 	case int:
@@ -438,6 +449,8 @@ func ToUint64(_v interface{}) (v uint64, err error) {
 	case nil:
 	case bool:
 		v = uint64(bool2Int64(t))
+	case []byte:
+		v, err = strconv.ParseUint(string(t), 10, 64)
 	case string:
 		v, err = strconv.ParseUint(t, 10, 64)
 	case int:
@@ -532,6 +545,8 @@ func ToFloat64(_v interface{}) (v float64, err error) {
 	case nil:
 	case bool:
 		v = float64(bool2Int64(t))
+	case []byte:
+		v, err = strconv.ParseFloat(string(t), 64)
 	case string:
 		v, err = strconv.ParseFloat(t, 64)
 	case int:
