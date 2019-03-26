@@ -16,7 +16,6 @@ package option
 
 import (
 	"encoding/json"
-	"time"
 
 	"github.com/xgfone/go-tools/types"
 )
@@ -401,43 +400,13 @@ func NewTimeOption(o Option) TimeOption {
 // Scan converts src as float64 to the inner value.
 func (o TimeOption) Scan(src interface{}) error {
 	return o.ConvertTo(src, func(v interface{}) (interface{}, error) {
-		switch _v := v.(type) {
-		case []byte:
-			switch s := string(_v); s {
-			case "0000-00-00 00:00:00":
-				return time.Time{}, nil
-			default:
-				v = s
-			}
-		case string:
-			if _v == "0000-00-00 00:00:00" {
-				return time.Time{}, nil
-			}
-		}
-		return types.ToTime(v, "2006-01-02 15:04:05")
+		return types.ToTime(v, types.DateTimeLayout)
 	})
 }
 
-var zeroTime = []byte("0000-00-00 00:00:00")
-
 // UnmarshalJSON implements the interface json.Unmarshaler.
 func (o TimeOption) UnmarshalJSON(src []byte) (err error) {
-	if _len := len(zeroTime); len(src) >= _len {
-		equal := true
-		for i := 0; i < _len; i++ {
-			if zeroTime[i] != src[i] {
-				equal = false
-				break
-			}
-		}
-
-		if equal {
-			o.Reset(time.Time{})
-			return
-		}
-	}
-
-	v, err := time.Parse("2006-01-02 15:04:05", string(src))
+	v, err := types.ToTime(src, types.DateTimeLayout)
 	if err == nil {
 		o.Reset(v)
 	}

@@ -21,6 +21,9 @@ import (
 	"time"
 )
 
+// DateTimeLayout is the DateTime layout to parse the value to the time.Time.
+const DateTimeLayout = "2006-01-02 15:04:05"
+
 var (
 	// ErrNotSliceOrArray is returned when the value is not a slice.
 	ErrNotSliceOrArray = fmt.Errorf("the value is not a slice or array")
@@ -310,28 +313,40 @@ func ToMapValues(v interface{}) ([]interface{}, error) {
 	return results, nil
 }
 
-// ToTime does the best to convert any certain value to time.Time.
-//
-// Notice: the layout is time.RFC3339Nano by default.
-func ToTime(v interface{}, layout ...string) (time.Time, error) {
+func toTime(parse func(string, string) (time.Time, error), v interface{}, layout ...string) (time.Time, error) {
+	var s string
 	switch _v := v.(type) {
 	case nil:
 		return time.Time{}, nil
 	case time.Time:
 		return _v, nil
-	case string:
-		if len(layout) > 0 && layout[0] != "" {
-			return time.Parse(layout[0], _v)
-		}
-		return time.Parse(time.RFC3339Nano, _v)
 	case []byte:
-		if len(layout) > 0 && layout[0] != "" {
-			return time.Parse(layout[0], string(_v))
-		}
-		return time.Parse(time.RFC3339Nano, string(_v))
+		s = string(_v)
+	case string:
+		s = _v
 	default:
 		return time.Time{}, ErrUnknownType
 	}
+
+	if s == "0000-00-00 00:00:00" {
+		return time.Time{}, nil
+	}
+
+	if len(layout) > 0 && layout[0] != "" {
+		return parse(layout[0], s)
+	}
+	return time.Parse(time.RFC3339Nano, s)
+}
+
+// ToTime does the best to convert any certain value to time.Time.
+//
+// Notice: the layout is time.RFC3339Nano by default.
+func ToTime(v interface{}, layout ...string) (time.Time, error) {
+	return toTime(time.Parse, v, layout...)
+}
+
+func toLocalTimeParser(layout, value string) (time.Time, error) {
+	return time.ParseInLocation(layout, value, time.Local)
 }
 
 // ToLocalTime does the best to convert any certain value to time.Time
@@ -339,24 +354,7 @@ func ToTime(v interface{}, layout ...string) (time.Time, error) {
 //
 // Notice: the layout is time.RFC3339Nano by default.
 func ToLocalTime(v interface{}, layout ...string) (time.Time, error) {
-	switch _v := v.(type) {
-	case nil:
-		return time.Time{}, nil
-	case time.Time:
-		return _v, nil
-	case string:
-		if len(layout) > 0 && layout[0] != "" {
-			return time.ParseInLocation(layout[0], _v, time.Local)
-		}
-		return time.ParseInLocation(time.RFC3339Nano, _v, time.Local)
-	case []byte:
-		if len(layout) > 0 && layout[0] != "" {
-			return time.ParseInLocation(layout[0], string(_v), time.Local)
-		}
-		return time.ParseInLocation(time.RFC3339Nano, string(_v), time.Local)
-	default:
-		return time.Time{}, ErrUnknownType
-	}
+	return toTime(toLocalTimeParser, v, layout...)
 }
 
 // ToBool does the best to convert any certain value to bool.
