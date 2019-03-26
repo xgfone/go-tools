@@ -321,8 +321,14 @@ func toTime(parse func(string, string) (time.Time, error), v interface{}, layout
 	case time.Time:
 		return _v, nil
 	case []byte:
+		if len(_v) == 0 {
+			return time.Time{}, nil
+		}
 		s = string(_v)
 	case string:
+		if _v == "" {
+			return time.Time{}, nil
+		}
 		s = _v
 	default:
 		return time.Time{}, ErrUnknownType
