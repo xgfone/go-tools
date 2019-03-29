@@ -341,7 +341,7 @@ func toTime(parse func(string, string) (time.Time, error), v interface{}, layout
 	if len(layout) > 0 && layout[0] != "" {
 		return parse(layout[0], s)
 	}
-	return time.Parse(time.RFC3339Nano, s)
+	return parse(time.RFC3339Nano, s)
 }
 
 // ToTime does the best to convert any certain value to time.Time.
