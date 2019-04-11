@@ -35,6 +35,16 @@ func RunCmd(cxt context.Context, name string, args ...string) (
 	return output.Bytes(), errput.Bytes(), err
 }
 
+// RetryRunCmd is the same as RunCmd, but try to run once again if failed.
+func RetryRunCmd(ctx context.Context, name string, args ...string) (
+	stdout, stderr []byte, err error) {
+	stdout, stderr, err = RunCmd(ctx, name, args...)
+	if err != nil {
+		stdout, stderr, err = RunCmd(ctx, name, args...)
+	}
+	return
+}
+
 // Execute is the same as RunCmd, but only returns the error.
 func Execute(cxt context.Context, name string, args ...string) error {
 	_, _, err := RunCmd(cxt, name, args...)
