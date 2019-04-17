@@ -21,6 +21,21 @@ import (
 	"strings"
 )
 
+// GetFieldTagsMap is the same as GetFieldTags, but returns a map, the key
+// of which is the tag name, and the value of which is the tag value.
+func GetFieldTagsMap(t interface{}) map[string]string {
+	tags := GetFieldTags(t)
+	if tags == nil {
+		return nil
+	}
+
+	ms := make(map[string]string, len(tags))
+	for _, tag := range tags {
+		ms[tag[0]] = tag[1]
+	}
+	return ms
+}
+
 // GetFieldTags returns all tags in a fields of a struct.
 //
 // If the type of v is not string or reflect.StructTag, return nil.
@@ -106,4 +121,25 @@ func GetStructTags(v interface{}) [][3]string {
 		}
 	}
 	return tags
+}
+
+// GetStructTagsMap is the same as GetStructTags, but returns a map,
+// which is `map[FieldName]map[TagName]TagValue`.
+func GetStructTagsMap(t interface{}) map[string]map[string]string {
+	tags := GetStructTags(t)
+	if tags == nil {
+		return nil
+	}
+
+	maps := make(map[string]map[string]string, len(tags))
+	for _, tag := range tags {
+		ms := maps[tag[0]]
+		if ms == nil {
+			ms = make(map[string]string, 4)
+			maps[tag[0]] = ms
+		}
+		ms[tag[1]] = tag[2]
+	}
+
+	return maps
 }
