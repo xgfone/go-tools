@@ -132,6 +132,8 @@ func (f Format) Format(s string, kwargs ...interface{}) string {
 		switch s := kwargs[i].(type) {
 		case string:
 			ms[s] = kwargs[i+1]
+		case fmt.Stringer:
+			ms[s.String()] = kwargs[i+1]
 		default:
 			panic("the key must be string")
 		}
