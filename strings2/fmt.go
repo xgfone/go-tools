@@ -52,8 +52,13 @@ func NewFormat(left, right string) Format {
 // FormatByMap formats the string s, which will replaces the placeholder key
 // with the value in kwargs.
 //
-// Notice: if the placeholder key does not have a corresponding value, it will
-// persist and not be replaced.
+// Notice:
+//   1. If the placeholder key does not have a corresponding value, it will
+//      persist and not be replaced.
+//   2. The placeholder key maybe contain the formatter, and the value will be
+//      formatted by fmt.Sprintf(formatter, value). They are separated by the
+//      colon and the % character is optional. It will panic if fmt.Sprintf
+//      returns an error.
 func (f Format) FormatByMap(s string, kwargs map[string]interface{}) string {
 	if len(kwargs) == 0 {
 		return s
@@ -76,8 +81,26 @@ func (f Format) FormatByMap(s string, kwargs map[string]interface{}) string {
 		}
 		valueEndIndex := rightIndex + len(f.Right)
 
-		if value, ok := kwargs[s[:rightIndex]]; ok {
-			if v, err := types.ToString(value); err == nil {
+		var format string
+		key := s[:rightIndex]
+		if index := strings.IndexByte(key, ':'); index != -1 {
+			format = key[index+1:]
+			key = key[:index]
+		}
+
+		if key == "" {
+			continue
+		}
+
+		if value, ok := kwargs[key]; ok {
+			if format != "" {
+				if format[0] != '%' {
+					format = "%" + format
+				}
+				if _, err := fmt.Fprintf(buf, format, value); err != nil {
+					panic(err)
+				}
+			} else if v, err := types.ToString(value); err == nil {
 				buf.WriteString(v)
 			} else {
 				panic(fmt.Errorf("cannot convert '%v' to string", value))

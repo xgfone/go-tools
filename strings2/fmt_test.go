@@ -37,6 +37,12 @@ func ExampleFormat() {
 	s6 := format.FormatByMap("hello {{name}}. {{name}}.", map[string]interface{}{"age": 123})
 	fmt.Println(s6)
 
+	s7 := format.FormatByMap("hello {{name}}. You are [{{age:6d}}].", map[string]interface{}{"name": "world", "age": 123})
+	fmt.Println(s7)
+
+	s8 := format.Format("hello {{name}}. You are [{{age:6d}}].", "name", "world", "age", 123)
+	fmt.Println(s8)
+
 	// Output:
 	// hello world. world.
 	// hello world. world.
@@ -44,6 +50,8 @@ func ExampleFormat() {
 	// hello world. world.
 	// hello world. world.
 	// hello {{name}}. {{name}}.
+	// hello world. You are [   123].
+	// hello world. You are [   123].
 }
 
 func ExampleFmtString() {
@@ -56,10 +64,14 @@ func ExampleFmtString() {
 	s3 := FmtString("hello {name}. {name}.", "age", 123)
 	fmt.Println(s3)
 
+	s4 := FmtString("hello {name}. You are [{age:6d}].", "name", "world", "age", 123)
+	fmt.Println(s4)
+
 	// Output:
 	// hello world. world.
 	// hello world. world.
 	// hello {name}. {name}.
+	// hello world. You are [   123].
 }
 
 func ExampleFmtStringByMap() {
@@ -72,8 +84,12 @@ func ExampleFmtStringByMap() {
 	s3 := FmtStringByMap("hello {name}. {name}.", map[string]interface{}{"age": 123})
 	fmt.Println(s3)
 
+	s4 := FmtStringByMap("hello {name}. You are [{age:6d}].", map[string]interface{}{"name": "world", "age": 123})
+	fmt.Println(s4)
+
 	// Output:
 	// hello world. world.
 	// hello world. world.
 	// hello {name}. {name}.
+	// hello world. You are [   123].
 }
