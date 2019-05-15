@@ -35,6 +35,7 @@ option       | Supply a type to represent the optional value referring to Option
 pools        | Some simple convenient pools, such as `BytesPool`, `BufferPool`, `ResourcePool`, etc.
 signal2      | The supplement of the standard library of `signal`, such as `HandleSignal`.
 sort2        | The supplement of the standard library of `sort`.
+strings2     | The supplement of the standard library of `strings`.
 sync2        | The supplement of the standard library `sync`, such as some atomic types.
 tag          | Find and get the tags in a struct.
 types        | Some assistant functions about type, such as the type validation and conversion, etc.
