@@ -43,6 +43,9 @@ func ExampleFormat() {
 	s8 := format.Format("hello {{name}}. You are [{{age:6d}}].", "name", "world", "age", 123)
 	fmt.Println(s8)
 
+	s9 := format.Format("hello {{name}}.", "name", func() interface{} { return "world" })
+	fmt.Println(s9)
+
 	// Output:
 	// hello world. world.
 	// hello world. world.
@@ -52,6 +55,7 @@ func ExampleFormat() {
 	// hello {{name}}. {{name}}.
 	// hello world. You are [   123].
 	// hello world. You are [   123].
+	// hello world.
 }
 
 func ExampleFmtString() {

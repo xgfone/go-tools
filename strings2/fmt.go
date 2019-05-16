@@ -52,13 +52,13 @@ func NewFormat(left, right string) Format {
 // FormatByMap formats the string s, which will replaces the placeholder key
 // with the value in kwargs.
 //
-// Notice:
-//   1. If the placeholder key does not have a corresponding value, it will
-//      persist and not be replaced.
-//   2. The placeholder key maybe contain the formatter, and the value will be
-//      formatted by fmt.Sprintf(formatter, value). They are separated by the
-//      colon and the % character is optional. It will panic if fmt.Sprintf
-//      returns an error.
+// If the placeholder key does not have a corresponding value, it will persist
+// and not be replaced. However, if the value is a function, func() interface{},
+// it will call it firstly to calculate the value.
+//
+// The placeholder key maybe contain the formatter, and the value will be
+// formatted by fmt.Sprintf(formatter, value). They are separated by the colon
+// and the % character is optional. It will panic if fmt.Sprintf returns an error.
 func (f Format) FormatByMap(s string, kwargs map[string]interface{}) string {
 	if len(kwargs) == 0 {
 		return s
@@ -93,6 +93,11 @@ func (f Format) FormatByMap(s string, kwargs map[string]interface{}) string {
 		}
 
 		if value, ok := kwargs[key]; ok {
+			switch f := value.(type) {
+			case func() interface{}:
+				value = f()
+			}
+
 			if format != "" {
 				if format[0] != '%' {
 					format = "%" + format
