@@ -15,9 +15,50 @@
 package strings2
 
 import (
+	"bytes"
 	"fmt"
 	"unicode"
 )
+
+func ExampleSafeWriteString() {
+	buf := bytes.NewBuffer(nil)
+
+	SafeWriteString(buf, `abcefg`, true, true)
+	buf.WriteByte('\n')
+
+	SafeWriteString(buf, `abcefg`, true, false)
+	buf.WriteByte('\n')
+
+	SafeWriteString(buf, `abcefg`, false, true)
+	buf.WriteByte('\n')
+
+	SafeWriteString(buf, `abcefg`, false, false)
+	buf.WriteByte('\n')
+
+	SafeWriteString(buf, `abc"efg`, true, true)
+	buf.WriteByte('\n')
+
+	SafeWriteString(buf, `abc"efg`, true, false)
+	buf.WriteByte('\n')
+
+	SafeWriteString(buf, `abc"efg`, false, true)
+	buf.WriteByte('\n')
+
+	SafeWriteString(buf, `abc"efg`, false, false)
+	buf.WriteByte('\n')
+
+	fmt.Print(buf.String())
+
+	// Output:
+	// "abcefg"
+	// abcefg
+	// "abcefg"
+	// abcefg
+	// "abc\"efg"
+	// abc\"efg
+	// "abc"efg"
+	// abc"efg
+}
 
 func ExampleSplitSpace() {
 	s := "   1   2   3   "

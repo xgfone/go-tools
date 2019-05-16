@@ -16,8 +16,74 @@ package strings2
 
 import (
 	"bytes"
+	"io"
+	"strconv"
 	"unicode"
 )
+
+var (
+	doubleQuotationByte = []byte{'"'}
+)
+
+// StringWriter is a WriteString interface.
+type StringWriter interface {
+	WriteString(string) (int, error)
+}
+
+// SafeWriteString writes s into w.
+//
+// If escape is true, it will convert '"' to '\"'.
+//
+// if quote is true, it will output a '"' on both sides of s.
+func SafeWriteString(w io.Writer, s string, escape, quote bool) (n int, err error) {
+	// Check whether it needs to be escaped.
+	if escape {
+		escape = false
+		for _, c := range s {
+			if c == '"' {
+				escape = true
+			}
+		}
+		if escape {
+			s = strconv.Quote(s)
+			s = s[1 : len(s)-1]
+		}
+	}
+
+	if quote {
+		if n, err = w.Write(doubleQuotationByte); err != nil {
+			return
+		}
+	}
+
+	if ws, ok := w.(StringWriter); ok {
+		if n, err = ws.WriteString(s); err != nil {
+			return
+		}
+	} else {
+		if n, err = w.Write([]byte(s)); err != nil {
+			return
+		}
+	}
+
+	if quote {
+		if n, err = w.Write(doubleQuotationByte); err != nil {
+			return
+		}
+	}
+
+	return len(s), nil
+}
+
+// WriteString writes s into w.
+//
+// Notice: it will escape the double-quotation.
+func WriteString(w io.Writer, s string, quote ...bool) (n int, err error) {
+	if len(quote) > 0 && quote[0] {
+		return SafeWriteString(w, s, true, true)
+	}
+	return SafeWriteString(w, s, true, false)
+}
 
 // SplitSpace splits the string of s by the whitespace, which is equal to
 // str.split() in Python.
