@@ -17,6 +17,7 @@ package strings2
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/xgfone/go-tools/types"
@@ -43,6 +44,12 @@ func FmtStringByFunc(s string, getValue func(string) (interface{}, bool)) string
 	return DefaultFormat.FormatByFunc(s, getValue)
 }
 
+// FmtStringOutput formats the string s by DefaultFormat, which is short for
+//   DefaultFormat.FormatOutput(w, s, getValue)
+func FmtStringOutput(w io.Writer, s string, getValue func(string) (interface{}, bool)) (int, error) {
+	return DefaultFormat.FormatOutput(w, s, getValue)
+}
+
 // Format is used to format a string based on the key placeholder
 // that is replaced by the value.
 type Format struct {
@@ -55,7 +62,19 @@ func NewFormat(left, right string) Format {
 	return Format{Left: left, Right: right}
 }
 
-// FormatByFunc formats the string s, which will replaces the placeholder key
+func writeString(w io.Writer, n int, s string, args ...interface{}) (int, error) {
+	if len(args) == 0 {
+		m, err := io.WriteString(w, s)
+		n += m
+		return n, err
+	}
+
+	m, err := fmt.Fprintf(w, s, args...)
+	n += m
+	return n, err
+}
+
+// FormatOutput formats the string s into w, which will replaces the placeholder key
 // with the value returned by getValue(key).
 //
 // If the placeholder key does not have a corresponding value, it will persist
@@ -64,17 +83,18 @@ func NewFormat(left, right string) Format {
 //
 // The placeholder key maybe contain the formatter, and the value will be
 // formatted by fmt.Sprintf(formatter, value). They are separated by the colon
-// and the % character is optional. It will panic if fmt.Sprintf returns an error.
-func (f Format) FormatByFunc(s string, getValue func(key string) (interface{}, bool)) string {
-	buf := bytes.NewBuffer(nil)
-	buf.Grow(len(s))
-
+// and the % character is optional.
+func (f Format) FormatOutput(w io.Writer, s string, getValue func(key string) (interface{}, bool)) (n int, err error) {
 	for {
 		leftIndex := strings.Index(s, f.Left)
 		if leftIndex == -1 {
 			break
 		}
-		buf.WriteString(s[:leftIndex])
+
+		if n, err = writeString(w, n, s[:leftIndex]); err != nil {
+			return
+		}
+
 		s = s[leftIndex+len(f.Left):]
 
 		rightIndex := strings.Index(s, f.Right)
@@ -104,22 +124,47 @@ func (f Format) FormatByFunc(s string, getValue func(key string) (interface{}, b
 				if format[0] != '%' {
 					format = "%" + format
 				}
-				if _, err := fmt.Fprintf(buf, format, value); err != nil {
-					panic(err)
+				if n, err = writeString(w, n, format, value); err != nil {
+					return
 				}
 			} else if v, err := types.ToString(value); err == nil {
-				buf.WriteString(v)
+				if n, err = writeString(w, n, v); err != nil {
+					return n, err
+				}
 			} else {
-				panic(fmt.Errorf("cannot convert '%v' to string", value))
+				panic(fmt.Errorf("cannot convert '%v' to string: %s", value, err.Error()))
 			}
 		} else {
-			buf.WriteString(f.Left)
-			buf.WriteString(s[:valueEndIndex])
+			if n, err = writeString(w, n, f.Left); err != nil {
+				return
+			}
+			if n, err = writeString(w, n, s[:valueEndIndex]); err != nil {
+				return
+			}
 		}
 		s = s[valueEndIndex:]
 	}
 
-	buf.WriteString(s)
+	if s != "" {
+		n, err = writeString(w, n, s)
+	}
+
+	return
+}
+
+// FormatByFunc is the same as FormatByFunc, but returns the result string.
+func (f Format) FormatByFunc(s string, getValue func(key string) (interface{}, bool)) string {
+	_len := len(s)
+	if _len < 1024 {
+		_len *= 2
+	} else {
+		_len += _len / 4
+	}
+
+	buf := bytes.NewBuffer(nil)
+	buf.Grow(len(s) * 2)
+
+	f.FormatOutput(buf, s, getValue)
 	return buf.String()
 }
 
