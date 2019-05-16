@@ -37,6 +37,12 @@ func FmtStringByMap(s string, kwargs map[string]interface{}) string {
 	return DefaultFormat.FormatByMap(s, kwargs)
 }
 
+// FmtStringByFunc formats the string s by DefaultFormat, which is short for
+//   DefaultFormat.FormatByFunc(s, getValue)
+func FmtStringByFunc(s string, getValue func(string) (interface{}, bool)) string {
+	return DefaultFormat.FormatByFunc(s, getValue)
+}
+
 // Format is used to format a string based on the key placeholder
 // that is replaced by the value.
 type Format struct {
@@ -49,8 +55,8 @@ func NewFormat(left, right string) Format {
 	return Format{Left: left, Right: right}
 }
 
-// FormatByMap formats the string s, which will replaces the placeholder key
-// with the value in kwargs.
+// FormatByFunc formats the string s, which will replaces the placeholder key
+// with the value returned by getValue(key).
 //
 // If the placeholder key does not have a corresponding value, it will persist
 // and not be replaced. However, if the value is a function, func() interface{},
@@ -59,11 +65,7 @@ func NewFormat(left, right string) Format {
 // The placeholder key maybe contain the formatter, and the value will be
 // formatted by fmt.Sprintf(formatter, value). They are separated by the colon
 // and the % character is optional. It will panic if fmt.Sprintf returns an error.
-func (f Format) FormatByMap(s string, kwargs map[string]interface{}) string {
-	if len(kwargs) == 0 {
-		return s
-	}
-
+func (f Format) FormatByFunc(s string, getValue func(key string) (interface{}, bool)) string {
 	buf := bytes.NewBuffer(nil)
 	buf.Grow(len(s))
 
@@ -92,7 +94,7 @@ func (f Format) FormatByMap(s string, kwargs map[string]interface{}) string {
 			continue
 		}
 
-		if value, ok := kwargs[key]; ok {
+		if value, ok := getValue(key); ok {
 			switch f := value.(type) {
 			case func() interface{}:
 				value = f()
@@ -119,6 +121,18 @@ func (f Format) FormatByMap(s string, kwargs map[string]interface{}) string {
 
 	buf.WriteString(s)
 	return buf.String()
+}
+
+// FormatByMap is the same as FormatByFunc, which will get the value from kwargs.
+func (f Format) FormatByMap(s string, kwargs map[string]interface{}) string {
+	if len(kwargs) == 0 {
+		return s
+	}
+
+	return f.FormatByFunc(s, func(key string) (v interface{}, ok bool) {
+		v, ok = kwargs[key]
+		return
+	})
 }
 
 // Format formats the string s, which will convert kwargs to map[string]interface{}
