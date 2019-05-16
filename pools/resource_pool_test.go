@@ -362,7 +362,7 @@ func TestClosing(t *testing.T) {
 	}()
 
 	// Wait for goroutine to call Close
-	time.Sleep(time.Microsecond)
+	time.Sleep(time.Millisecond * 10)
 	stats := p.StatsJSON()
 	expected := `{"Capacity": 0, "Available": 0, "MaxCapacity": 5, "WaitCount": 0, "WaitTime": 0, "IdleTimeout": 1000000000}`
 	if stats != expected {
