@@ -29,6 +29,7 @@ execution    | execution executes a command line program in a new process and re
 file         | Some convenient functions about the file operation.
 function     | Collect some convenient funtions, for example, calling a function or method dynamically, comparing two values, getting a integer range, determining whether a value is in a map or slice, etc.
 io2          | The supplement of the standard library of `io`.
+json2        | The supplement of the standard library of `json`.
 lifecycle    | The manager of the lifecycle of some apps in a program.
 net2         | The supplement of the standard library `net`, such as some helpers about net.
 option       | Supply a type to represent the optional value referring to Option in Rust.

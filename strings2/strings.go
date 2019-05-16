@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package strings2 is the supplement of the standard library of `strings`.
 package strings2
 
 import (
