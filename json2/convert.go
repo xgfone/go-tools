@@ -16,6 +16,7 @@ package json2
 
 import (
 	"fmt"
+	"io"
 	"strconv"
 	"time"
 
@@ -157,4 +158,28 @@ func EncodeTime(t time.Time, layout string, utc ...bool) []byte {
 		t = t.UTC()
 	}
 	return t.AppendFormat(make([]byte, 0, 36), layout)
+}
+
+// Write is the same as ToBytesErr, but writes the result into w,
+// and do some optimizations.
+func Write(w io.Writer, i interface{}, fmtSprintf ...bool) error {
+	switch v := i.(type) {
+	case nil:
+		io.WriteString(w, "nil")
+	case []byte:
+		w.Write(v)
+	case string:
+		io.WriteString(w, v)
+	case error:
+		io.WriteString(w, v.Error())
+	case fmt.Stringer:
+		io.WriteString(w, v.String())
+	default:
+		bs, err := ToBytesErr(i, fmtSprintf...)
+		if err != nil {
+			return err
+		}
+		w.Write(bs)
+	}
+	return nil
 }
