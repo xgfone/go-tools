@@ -18,8 +18,20 @@ package execution
 import (
 	"bytes"
 	"context"
+	"errors"
 	"os/exec"
 )
+
+func geterr(stdout, stderr []byte, err error) error {
+	if err != nil {
+		if len(stderr) > 0 {
+			err = errors.New(string(stderr))
+		} else if len(stdout) > 0 {
+			err = errors.New(string(stdout))
+		}
+	}
+	return err
+}
 
 // RunCmd executes the command, name, with its arguments, args,
 // then returns stdout, stderr and error.
@@ -32,7 +44,10 @@ func RunCmd(cxt context.Context, name string, args ...string) (
 	cmd.Stdout = &output
 	cmd.Stderr = &errput
 	err = cmd.Run()
-	return output.Bytes(), errput.Bytes(), err
+	stdout = output.Bytes()
+	stderr = errput.Bytes()
+	err = geterr(stdout, stderr, err)
+	return
 }
 
 // RetryRunCmd is the same as RunCmd, but try to run once again if failed.
