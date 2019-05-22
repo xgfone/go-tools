@@ -15,6 +15,9 @@
 package strings2
 
 import (
+	"encoding"
+	"encoding/json"
+	"fmt"
 	"io"
 	"strconv"
 	"time"
@@ -100,6 +103,11 @@ func (b *Builder) TruncateAfter(n int) {
 	b.buf = b.buf[:n]
 }
 
+// AppendBool appends a bool to the underlying buffer.
+func (b *Builder) AppendBool(v bool) {
+	b.buf = strconv.AppendBool(b.buf, v)
+}
+
 // AppendByte is the same as WriteByte, but no return.
 func (b *Builder) AppendByte(c byte) {
 	b.WriteByte(c)
@@ -121,11 +129,6 @@ func (b *Builder) AppendUint(i uint64) {
 	b.buf = strconv.AppendUint(b.buf, i, 10)
 }
 
-// AppendBool appends a bool to the underlying buffer.
-func (b *Builder) AppendBool(v bool) {
-	b.buf = strconv.AppendBool(b.buf, v)
-}
-
 // AppendFloat appends a float to the underlying buffer. It doesn't quote NaN
 // or +/- Inf.
 func (b *Builder) AppendFloat(f float64, bitSize int) {
@@ -135,6 +138,149 @@ func (b *Builder) AppendFloat(f float64, bitSize int) {
 // AppendTime appends a time to the underlying buffer.
 func (b *Builder) AppendTime(t time.Time, layout string) {
 	b.buf = t.AppendFormat(b.buf, layout)
+}
+
+// AppendAny appends any value to the underlying buffer.
+//
+// It supports the type:
+//    nil     ==> "<nil>"
+//    bool    ==> "true" or "false"
+//    []byte
+//    string
+//    float32
+//    float64
+//    int
+//    int8
+//    int16
+//    int32
+//    int64
+//    uint
+//    uint8
+//    uint16
+//    uint32
+//    uint64
+//    time.Time ==> time.RFC3339Nano
+//    interface error
+//    interface fmt.Stringer
+//    interface encoding.TextMarshaler
+//
+// For the unknown type, it does not append it and return false, or return true.
+func (b *Builder) AppendAny(any interface{}) (ok bool, err error) {
+	switch v := any.(type) {
+	case nil:
+		b.WriteString("<nil>")
+	case bool:
+		b.AppendBool(v)
+	case []byte:
+		b.Write(v)
+	case string:
+		b.WriteString(v)
+	case float32:
+		b.AppendFloat(float64(v), 32)
+	case float64:
+		b.AppendFloat(v, 64)
+	case int:
+		b.AppendInt(int64(v))
+	case int8:
+		b.AppendInt(int64(v))
+	case int16:
+		b.AppendInt(int64(v))
+	case int32:
+		b.AppendInt(int64(v))
+	case int64:
+		b.AppendInt(v)
+	case uint:
+		b.AppendUint(uint64(v))
+	case uint8:
+		b.AppendUint(uint64(v))
+	case uint16:
+		b.AppendUint(uint64(v))
+	case uint32:
+		b.AppendUint(uint64(v))
+	case uint64:
+		b.AppendUint(v)
+	case time.Time:
+		b.AppendTime(v, time.RFC3339Nano)
+	case fmt.Stringer:
+		b.WriteString(v.String())
+	case error:
+		b.WriteString(v.Error())
+	case encoding.TextMarshaler:
+		data, err := v.MarshalText()
+		if err != nil {
+			return true, err
+		}
+		b.Write(data)
+	default:
+		return false, nil
+	}
+	return true, nil
+}
+
+// AppendJSON appends the value as the JSON value, that's, the value will
+// be encoded to JSON and appended into the underlying byte slice.
+func (b *Builder) AppendJSON(value interface{}) error {
+	switch v := value.(type) {
+	case nil:
+		b.WriteString(`null`)
+	case bool:
+		if v {
+			b.WriteString(`true`)
+		} else {
+			b.WriteString(`false`)
+		}
+	case int:
+		b.AppendInt(int64(v))
+	case int8:
+		b.AppendInt(int64(v))
+	case int16:
+		b.AppendInt(int64(v))
+	case int32:
+		b.AppendInt(int64(v))
+	case int64:
+		b.AppendInt(v)
+	case uint:
+		b.AppendUint(uint64(v))
+	case uint8:
+		b.AppendUint(uint64(v))
+	case uint16:
+		b.AppendUint(uint64(v))
+	case uint32:
+		b.AppendUint(uint64(v))
+	case uint64:
+		b.AppendUint(v)
+	case float32:
+		b.AppendFloat(float64(v), 32)
+	case float64:
+		b.AppendFloat(v, 64)
+	case time.Time:
+		b.AppendTime(v, time.RFC3339Nano)
+	case error:
+		b.WriteString(`"`)
+		b.WriteString(v.Error())
+		b.WriteString(`"`)
+	case string:
+		b.WriteString(`"`)
+		b.WriteString(v)
+		b.WriteString(`"`)
+	case fmt.Stringer:
+		b.WriteString(`"`)
+		b.WriteString(v.String())
+		b.WriteString(`"`)
+	case json.Marshaler:
+		data, err := v.MarshalJSON()
+		if err != nil {
+			return err
+		}
+		b.Write(data)
+	default:
+		data, err := json.Marshal(v)
+		if err != nil {
+			return err
+		}
+		b.Write(data)
+	}
+	return nil
 }
 
 // Write implements io.Writer.
