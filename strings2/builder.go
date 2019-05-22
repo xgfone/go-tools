@@ -17,6 +17,7 @@ package strings2
 import (
 	"io"
 	"strconv"
+	"time"
 	"unicode/utf8"
 )
 
@@ -68,6 +69,11 @@ func (b *Builder) String() string {
 // Subsequent writes will re-use the slice's backing array.
 func (b *Builder) Reset() {
 	b.buf = b.buf[:0]
+}
+
+// ResetBytes resets the underlying byte slice to bs.
+func (b *Builder) ResetBytes(bs []byte) {
+	b.buf = bs
 }
 
 // TruncateBefore truncates and discards first n bytes.
@@ -124,6 +130,11 @@ func (b *Builder) AppendBool(v bool) {
 // or +/- Inf.
 func (b *Builder) AppendFloat(f float64, bitSize int) {
 	b.buf = strconv.AppendFloat(b.buf, f, 'f', -1, bitSize)
+}
+
+// AppendTime appends a time to the underlying buffer.
+func (b *Builder) AppendTime(t time.Time, layout string) {
+	b.buf = t.AppendFormat(b.buf, layout)
 }
 
 // Write implements io.Writer.
