@@ -15,6 +15,7 @@
 package json2
 
 import (
+	"encoding"
 	"fmt"
 	"io"
 	"strconv"
@@ -59,6 +60,7 @@ type MarshalByter interface {
 //   interface fmt.Stringer
 //   interface Byter
 //   interface MarshalByter
+//   interface encoding.TextMarshaler
 //
 // For other types, use fmt.Sprintf("%v") to format it if fmtSprintf is true,
 // or return the error types.ErrUnknownType.
@@ -101,6 +103,8 @@ func ToBytesErr(i interface{}, fmtSprintf ...bool) ([]byte, error) {
 		return strconv.AppendUint(make([]byte, 0, 20), v, 10), nil
 	case time.Time:
 		return EncodeTime(v, time.RFC3339Nano), nil
+	case encoding.TextMarshaler:
+		return v.MarshalText()
 	case Byter:
 		return v.Bytes(), nil
 	case MarshalByter:
