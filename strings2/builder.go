@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 	"time"
 	"unicode/utf8"
 )
@@ -217,6 +218,13 @@ func (b *Builder) AppendAny(any interface{}) (ok bool, err error) {
 	return true, nil
 }
 
+func (b *Builder) appendJSONString(s string) {
+	if strings.IndexByte(s, '"') > -1 {
+		s = strconv.Quote(s)
+	}
+	b.WriteString(s)
+}
+
 // AppendJSON appends the value as the JSON value, that's, the value will
 // be encoded to JSON and appended into the underlying byte slice.
 func (b *Builder) AppendJSON(value interface{}) error {
@@ -256,17 +264,11 @@ func (b *Builder) AppendJSON(value interface{}) error {
 	case time.Time:
 		b.AppendTime(v, time.RFC3339Nano)
 	case error:
-		b.WriteString(`"`)
-		b.WriteString(v.Error())
-		b.WriteString(`"`)
+		b.appendJSONString(v.Error())
 	case string:
-		b.WriteString(`"`)
-		b.WriteString(v)
-		b.WriteString(`"`)
+		b.appendJSONString(v)
 	case fmt.Stringer:
-		b.WriteString(`"`)
-		b.WriteString(v.String())
-		b.WriteString(`"`)
+		b.appendJSONString(v.String())
 	case json.Marshaler:
 		data, err := v.MarshalJSON()
 		if err != nil {

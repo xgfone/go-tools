@@ -71,3 +71,12 @@ func TestBuilder_WriteTo(t *testing.T) {
 		t.Error(b.String())
 	}
 }
+
+func TestBuilder_AppendJSON(t *testing.T) {
+	b := NewBuilder(32)
+	b.AppendJSON(`a"b`)
+
+	if b.String() != `"a\"b"` {
+		t.Error(b.String())
+	}
+}
