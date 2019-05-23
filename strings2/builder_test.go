@@ -79,4 +79,10 @@ func TestBuilder_AppendJSON(t *testing.T) {
 	if b.String() != `"a\"b"` {
 		t.Error(b.String())
 	}
+
+	b.Reset()
+	b.AppendJSON("ab")
+	if b.String() != `"ab"` {
+		t.Error(b.String())
+	}
 }

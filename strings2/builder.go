@@ -218,11 +218,16 @@ func (b *Builder) AppendAny(any interface{}) (ok bool, err error) {
 	return true, nil
 }
 
-func (b *Builder) appendJSONString(s string) {
+// AppendJSONString appends a string as JSON string, which will escape
+// the double quotation(") and enclose it with a pair of the double quotation.
+func (b *Builder) AppendJSONString(s string) {
 	if strings.IndexByte(s, '"') > -1 {
-		s = strconv.Quote(s)
+		b.buf = strconv.AppendQuote(b.buf, s)
+	} else {
+		b.WriteByte('"')
+		b.WriteString(s)
+		b.WriteByte('"')
 	}
-	b.WriteString(s)
 }
 
 // AppendJSON appends the value as the JSON value, that's, the value will
@@ -262,13 +267,15 @@ func (b *Builder) AppendJSON(value interface{}) error {
 	case float64:
 		b.AppendFloat(v, 64)
 	case time.Time:
+		b.WriteByte('"')
 		b.AppendTime(v, time.RFC3339Nano)
+		b.WriteByte('"')
 	case error:
-		b.appendJSONString(v.Error())
+		b.AppendJSONString(v.Error())
 	case string:
-		b.appendJSONString(v)
+		b.AppendJSONString(v)
 	case fmt.Stringer:
-		b.appendJSONString(v.String())
+		b.AppendJSONString(v.String())
 	case json.Marshaler:
 		data, err := v.MarshalJSON()
 		if err != nil {
