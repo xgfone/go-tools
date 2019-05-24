@@ -16,6 +16,7 @@ package strings2
 
 import (
 	"bytes"
+	"encoding/json"
 	"strings"
 	"testing"
 )
@@ -85,6 +86,27 @@ func TestBuilder_AppendJSON(t *testing.T) {
 	b.AppendJSON("ab")
 	if b.String() != `"ab"` {
 		t.Error(b.String())
+	}
+
+	b.Reset()
+	b.AppendJSON([]interface{}{1, "a", 2, "c", 3, `"d"`})
+	if b.String() != `[1,"a",2,"c",3,"\"d\""]` {
+		t.Error(b.String())
+	}
+
+	b.Reset()
+	b.AppendJSON(map[string]interface{}{"a": 123, "b": `"b"`, "c": `c`})
+	var ms map[string]interface{}
+	if err := json.Unmarshal(b.Bytes(), &ms); err != nil {
+		t.Error(b.String(), err)
+	} else if len(ms) != 3 {
+		t.Error(ms)
+	} else if v, _ := ms["a"].(float64); v != 123 {
+		t.Error(ms)
+	} else if v, _ := ms["b"].(string); v != `"b"` {
+		t.Error(ms)
+	} else if v, _ := ms["c"].(string); v != "c" {
+		t.Error(ms)
 	}
 }
 

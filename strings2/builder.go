@@ -352,6 +352,63 @@ func (b *Builder) AppendJSON(value interface{}) error {
 			return err
 		}
 		b.Write(data)
+	case []interface{}: // Optimize []interface{}
+		b.WriteByte('[')
+		for i, _v := range v {
+			if i > 0 {
+				b.WriteByte(',')
+			}
+			if err := b.AppendJSON(_v); err != nil {
+				return err
+			}
+		}
+		b.WriteByte(']')
+	case []string: // Optimize []string
+		b.WriteByte('[')
+		for i, _v := range v {
+			if i > 0 {
+				b.WriteByte(',')
+			}
+			b.AppendJSONString(_v)
+		}
+		b.WriteByte(']')
+	case []int: // Optimize []int
+		b.WriteByte('[')
+		for i, _v := range v {
+			if i > 0 {
+				b.WriteByte(',')
+			}
+			b.AppendInt(int64(_v))
+		}
+		b.WriteByte(']')
+	case map[string]interface{}: // Optimize map[string]interface{}
+		b.WriteByte('{')
+		var i int
+		for key, value := range v {
+			if i > 0 {
+				b.WriteByte(',')
+			}
+			i++
+			b.AppendJSONString(key)
+			b.WriteByte(':')
+			if err := b.AppendJSON(value); err != nil {
+				return err
+			}
+		}
+		b.WriteByte('}')
+	case map[string]string: // Optimize map[string]string
+		b.WriteByte('{')
+		var i int
+		for key, value := range v {
+			if i > 0 {
+				b.WriteByte(',')
+			}
+			i++
+			b.AppendJSONString(key)
+			b.WriteByte(':')
+			b.AppendJSONString(value)
+		}
+		b.WriteByte('}')
 	default:
 		data, err := json.Marshal(v)
 		if err != nil {
