@@ -254,6 +254,40 @@ func (b *Builder) AppendAny(any interface{}) (ok bool, err error) {
 	return true, nil
 }
 
+// AppendAnyFmt is the same as AppendAny(any), but it will use
+// `fmt.Sprintf("%+v", any)` to format the unknown type `any`.
+func (b *Builder) AppendAnyFmt(any interface{}) error {
+	switch any.(type) {
+	case nil:
+	case bool:
+	case []byte:
+	case string:
+	case float32:
+	case float64:
+	case int:
+	case int8:
+	case int16:
+	case int32:
+	case int64:
+	case uint:
+	case uint8:
+	case uint16:
+	case uint32:
+	case uint64:
+	case time.Time:
+	case fmt.Stringer:
+	case error:
+	case encoding.TextMarshaler:
+	case []interface{}:
+	case []string:
+	case []int:
+	default:
+		fmt.Fprintf(b, "%+v", any)
+	}
+	_, err := b.AppendAny(any)
+	return err
+}
+
 // AppendJSONString appends a string as JSON string, which will escape
 // the double quotation(") and enclose it with a pair of the double quotation.
 func (b *Builder) AppendJSONString(s string) {
