@@ -16,6 +16,7 @@ package strings2
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 )
 
@@ -84,5 +85,29 @@ func TestBuilder_AppendJSON(t *testing.T) {
 	b.AppendJSON("ab")
 	if b.String() != `"ab"` {
 		t.Error(b.String())
+	}
+}
+
+func TestBuilder_AppendAny(t *testing.T) {
+	b := NewBuilder(64)
+	b.AppendAny([]int{1, 2, 3})
+	b.WriteByte('\n')
+	b.AppendAny([]string{"a", "b", "c"})
+	b.WriteByte('\n')
+	b.AppendAny([]interface{}{4, "x", 5, "y"})
+	b.WriteByte('\n')
+	b.AppendAny(map[string]interface{}{"k1": "v1", "k2": 789})
+
+	ss := strings.Split(b.String(), "\n")
+	if len(ss) != 4 {
+		t.Error(b.String())
+	} else if ss[0] != "[1 2 3]" {
+		t.Error(ss[0])
+	} else if ss[1] != "[a b c]" {
+		t.Error(ss[1])
+	} else if ss[2] != "[4 x 5 y]" {
+		t.Error(ss[2])
+	} else if ss[3] != "map[k1:v1 k2:789]" {
+		t.Error(ss[3])
 	}
 }

@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -161,6 +162,8 @@ func (b *Builder) AppendTime(t time.Time, layout string) {
 //    uint32
 //    uint64
 //    time.Time ==> time.RFC3339Nano
+//    Slice
+//    Map
 //    interface error
 //    interface fmt.Stringer
 //    interface encoding.TextMarshaler
@@ -212,8 +215,41 @@ func (b *Builder) AppendAny(any interface{}) (ok bool, err error) {
 			return true, err
 		}
 		b.Write(data)
+	case []interface{}:
+		b.WriteByte('[')
+		for i, _v := range v {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			if ok, err = b.AppendAny(_v); !ok || err != nil {
+				return
+			}
+		}
+		b.WriteByte(']')
+	case []string:
+		b.WriteByte('[')
+		for i, _v := range v {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			b.WriteString(_v)
+		}
+		b.WriteByte(']')
+	case []int:
+		b.WriteByte('[')
+		for i, _v := range v {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			b.AppendInt(int64(_v))
+		}
+		b.WriteByte(']')
 	default:
-		return false, nil
+		kind := reflect.ValueOf(v).Kind()
+		if kind != reflect.Map && kind != reflect.Slice && kind != reflect.Array {
+			return false, nil
+		}
+		fmt.Fprintf(b, "%v", v)
 	}
 	return true, nil
 }
