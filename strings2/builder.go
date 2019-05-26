@@ -283,6 +283,7 @@ func (b *Builder) AppendAnyFmt(any interface{}) error {
 	case []int:
 	default:
 		fmt.Fprintf(b, "%+v", any)
+		return nil
 	}
 	_, err := b.AppendAny(any)
 	return err
