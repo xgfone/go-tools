@@ -244,6 +244,32 @@ func (b *Builder) AppendAny(any interface{}) (ok bool, err error) {
 			b.AppendInt(int64(_v))
 		}
 		b.WriteByte(']')
+	case map[string]interface{}:
+		b.WriteString("map[")
+		var i int
+		for key, value := range v {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			i++
+			b.WriteString(key)
+			b.WriteByte(':')
+			b.AppendAny(value)
+		}
+		b.WriteByte(']')
+	case map[string]string:
+		b.WriteString("map[")
+		var i int
+		for key, value := range v {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			i++
+			b.WriteString(key)
+			b.WriteByte(':')
+			b.AppendString(value)
+		}
+		b.WriteByte(']')
 	default:
 		kind := reflect.ValueOf(v).Kind()
 		if kind != reflect.Map && kind != reflect.Slice && kind != reflect.Array {
@@ -281,6 +307,8 @@ func (b *Builder) AppendAnyFmt(any interface{}) error {
 	case []interface{}:
 	case []string:
 	case []int:
+	case map[string]interface{}:
+	case map[string]string:
 	default:
 		fmt.Fprintf(b, "%+v", any)
 		return nil

@@ -129,7 +129,7 @@ func TestBuilder_AppendAny(t *testing.T) {
 		t.Error(ss[1])
 	} else if ss[2] != "[4 x 5 y]" {
 		t.Error(ss[2])
-	} else if ss[3] != "map[k1:v1 k2:789]" {
+	} else if ss[3] != "map[k1:v1 k2:789]" && ss[3] != "map[k2:789 k1:v1]" {
 		t.Error(ss[3])
 	}
 }
