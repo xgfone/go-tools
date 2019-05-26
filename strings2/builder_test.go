@@ -141,13 +141,13 @@ func TestBuilder_AppendAnyFmt(t *testing.T) {
 	}
 
 	b := NewBuilder(64)
-	b.AppendAny([]int{1, 2, 3})
+	b.AppendAnyFmt([]int{1, 2, 3})
 	b.WriteByte('\n')
-	b.AppendAny([]string{"a", "b", "c"})
+	b.AppendAnyFmt([]string{"a", "b", "c"})
 	b.WriteByte('\n')
-	b.AppendAny([]interface{}{4, "x", 5, "y"})
+	b.AppendAnyFmt([]interface{}{4, "x", 5, "y"})
 	b.WriteByte('\n')
-	b.AppendAny(map[string]interface{}{"k1": "v1", "k2": 789})
+	b.AppendAnyFmt(map[string]interface{}{"k1": "v1", "k2": 789})
 	b.WriteByte('\n')
 	b.AppendAnyFmt(st{"Aaron", 123})
 
