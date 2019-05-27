@@ -22,6 +22,25 @@ import (
 	"os/exec"
 )
 
+// ErrDeny is returned when the hook denies the cmd.
+var ErrDeny = errors.New("the cmd is denied")
+
+var globalHooks []Hook
+
+// Hook is used to filter or handle the cmd `name` with the arguments `args`.
+//
+// If returning true, it will continue to run it, or do nothing.
+type Hook func(name string, args ...string) bool
+
+// AppendHook appends the hooks to the global hooks.
+func AppendHook(hooks ...Hook) {
+	for _, hook := range hooks {
+		if hook != nil {
+			globalHooks = append(globalHooks, hook)
+		}
+	}
+}
+
 func geterr(stdout, stderr []byte, err error) error {
 	if err != nil {
 		if len(stderr) > 0 {
@@ -38,6 +57,12 @@ func geterr(stdout, stderr []byte, err error) error {
 func RunCmd(cxt context.Context, name string, args ...string) (
 	stdout, stderr []byte, err error) {
 
+	for _, hook := range globalHooks {
+		if ok := hook(name, args...); !ok {
+			return nil, nil, ErrDeny
+		}
+	}
+
 	cmd := exec.CommandContext(cxt, name, args...)
 	var output bytes.Buffer
 	var errput bytes.Buffer
@@ -48,6 +73,11 @@ func RunCmd(cxt context.Context, name string, args ...string) (
 	stderr = errput.Bytes()
 	err = geterr(stdout, stderr, err)
 	return
+}
+
+// Run is the alias of RunCmd.
+func Run(ctx context.Context, name string, args ...string) ([]byte, []byte, error) {
+	return RunCmd(ctx, name, args...)
 }
 
 // RetryRunCmd is the same as RunCmd, but try to run once again if failed.
@@ -74,10 +104,12 @@ func Output(cxt context.Context, name string, args ...string) (string, error) {
 
 // Executes is equal to Execute(cxt, cmds[0], cmds[1:]...)
 func Executes(cxt context.Context, cmds []string) error {
-	return Execute(cxt, cmds[0], cmds[1:]...)
+	_, _, err := RunCmd(cxt, cmds[0], cmds[1:]...)
+	return err
 }
 
 // Outputs is equal to Output(cxt, cmds[0], cmds[1:]...).
 func Outputs(cxt context.Context, cmds []string) (string, error) {
-	return Output(cxt, cmds[0], cmds[1:]...)
+	stdout, _, err := RunCmd(cxt, cmds[0], cmds[1:]...)
+	return string(stdout), err
 }

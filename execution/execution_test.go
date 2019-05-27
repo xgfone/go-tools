@@ -62,3 +62,28 @@ func ExampleOutputs() {
 	// Output:
 	// OK
 }
+
+func ExampleHook() {
+	filterCmd := func(name string, args ...string) bool {
+		// Disable run: rm -rf /
+		if name == "rm" && len(args) >= 2 && args[0] == "-rf" && args[1] == "/" {
+			return false
+		}
+		return true
+	}
+	printCmd := func(name string, args ...string) bool {
+		// Print the cmd
+		fmt.Printf("Run: %v\n", append([]string{name}, args...))
+		return true
+	}
+	AppendHook(filterCmd, printCmd)
+
+	RunCmd(context.TODO(), "ls")
+	if _, _, err := RunCmd(context.TODO(), "rm", "-rf", "/"); err == ErrDeny {
+		fmt.Println(`deny to run "rm -rf /"`)
+	}
+
+	// Output:
+	// Run: [ls]
+	// deny to run "rm -rf /"
+}
