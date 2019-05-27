@@ -33,7 +33,7 @@ type Byter interface {
 
 // MarshalByter is an interface to marshal a value to text.
 //
-// DEPRECATED!!! it is equal to encoding.TextMarshaler.
+// DEPRECATED!!! it is the same as encoding.TextMarshaler.
 type MarshalByter interface {
 	MarshalByte() ([]byte, error)
 }
