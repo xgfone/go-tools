@@ -76,7 +76,7 @@ func ExampleHook() {
 		fmt.Printf("Run: %v\n", append([]string{name}, args...))
 		return true
 	}
-	AppendHook(filterCmd, printCmd)
+	AppendHooks(filterCmd, printCmd)
 
 	RunCmd(context.TODO(), "ls")
 	if _, _, err := RunCmd(context.TODO(), "rm", "-rf", "/"); err == ErrDeny {
