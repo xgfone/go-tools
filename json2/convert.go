@@ -25,11 +25,15 @@ import (
 )
 
 // Byter returns a []byte.
+//
+// DEPRECATED!!!
 type Byter interface {
 	Bytes() []byte
 }
 
 // MarshalByter is an interface to marshal a value to text.
+//
+// DEPRECATED!!! it is equal to encoding.TextMarshaler.
 type MarshalByter interface {
 	MarshalByte() ([]byte, error)
 }
