@@ -169,6 +169,9 @@ func (b *Builder) AppendTime(t time.Time, layout string) {
 //    interface encoding.TextMarshaler
 //
 // For the unknown type, it does not append it and return false, or return true.
+//
+// Notice: for map[string]interface{} and map[string]string, they are optimized,
+// so the order that the key-value is output is not determined.
 func (b *Builder) AppendAny(any interface{}) (ok bool, err error) {
 	switch v := any.(type) {
 	case nil:
