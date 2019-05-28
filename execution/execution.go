@@ -33,6 +33,11 @@ type Hook func(name string, args ...string) bool
 // Cmd represents a command executor.
 type Cmd struct {
 	hooks []Hook
+
+	// SetCmd allows the user to customize exec.Cmd.
+	//
+	// Notice: You should not modify the fields `Stdout` and `Stderr`.
+	SetCmd func(*exec.Cmd)
 }
 
 // NewCmd returns a new executor Cmd.
@@ -73,6 +78,10 @@ func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 	}
 
 	cmd := exec.CommandContext(cxt, name, args...)
+	if c.SetCmd != nil {
+		c.SetCmd(cmd)
+	}
+
 	var output bytes.Buffer
 	var errput bytes.Buffer
 	cmd.Stdout = &output
