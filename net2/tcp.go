@@ -52,6 +52,13 @@ type TCPServer struct {
 	Listener *net.TCPListener
 	Handler  func(conn *net.TCPConn, isStopped func() bool)
 
+	// When an error occurs, the error handler will be called.
+	// If it returns true, the tcp server will continue to handle the connection.
+	// Or, it will close the tcp server and return.
+	//
+	// The default error handler does nothing and returns false.
+	ErrHandler func(error) bool
+
 	once   sync.Once
 	funcs  []func()
 	conns  int64
@@ -81,6 +88,11 @@ func NewTCPServerFromAddr(addr string, handler func(conn *net.TCPConn, isStopped
 
 // Start starts the TCP server.
 func (s *TCPServer) Start() {
+	errhandler := s.ErrHandler
+	if errhandler == nil {
+		errhandler = func(err error) bool { return false }
+	}
+
 	s.waits.Add(1)
 	defer s.waits.Done()
 
@@ -91,6 +103,9 @@ func (s *TCPServer) Start() {
 
 		conn, err := s.Listener.AcceptTCP()
 		if err != nil {
+			if errhandler(err) {
+				continue
+			}
 			s.once.Do(s.close)
 			return
 		}
