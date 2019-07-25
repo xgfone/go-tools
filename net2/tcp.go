@@ -84,6 +84,10 @@ func (s *TCPServer) Start() {
 	defer s.waits.Done()
 
 	for {
+		if s.IsStopped() {
+			return
+		}
+
 		conn, err := s.Listener.AcceptTCP()
 		if err != nil {
 			s.once.Do(s.close)
