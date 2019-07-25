@@ -52,6 +52,8 @@ type TCPServer struct {
 	Listener *net.TCPListener
 	Handler  func(conn *net.TCPConn, isStopped func() bool)
 
+	once   sync.Once
+	funcs  []func()
 	waits  sync.WaitGroup
 	closed int32
 }
@@ -84,6 +86,7 @@ func (s *TCPServer) Start() {
 	for {
 		conn, err := s.Listener.AcceptTCP()
 		if err != nil {
+			s.once.Do(s.close)
 			return
 		}
 
@@ -103,7 +106,20 @@ func (s *TCPServer) Start() {
 func (s *TCPServer) Stop() {
 	if atomic.CompareAndSwapInt32(&s.closed, 0, 1) {
 		s.Listener.Close()
+		s.once.Do(s.close)
 	}
+}
+
+func (s *TCPServer) close() {
+	for i := len(s.funcs) - 1; i >= 0; i-- {
+		s.funcs[i]()
+	}
+}
+
+// RegisterOnShutdown registers some callbacks, which will be called
+// when the server is closed.
+func (s *TCPServer) RegisterOnShutdown(callback ...func()) {
+	s.funcs = append(s.funcs, callback...)
 }
 
 // Wait waits until all the connections are closed and exit.
