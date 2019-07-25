@@ -54,6 +54,7 @@ type TCPServer struct {
 
 	once   sync.Once
 	funcs  []func()
+	conns  int64
 	waits  sync.WaitGroup
 	closed int32
 }
@@ -95,9 +96,11 @@ func (s *TCPServer) Start() {
 		}
 
 		s.waits.Add(1)
+		atomic.AddInt64(&s.conns, 1)
 		go func() {
 			defer func() {
 				conn.Close()
+				atomic.AddInt64(&s.conns, -1)
 				s.waits.Done()
 			}()
 
@@ -134,6 +137,11 @@ func (s *TCPServer) Wait() {
 // IsStopped reports whether the TCP server is stopped
 func (s *TCPServer) IsStopped() bool {
 	return atomic.LoadInt32(&s.closed) == 1
+}
+
+// Connection reports the number of the client connection.
+func (s *TCPServer) Connection() int {
+	return int(atomic.LoadInt64(&s.conns))
 }
 
 // DialTCP dials a TCP connection to host:port.
