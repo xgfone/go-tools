@@ -37,13 +37,15 @@ type Manager struct {
 	stoped     int32
 	callbacks  []func()
 	shouldStop chan struct{}
+	done       chan struct{}
 }
 
 // NewManager returns a new LifeCycleManager.
 func NewManager() *Manager {
 	return &Manager{
 		callbacks:  make([]func(), 0, 8),
-		shouldStop: make(chan struct{}, 1),
+		shouldStop: make(chan struct{}),
+		done:       make(chan struct{}),
 	}
 }
 
@@ -110,7 +112,8 @@ func (m *Manager) Stop() {
 		for _len := len(m.callbacks) - 1; _len >= 0; _len-- {
 			callFuncAndIgnorePanic(m.callbacks[_len])
 		}
-		m.shouldStop <- struct{}{}
+		close(m.shouldStop)
+		close(m.done)
 	}
 }
 
@@ -127,6 +130,11 @@ func callFuncAndIgnorePanic(f func()) {
 // IsStop returns true if the manager has been stoped, or false.
 func (m *Manager) IsStop() bool {
 	return atomic.LoadInt32(&m.stoped) != 0
+}
+
+// Done returns a channel to report whether the manager is stopped.
+func (m *Manager) Done() <-chan struct{} {
+	return m.done
 }
 
 // RunForever is the same as m.Wait(), but it should be called in main goroutine

@@ -48,9 +48,14 @@ func ResetDefaultManager(m *Manager) {
 	defaultManager = m
 }
 
-// IsStop returns true if the default global manager, or false.
+// IsStop calls the IsStop method of the default global manager.
 func IsStop() bool {
 	return defaultManager.IsStop()
+}
+
+// Done calls the Done method of the default global manager.
+func Done() <-chan struct{} {
+	return defaultManager.Done()
 }
 
 // RunForever calls the method RunForever of the default global manager.
