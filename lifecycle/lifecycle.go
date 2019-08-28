@@ -52,7 +52,7 @@ func NewManager() *Manager {
 // RegisterChannel is same as Register, but using the channel, not the callback.
 //
 // The parameter out is used to notice the app to end. And in is used to notice
-// the manager that the app has cleaned and ended successfully.
+// the manager that the app has cleaned and ended successfully if it is not nil.
 //
 // NOTICE: the two parameters must not be a same channel.
 //
@@ -64,7 +64,9 @@ func (m *Manager) RegisterChannel(out chan<- interface{}, in <-chan interface{})
 
 	return m.Register(func() {
 		out <- struct{}{}
-		<-in
+		if in != nil {
+			<-in
+		}
 	})
 }
 
