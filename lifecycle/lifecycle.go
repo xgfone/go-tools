@@ -16,6 +16,7 @@
 package lifecycle
 
 import (
+	"context"
 	"errors"
 	"os"
 	"reflect"
@@ -38,14 +39,19 @@ type Manager struct {
 	callbacks  []func()
 	shouldStop chan struct{}
 	done       chan struct{}
+	ctx        context.Context
+	cancel     func()
 }
 
 // NewManager returns a new LifeCycleManager.
 func NewManager() *Manager {
+	ctx, cancel := context.WithCancel(context.Background())
 	return &Manager{
 		callbacks:  make([]func(), 0, 8),
 		shouldStop: make(chan struct{}),
 		done:       make(chan struct{}),
+		ctx:        ctx,
+		cancel:     cancel,
 	}
 }
 
@@ -114,8 +120,9 @@ func (m *Manager) Stop() {
 		for _len := len(m.callbacks) - 1; _len >= 0; _len-- {
 			callFuncAndIgnorePanic(m.callbacks[_len])
 		}
-		close(m.shouldStop)
+		m.cancel()
 		close(m.done)
+		close(m.shouldStop)
 	}
 }
 
@@ -134,9 +141,15 @@ func (m *Manager) IsStop() bool {
 	return atomic.LoadInt32(&m.stoped) != 0
 }
 
-// Done returns a channel to report whether the manager is stopped.
+// Done returns a channel to report whether the manager is stopped, that,s,
+// the channel will be closed when the manager is stopped.
 func (m *Manager) Done() <-chan struct{} {
 	return m.done
+}
+
+// Context returns a Context, which will be canceled when the manager is stopped.
+func (m *Manager) Context() context.Context {
+	return m.ctx
 }
 
 // RunForever is the same as m.Wait(), but it should be called in main goroutine

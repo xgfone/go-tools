@@ -14,6 +14,8 @@
 
 package lifecycle
 
+import "context"
+
 var defaultManager *Manager
 
 func init() {
@@ -56,6 +58,11 @@ func IsStop() bool {
 // Done calls the Done method of the default global manager.
 func Done() <-chan struct{} {
 	return defaultManager.Done()
+}
+
+// Context calls the Context method of the default global manager.
+func Context() context.Context {
+	return defaultManager.Context()
 }
 
 // RunForever calls the method RunForever of the default global manager.
