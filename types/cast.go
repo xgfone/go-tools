@@ -1407,7 +1407,22 @@ func ToFloat64Slice(value interface{}) ([]float64, error) {
 	}
 }
 
+// StringSeparator is the separator of the string slice to split the string.
+var StringSeparator = ""
+
+func isStringSeparator(r rune) bool {
+	for _, c := range StringSeparator {
+		if c == r {
+			return true
+		}
+	}
+	return false
+}
+
 // ToStringSlice casts an interface to a []string type.
+//
+// If value is string and the global variable StringSeparator is not "",
+// the value will be split into []string by the string separator.
 func ToStringSlice(value interface{}) ([]string, error) {
 	switch v := value.(type) {
 	case nil:
@@ -1421,7 +1436,10 @@ func ToStringSlice(value interface{}) ([]string, error) {
 	case []string:
 		return v, nil
 	case string:
-		return strings.Fields(v), nil
+		if StringSeparator == "" {
+			return strings.Fields(v), nil
+		}
+		return strings.FieldsFunc(v, isStringSeparator), nil
 	}
 
 	switch reflect.TypeOf(value).Kind() {
