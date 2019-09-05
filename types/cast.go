@@ -1419,6 +1419,13 @@ func isStringSeparator(r rune) bool {
 	return false
 }
 
+func getStringSlice(s string) []string {
+	if StringSeparator == "" {
+		return strings.Fields(s)
+	}
+	return strings.FieldsFunc(s, isStringSeparator)
+}
+
 // ToStringSlice casts an interface to a []string type.
 //
 // If value is string and the global variable StringSeparator is not "",
@@ -1436,10 +1443,11 @@ func ToStringSlice(value interface{}) ([]string, error) {
 	case []string:
 		return v, nil
 	case string:
-		if StringSeparator == "" {
-			return strings.Fields(v), nil
-		}
-		return strings.FieldsFunc(v, isStringSeparator), nil
+		return getStringSlice(v), nil
+	case []byte:
+		return getStringSlice(string(v)), nil
+	case fmt.Stringer:
+		return getStringSlice(v.String()), nil
 	}
 
 	switch reflect.TypeOf(value).Kind() {
