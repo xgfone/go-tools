@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"os/exec"
+	"time"
 )
 
 // ErrDeny is returned when the hook denies the cmd.
@@ -33,6 +34,10 @@ type Hook func(name string, args ...string) bool
 // Cmd represents a command executor.
 type Cmd struct {
 	hooks []Hook
+
+	// Timeout is used to produce the timeout context based on the context
+	// argument if not 0 when executing the command.
+	Timeout time.Duration
 
 	// SetCmd allows the user to customize exec.Cmd.
 	//
@@ -75,6 +80,12 @@ func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 		if ok := hook(name, args...); !ok {
 			return nil, nil, ErrDeny
 		}
+	}
+
+	var cancel func()
+	if c.Timeout > 0 {
+		cxt, cancel = context.WithTimeout(cxt, c.Timeout)
+		defer cancel()
 	}
 
 	cmd := exec.CommandContext(cxt, name, args...)
