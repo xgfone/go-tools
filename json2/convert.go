@@ -95,10 +95,6 @@ func ToBytesErr(i interface{}, fmtSprintf ...bool) ([]byte, error) {
 		return EncodeTime(v, time.RFC3339Nano), nil
 	case encoding.TextMarshaler:
 		return v.MarshalText()
-	case Byter:
-		return v.Bytes(), nil
-	case MarshalByter:
-		return v.MarshalByte()
 	case error:
 		return []byte(v.Error()), nil
 	case fmt.Stringer:
