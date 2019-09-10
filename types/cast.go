@@ -129,13 +129,6 @@ func ToTime(value interface{}, layout ...string) (time.Time, error) {
 	}
 }
 
-// ToLocalTime does the best to convert any certain value to time.Time
-//
-// DEPRECATED!!! It is equal to ToTime.
-func ToLocalTime(value interface{}, layout ...string) (time.Time, error) {
-	return ToTime(value, layout...)
-}
-
 // ToDuration casts an interface to a time.Duration type.
 func ToDuration(value interface{}) (time.Duration, error) {
 	value = indirect(value)

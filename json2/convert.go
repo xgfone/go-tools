@@ -24,20 +24,6 @@ import (
 	"github.com/xgfone/go-tools/types"
 )
 
-// Byter returns a []byte.
-//
-// DEPRECATED!!!
-type Byter interface {
-	Bytes() []byte
-}
-
-// MarshalByter is an interface to marshal a value to text.
-//
-// DEPRECATED!!! it is the same as encoding.TextMarshaler.
-type MarshalByter interface {
-	MarshalByte() ([]byte, error)
-}
-
 // ToBytesErr encodes a value to []byte.
 //
 // For the time.Time, it uses time.RFC3339Nano to format it.
