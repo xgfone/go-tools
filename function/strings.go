@@ -15,7 +15,7 @@
 package function
 
 import (
-	"github.com/xgfone/go-tools/v6/strings2"
+	"github.com/xgfone/go-tools/strings2"
 )
 
 // Some string splitting functions.

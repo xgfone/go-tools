@@ -17,7 +17,7 @@ package option
 import (
 	"encoding/json"
 
-	"github.com/xgfone/go-tools/v6/types"
+	"github.com/xgfone/go-tools/types"
 )
 
 // BoolOption is an Option of the bool type.
