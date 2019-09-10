@@ -58,7 +58,7 @@ func NewManager() *Manager {
 // RegisterChannel is same as Register, but using the channel, not the callback.
 //
 // The parameter out is used to notice the app to end. And in is used to notice
-// the manager that the app has cleaned and ended successfully if it is not nil.
+// the manager that the app has cleaned and ended successfully. They may be nil.
 //
 // NOTICE: the two parameters must not be a same channel.
 //
@@ -68,11 +68,19 @@ func (m *Manager) RegisterChannel(out chan<- interface{}, in <-chan interface{})
 		panic(ErrSameArgs)
 	}
 
+	outf := func() {}
+	if out != nil {
+		outf = func() { out <- struct{}{} }
+	}
+
+	inf := func() {}
+	if in != nil {
+		inf = func() { <-in }
+	}
+
 	return m.Register(func() {
-		out <- struct{}{}
-		if in != nil {
-			<-in
-		}
+		outf()
+		inf()
 	})
 }
 
@@ -127,10 +135,7 @@ func (m *Manager) Stop() {
 }
 
 func callFuncAndIgnorePanic(f func()) {
-	defer func() {
-		recover()
-	}()
-
+	defer recover()
 	if f != nil {
 		f()
 	}
