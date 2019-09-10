@@ -2,7 +2,7 @@
 
 A utility tool library of Golang.
 
-The current version is **`v6`** to support Semantic Import Versioning. See [Doc](https://godoc.org/github.com/xgfone/go-tools/v6).
+The current version is **`v6`** to support Semantic Import Versioning. See [Doc](https://godoc.org/github.com/xgfone/go-tools).
 
 ## Announcement
 These packages only depend on the standard libraries, not any third-part packages. `Go1.11+` will be supported.
