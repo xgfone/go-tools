@@ -25,15 +25,6 @@ func MustToTime(v interface{}, layout ...string) time.Time {
 	return _v
 }
 
-// MustToLocalTime is equal to ToLocalTime, but panic if there is an error.
-func MustToLocalTime(v interface{}, layout ...string) time.Time {
-	_v, err := ToLocalTime(v, layout...)
-	if err != nil {
-		panic(err)
-	}
-	return _v
-}
-
 // MustToBool is equal to ToBool, but panic if there is an error.
 func MustToBool(v interface{}) bool {
 	_v, err := ToBool(v)
