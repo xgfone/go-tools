@@ -21,7 +21,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/xgfone/go-tools/types"
+	"../types"
 )
 
 // ToBytesErr encodes a value to []byte.

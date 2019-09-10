@@ -20,7 +20,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/xgfone/go-tools/types"
+	"../types"
 )
 
 // SetValuer is used to set the itself value to v.

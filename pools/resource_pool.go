@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/xgfone/go-tools/sync2"
+	"../sync2"
 )
 
 var (

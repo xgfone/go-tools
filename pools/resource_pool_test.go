@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/xgfone/go-tools/sync2"
+	"../sync2"
 )
 
 var lastID, count sync2.AtomicInt64

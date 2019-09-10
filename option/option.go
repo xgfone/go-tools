@@ -20,7 +20,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/xgfone/go-tools/types"
+	"../types"
 )
 
 // NONE is the global None value.
