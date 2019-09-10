@@ -21,7 +21,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"../lifecycle"
+	"github.com/xgfone/go-tools/v6/lifecycle"
 )
 
 // DefaultSignals is the default signals to be handled.

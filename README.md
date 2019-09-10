@@ -5,16 +5,21 @@ A utility tool library of Golang.
 The current version is **`v6`** to support Semantic Import Versioning. See [Doc](https://godoc.org/github.com/xgfone/go-tools).
 
 ## Announcement
-These packages only depend on the standard libraries, not any third-part packages. `Go1.11+` will be supported.
+These packages only depend on the standard libraries, not any third-part packages.
+
+The `v6` version requires `Go1.11+`.
 
 ## Installation
 ```shell
 $ go get -u github.com/xgfone/go-tools/v6
 ```
 
-### Test
+### V5
 ```shell
-go test github.com/xgfone/go-tools/v6/...
+$ go1.x  get -u github.com/xgfone/go-tools
+$ go1.11 get -u github.com/xgfone/go-tools@v5.13.0+incompatible
+$ go1.12 get -u github.com/xgfone/go-tools@v5.13.0+incompatible
+$ GONOSUMDB="*" go1.13 get -u github.com/xgfone/go-tools@v5.13.0+incompatible
 ```
 
 ## Subpackages

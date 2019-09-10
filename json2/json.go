@@ -22,7 +22,7 @@ import (
 	"reflect"
 	"time"
 
-	"../strings2"
+	"github.com/xgfone/go-tools/v6/strings2"
 )
 
 // Predefine some json mark
