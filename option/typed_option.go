@@ -412,32 +412,3 @@ func (o TimeOption) UnmarshalJSON(src []byte) (err error) {
 	}
 	return
 }
-
-// LocalTimeOption is an Option of the time.Time type, but parsed as the localtime.
-type LocalTimeOption struct {
-	Option
-}
-
-// NewLocalTimeOption returns a new LocalTimeOption.
-func NewLocalTimeOption(o Option) LocalTimeOption {
-	if o == nil {
-		o = None()
-	}
-	return LocalTimeOption{Option: o}
-}
-
-// Scan converts src as float64 to the inner value.
-func (o LocalTimeOption) Scan(src interface{}) error {
-	return o.ConvertTo(src, func(v interface{}) (interface{}, error) {
-		return types.ToLocalTime(v, types.DateTimeLayout)
-	})
-}
-
-// UnmarshalJSON implements the interface json.Unmarshaler.
-func (o LocalTimeOption) UnmarshalJSON(src []byte) (err error) {
-	v, err := types.ToLocalTime(src, types.DateTimeLayout)
-	if err == nil {
-		o.Reset(v)
-	}
-	return
-}
