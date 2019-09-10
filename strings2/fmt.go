@@ -20,7 +20,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/xgfone/go-tools/types"
+	"github.com/xgfone/go-tools/v6/types"
 )
 
 // DefaultFormat is the default global formatter.

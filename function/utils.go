@@ -19,8 +19,6 @@ import (
 )
 
 // IsNil returns true when v is the nil value.
-//
-// var
 func IsNil(v interface{}) bool {
 	if v == nil {
 		return true

@@ -1,20 +1,20 @@
-# go-tools [![Build Status](https://travis-ci.org/xgfone/go-tools.svg?branch=master)](https://travis-ci.org/xgfone/go-tools) [![GoDoc](https://godoc.org/github.com/xgfone/go-tools?status.svg)](http://godoc.org/github.com/xgfone/go-tools) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://raw.githubusercontent.com/xgfone/go-tools/master/LICENSE)
+# go-tools [![Build Status](https://travis-ci.org/xgfone/go-tools.svg?branch=master)](https://travis-ci.org/xgfone/go-tools) [![GoDoc](https://godoc.org/github.com/xgfone/go-tools/v6?status.svg)](http://godoc.org/github.com/xgfone/go-tools) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://raw.githubusercontent.com/xgfone/go-tools/master/LICENSE)
 
 A utility tool library of Golang.
 
-The current version is **`v5`**. See [Doc](https://godoc.org/github.com/xgfone/go-tools).
+The current version is **`v6`** to support Semantic Import Versioning. See [Doc](https://godoc.org/github.com/xgfone/go-tools/v6).
 
 ## Announcement
-These packages only depend on the standard libraries, not any third-part packages. `Go1.7+` will be supported.
+These packages only depend on the standard libraries, not any third-part packages. `Go1.11+` will be supported.
 
 ## Installation
 ```shell
-$ go get -u github.com/xgfone/go-tools
+$ go get -u github.com/xgfone/go-tools/v6
 ```
 
 ### Test
 ```shell
-go test github.com/xgfone/go-tools/...
+go test github.com/xgfone/go-tools/v6/...
 ```
 
 ## Subpackages
