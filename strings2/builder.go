@@ -165,6 +165,7 @@ func (b *Builder) AppendTime(t time.Time, layout string) {
 //    Slice
 //    Map
 //    interface error
+//    interface io.WriterTo
 //    interface fmt.Stringer
 //    interface encoding.TextMarshaler
 //
@@ -208,10 +209,12 @@ func (b *Builder) AppendAny(any interface{}) (ok bool, err error) {
 		b.AppendUint(v)
 	case time.Time:
 		b.AppendTime(v, time.RFC3339Nano)
-	case fmt.Stringer:
-		b.WriteString(v.String())
 	case error:
 		b.WriteString(v.Error())
+	case io.WriterTo:
+		_, err = v.WriteTo(b)
+	case fmt.Stringer:
+		b.WriteString(v.String())
 	case encoding.TextMarshaler:
 		data, err := v.MarshalText()
 		if err != nil {
@@ -304,14 +307,15 @@ func (b *Builder) AppendAnyFmt(any interface{}) error {
 	case uint32:
 	case uint64:
 	case time.Time:
-	case fmt.Stringer:
-	case error:
-	case encoding.TextMarshaler:
-	case []interface{}:
-	case []string:
 	case []int:
+	case []string:
+	case []interface{}:
 	case map[string]interface{}:
 	case map[string]string:
+	case error:
+	case io.WriterTo:
+	case fmt.Stringer:
+	case encoding.TextMarshaler:
 	default:
 		fmt.Fprintf(b, "%+v", any)
 		return nil
