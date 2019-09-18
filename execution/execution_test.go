@@ -79,7 +79,7 @@ func ExampleHook() {
 	AppendHooks(filterCmd, printCmd)
 
 	RunCmd(context.TODO(), "ls")
-	if _, _, err := RunCmd(context.TODO(), "rm", "-rf", "/"); err == ErrDeny {
+	if _, _, err := RunCmd(context.TODO(), "rm", "-rf", "/"); err.(CmdError).Err == ErrDeny {
 		fmt.Println(`deny to run "rm -rf /"`)
 	}
 
