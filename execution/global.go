@@ -25,6 +25,11 @@ func AppendHooks(hooks ...Hook) {
 	DefaultCmd.AppendHooks(hooks...)
 }
 
+// AppendResultHooks is equal to DefaultCmd.AppendResultHooks(hooks...).
+func AppendResultHooks(hooks ...ResultHook) {
+	DefaultCmd.AppendResultHooks(hooks...)
+}
+
 // RunCmd is equal to DefaultCmd.RunCmd(ctx, name, args...).
 func RunCmd(ctx context.Context, name string, args ...string) (stdout, stderr []byte, err error) {
 	return DefaultCmd.RunCmd(ctx, name, args...)
