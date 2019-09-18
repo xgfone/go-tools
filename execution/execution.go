@@ -31,9 +31,14 @@ var ErrDeny = errors.New("the cmd is denied")
 // If returning true, it will continue to run it, or do nothing.
 type Hook func(name string, args ...string) bool
 
+// ResultHook is used to filter the result and returns the new result.
+type ResultHook func(name string, args []string, stdout, stderr []byte, err error) ([]byte, []byte, error)
+
 // Cmd represents a command executor.
 type Cmd struct {
 	Hooks []Hook
+
+	ResultHooks []ResultHook
 
 	// Timeout is used to produce the timeout context based on the context
 	// argument if not 0 when executing the command.
@@ -55,6 +60,16 @@ func (c *Cmd) AppendHooks(hooks ...Hook) *Cmd {
 	for _, hook := range hooks {
 		if hook != nil {
 			c.Hooks = append(c.Hooks, hook)
+		}
+	}
+	return c
+}
+
+// AppendResultHooks appends some result hooks.
+func (c *Cmd) AppendResultHooks(hooks ...ResultHook) *Cmd {
+	for _, hook := range hooks {
+		if hook != nil {
+			c.ResultHooks = append(c.ResultHooks, hook)
 		}
 	}
 	return c
@@ -103,7 +118,15 @@ func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 	err = cmd.Run()
 	stdout = output.Bytes()
 	stderr = errput.Bytes()
-	err = geterr(stdout, stderr, err)
+
+	if len(c.ResultHooks) == 0 {
+		err = geterr(stdout, stderr, err)
+	} else {
+		for _, hook := range c.ResultHooks {
+			stdout, stderr, err = hook(name, args, stdout, stderr, err)
+		}
+	}
+
 	return
 }
 
