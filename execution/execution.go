@@ -33,7 +33,7 @@ type Hook func(name string, args ...string) bool
 
 // Cmd represents a command executor.
 type Cmd struct {
-	hooks []Hook
+	Hooks []Hook
 
 	// Timeout is used to produce the timeout context based on the context
 	// argument if not 0 when executing the command.
@@ -54,7 +54,7 @@ func NewCmd() *Cmd {
 func (c *Cmd) AppendHooks(hooks ...Hook) *Cmd {
 	for _, hook := range hooks {
 		if hook != nil {
-			c.hooks = append(c.hooks, hook)
+			c.Hooks = append(c.Hooks, hook)
 		}
 	}
 	return c
@@ -76,7 +76,7 @@ func geterr(stdout, stderr []byte, err error) error {
 func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 	stdout, stderr []byte, err error) {
 
-	for _, hook := range c.hooks {
+	for _, hook := range c.Hooks {
 		if ok := hook(name, args...); !ok {
 			return nil, nil, ErrDeny
 		}
