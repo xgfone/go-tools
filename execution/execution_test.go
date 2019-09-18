@@ -87,3 +87,18 @@ func ExampleHook() {
 	// Run: [ls]
 	// deny to run "rm -rf /"
 }
+
+func ExampleResultHook() {
+	logHook := func(name string, args []string, stdout, stderr []byte, err error) ([]byte, []byte, error) {
+		fmt.Printf("cmd=%s, args=%s, stdout=%s, stderr=%s, err=%v",
+			name, args, string(stdout), string(stderr), err)
+		return stdout, stderr, err
+	}
+
+	executor := NewCmd()
+	executor.AppendResultHooks(logHook)
+	executor.RunCmd(context.TODO(), "echo", "-n", "test")
+
+	// Output:
+	// cmd=echo, args=[-n test], stdout=test, stderr=, err=<nil>
+}
