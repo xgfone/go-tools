@@ -75,6 +75,9 @@ func geterr(stdout, stderr []byte, err error) error {
 // then returns stdout, stderr and error.
 func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 	stdout, stderr []byte, err error) {
+	if name == "" {
+		panic("the cmd name is empty")
+	}
 
 	for _, hook := range c.Hooks {
 		if ok := hook(name, args...); !ok {
