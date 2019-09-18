@@ -19,12 +19,72 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"os/exec"
 	"time"
 )
 
 // ErrDeny is returned when the hook denies the cmd.
 var ErrDeny = errors.New("the cmd is denied")
+
+// CmdError represents a cmd error.
+type CmdError struct {
+	Name string
+	Args []string
+
+	Err    error
+	Stdout []byte
+	Stderr []byte
+}
+
+// NewCmdError returns a new CmdError.
+func NewCmdError(name string, args []string, stdout, stderr []byte, err error) CmdError {
+	return CmdError{Name: name, Args: args, Stdout: stdout, Stderr: stderr, Err: err}
+}
+
+func (c CmdError) Error() string {
+	err := c.Err.Error()
+	buf := bytes.NewBuffer(nil)
+	buf.Grow(len(c.Stderr) + len(c.Stdout) + len(err) + len(c.Name) + 32)
+	buf.WriteString("cmd=")
+	buf.WriteString(c.Name)
+
+	if len(c.Args) > 0 {
+		fmt.Fprintf(buf, ", args=%s", c.Args)
+	}
+	if len(c.Stdout) > 0 {
+		buf.WriteString(", stdout=")
+		buf.Write(c.Stdout)
+	}
+	if len(c.Stderr) > 0 {
+		buf.WriteString(", stderr=")
+		buf.Write(c.Stderr)
+	}
+
+	buf.WriteString(err)
+	return buf.String()
+}
+
+// Unwrap implements errors.Unwrap.
+func (c CmdError) Unwrap() error {
+	return c.Err
+}
+
+// IterKV iterates the field of CmdError in turn, which will ignore the field
+// that the value is ZERO.
+func (c CmdError) IterKV(iter func(key string, value interface{})) {
+	iter("cmd", c.Name)
+	if len(c.Args) > 0 {
+		iter("args", c.Args)
+	}
+	if len(c.Stdout) > 0 {
+		iter("stdout", string(c.Stdout))
+	}
+	if len(c.Stderr) > 0 {
+		iter("stderr", string(c.Stderr))
+	}
+	iter("err", c.Err)
+}
 
 // Hook is used to filter or handle the cmd `name` with the arguments `args`.
 //
@@ -75,19 +135,10 @@ func (c *Cmd) AppendResultHooks(hooks ...ResultHook) *Cmd {
 	return c
 }
 
-func geterr(stdout, stderr []byte, err error) error {
-	if err != nil {
-		if len(stderr) > 0 {
-			err = errors.New(string(stderr))
-		} else if len(stdout) > 0 {
-			err = errors.New(string(stdout))
-		}
-	}
-	return err
-}
-
 // RunCmd executes the command, name, with its arguments, args,
 // then returns stdout, stderr and error.
+//
+// Notice: if there is an error to be returned, it is CmdError.
 func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 	stdout, stderr []byte, err error) {
 	if name == "" {
@@ -96,7 +147,7 @@ func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 
 	for _, hook := range c.Hooks {
 		if ok := hook(name, args...); !ok {
-			return nil, nil, ErrDeny
+			return nil, nil, NewCmdError(name, args, nil, nil, ErrDeny)
 		}
 	}
 
@@ -119,12 +170,14 @@ func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 	stdout = output.Bytes()
 	stderr = errput.Bytes()
 
-	if len(c.ResultHooks) == 0 {
-		err = geterr(stdout, stderr, err)
-	} else {
-		for _, hook := range c.ResultHooks {
-			stdout, stderr, err = hook(name, args, stdout, stderr, err)
-		}
+	for _, hook := range c.ResultHooks {
+		stdout, stderr, err = hook(name, args, stdout, stderr, err)
+	}
+
+	switch err.(type) {
+	case nil, CmdError:
+	default:
+		err = NewCmdError(name, args, stdout, stderr, err)
 	}
 
 	return
