@@ -70,22 +70,6 @@ func (c CmdError) Unwrap() error {
 	return c.Err
 }
 
-// IterKV iterates the field of CmdError in turn, which will ignore the field
-// that the value is ZERO.
-func (c CmdError) IterKV(iter func(key string, value interface{})) {
-	iter("cmd", c.Name)
-	if len(c.Args) > 0 {
-		iter("args", c.Args)
-	}
-	if len(c.Stdout) > 0 {
-		iter("stdout", string(c.Stdout))
-	}
-	if len(c.Stderr) > 0 {
-		iter("stderr", string(c.Stderr))
-	}
-	iter("err", c.Err)
-}
-
 // Hook is used to filter or handle the cmd `name` with the arguments `args`.
 //
 // If returning true, it will continue to run it, or do nothing.
