@@ -147,7 +147,7 @@ func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 
 	for _, hook := range c.Hooks {
 		if ok := hook(name, args...); !ok {
-			return nil, nil, NewCmdError(name, args, nil, nil, ErrDeny)
+			return c.runResultHooks(name, args, nil, nil, ErrDeny)
 		}
 	}
 
@@ -170,6 +170,11 @@ func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 	stdout = output.Bytes()
 	stderr = errput.Bytes()
 
+	return c.runResultHooks(name, args, stdout, stderr, err)
+}
+
+func (c *Cmd) runResultHooks(name string, args []string, stdout, stderr []byte,
+	err error) ([]byte, []byte, error) {
 	for _, hook := range c.ResultHooks {
 		stdout, stderr, err = hook(name, args, stdout, stderr, err)
 	}
@@ -180,7 +185,7 @@ func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 		err = NewCmdError(name, args, stdout, stderr, err)
 	}
 
-	return
+	return stdout, stderr, err
 }
 
 // Run is the alias of RunCmd.
