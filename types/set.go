@@ -15,6 +15,8 @@
 package types
 
 import (
+	"bytes"
+	"fmt"
 	"reflect"
 )
 
@@ -69,6 +71,23 @@ func NewSetFromSlice(slices ...interface{}) Set {
 	s := Set{cache: make(map[interface{}]struct{}, len(slices))}
 	s.AddSlice(slices...)
 	return s
+}
+
+func (s Set) String() string {
+	var i int
+	buf := bytes.NewBuffer(nil)
+	buf.Grow(128)
+	buf.WriteByte('{')
+	for key := range s.cache {
+		if i == 0 {
+			fmt.Fprintf(buf, "%v", key)
+		} else {
+			fmt.Fprintf(buf, " %v", key)
+		}
+		i++
+	}
+	buf.WriteByte('}')
+	return buf.String()
 }
 
 // Add adds some elements into the set.
