@@ -14,7 +14,10 @@
 
 package types
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 func ExampleSet() {
 	s1 := NewSet(1, 2, 3)
@@ -117,4 +120,23 @@ func ExampleSet() {
 	// false
 	// false
 	// false
+}
+
+func ExampleSet_AddSlice() {
+	set := NewSetFromSlice([]string{"a", "b"}, []string{"c", "d"})
+	set.AddSlice([]string{"o", "p", "q"}, []string{"r", "s", "t"})
+	set.AddSlice([]string{"x", "y", "z"})
+
+	ss := make([]string, 0, set.Size())
+	set.Walk(func(v interface{}) { ss = append(ss, v.(string)) })
+	sort.Strings(ss)
+
+	fmt.Println(set.Size())
+	fmt.Println(len(ss))
+	fmt.Println(ss)
+
+	// Output:
+	// 13
+	// 13
+	// [a b c d o p q r s t x y z]
 }

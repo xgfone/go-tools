@@ -14,6 +14,10 @@
 
 package types
 
+import (
+	"reflect"
+)
+
 // Set is a set type.
 //
 // The element of the set must be hashable, such as int, string, array, etc.
@@ -57,6 +61,16 @@ func NewSetFromSet(sets ...Set) Set {
 	return s
 }
 
+// NewSetFromSlice returns a new Set, which initializes the set from the other
+// slices.
+//
+// Notice: it will panic if the arguments is not the slice or array.
+func NewSetFromSlice(slices ...interface{}) Set {
+	s := Set{cache: make(map[interface{}]struct{}, len(slices))}
+	s.AddSlice(slices...)
+	return s
+}
+
 // Add adds some elements into the set.
 //
 // If the element is string, it will ignore the empty string.
@@ -87,6 +101,28 @@ func (s Set) AddStrings(elements ...string) {
 func (s Set) AddInts(elements ...int) {
 	for _, v := range elements {
 		s.cache[v] = struct{}{}
+	}
+}
+
+// AddSlice adds the elements of all the slices into the set.
+//
+// Notice: if the argument is not a slice or array, it will add it
+// by using the method Add() instead.
+func (s Set) AddSlice(slices ...interface{}) {
+	for _, slice := range slices {
+		s.addSlice(slice)
+	}
+}
+
+func (s Set) addSlice(slice interface{}) {
+	vs := reflect.ValueOf(slice)
+	switch vs.Kind() {
+	case reflect.Slice, reflect.Array:
+		for i, _len := 0, vs.Len(); i < _len; i++ {
+			s.AddSlice(vs.Index(i).Interface())
+		}
+	default:
+		s.Add(slice)
 	}
 }
 
