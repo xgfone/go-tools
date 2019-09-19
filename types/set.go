@@ -63,13 +63,13 @@ func NewSetFromSet(sets ...Set) Set {
 	return s
 }
 
-// NewSetFromSlice returns a new Set, which initializes the set from the other
+// NewSetFromSlices returns a new Set, which initializes the set from the other
 // slices.
 //
 // Notice: it will panic if the arguments is not the slice or array.
-func NewSetFromSlice(slices ...interface{}) Set {
+func NewSetFromSlices(slices ...interface{}) Set {
 	s := Set{cache: make(map[interface{}]struct{}, len(slices))}
-	s.AddSlice(slices...)
+	s.AddSlices(slices...)
 	return s
 }
 
@@ -123,11 +123,11 @@ func (s Set) AddInts(elements ...int) {
 	}
 }
 
-// AddSlice adds the elements of all the slices into the set.
+// AddSlices adds the elements of all the slices into the set.
 //
 // Notice: if the argument is not a slice or array, it will add it
 // by using the method Add() instead.
-func (s Set) AddSlice(slices ...interface{}) {
+func (s Set) AddSlices(slices ...interface{}) {
 	for _, slice := range slices {
 		s.addSlice(slice)
 	}
@@ -138,7 +138,7 @@ func (s Set) addSlice(slice interface{}) {
 	switch vs.Kind() {
 	case reflect.Slice, reflect.Array:
 		for i, _len := 0, vs.Len(); i < _len; i++ {
-			s.AddSlice(vs.Index(i).Interface())
+			s.AddSlices(vs.Index(i).Interface())
 		}
 	default:
 		s.Add(slice)

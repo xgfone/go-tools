@@ -122,10 +122,10 @@ func ExampleSet() {
 	// false
 }
 
-func ExampleSet_AddSlice() {
-	set := NewSetFromSlice([]string{"a", "b"}, []string{"c", "d"})
-	set.AddSlice([]string{"o", "p", "q"}, []string{"r", "s", "t"})
-	set.AddSlice([]string{"x", "y", "z"})
+func ExampleSet_AddSlices() {
+	set := NewSetFromSlices([]string{"a", "b"}, []string{"c", "d"})
+	set.AddSlices([]string{"o", "p", "q"}, []string{"r", "s", "t"})
+	set.AddSlices([]string{"x", "y", "z"})
 
 	ss := make([]string, 0, set.Size())
 	set.Walk(func(v interface{}) { ss = append(ss, v.(string)) })
