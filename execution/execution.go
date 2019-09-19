@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"sync"
 	"time"
 )
 
@@ -45,7 +46,7 @@ func NewCmdError(name string, args []string, stdout, stderr []byte, err error) C
 func (c CmdError) Error() string {
 	err := c.Err.Error()
 	buf := bytes.NewBuffer(nil)
-	buf.Grow(len(c.Stderr) + len(c.Stdout) + len(err) + len(c.Name) + 32)
+	buf.Grow(len(c.Stderr) + len(c.Stdout) + len(err) + len(c.Name) + 36)
 	buf.WriteString("cmd=")
 	buf.WriteString(c.Name)
 
@@ -61,6 +62,7 @@ func (c CmdError) Error() string {
 		buf.Write(c.Stderr)
 	}
 
+	buf.WriteString(", err=")
 	buf.WriteString(err)
 	return buf.String()
 }
@@ -92,6 +94,9 @@ type Cmd struct {
 	//
 	// Notice: You should not modify the fields `Stdout` and `Stderr`.
 	SetCmd func(*exec.Cmd)
+
+	// If Lock is not nil, it will be locked during the command is executed.
+	Lock *sync.Mutex
 }
 
 // NewCmd returns a new executor Cmd.
@@ -117,6 +122,14 @@ func (c *Cmd) AppendResultHooks(hooks ...ResultHook) *Cmd {
 		}
 	}
 	return c
+}
+
+func (c *Cmd) runCmd(cmd *exec.Cmd) error {
+	if c.Lock != nil {
+		c.Lock.Lock()
+		defer c.Lock.Unlock()
+	}
+	return cmd.Run()
 }
 
 // RunCmd executes the command, name, with its arguments, args,
@@ -150,7 +163,7 @@ func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 	var errput bytes.Buffer
 	cmd.Stdout = &output
 	cmd.Stderr = &errput
-	err = cmd.Run()
+	err = c.runCmd(cmd)
 	stdout = output.Bytes()
 	stderr = errput.Bytes()
 
