@@ -228,7 +228,14 @@ func (s Set) Copy() Set {
 }
 
 // Walk travels the elements of the set.
+//
+// [DEPRECATED] Please use ForEach().
 func (s Set) Walk(f func(interface{})) {
+	s.ForEach(f)
+}
+
+// ForEach travels the elements of the set instead of the deprecated Walk.
+func (s Set) ForEach(f func(element interface{})) {
 	for e := range s.cache {
 		f(e)
 	}
