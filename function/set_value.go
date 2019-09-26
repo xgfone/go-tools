@@ -54,9 +54,9 @@ type SetValuer interface {
 //
 // Notice: number stands for all the integer and float types.
 //
-// For bool, "t", "T", "1", "on", "On", "ON", "true", "True", "TRUE" are true,
-// and "f", "F", "0", "off", "Off", "OFF", "false", "False", "FALSE" are false.
-// Others is invalid.
+// For bool, "t", "T", "1", "on", "On", "ON", "true", "True", "TRUE", "yes",
+// "Yes", and "YES" are true, and "f", "F", "0", "off", "Off", "OFF", "false",
+// "False", "FALSE", "no", "No", "NO", and "" are false. Others is invalid.
 //
 // For time.Time, it supports the layout ISO8601 and RFC3339. If it's ISO8601,
 // the time must be UTC. So you can parse the time as follow:
