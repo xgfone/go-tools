@@ -112,6 +112,44 @@ func GetAllIPs() (ips []string, err error) {
 	return
 }
 
+// GetAllNetIPs returns the ips with the subnet mask, such as
+//
+//   127.0.0.1/8
+//   10.218.0.26/32
+//   ::1/128
+//   fe80::1/64
+//   fe80::ac48:81ff:fe8d:e8b7/64
+//
+func GetAllNetIPs() (ips []string, err error) {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return
+	}
+
+	var ip string
+	ips = make([]string, len(addrs))
+
+OUTER:
+	for i, addr := range addrs {
+		if ip = addr.String(); strings.IndexByte(ip, '/') < 0 {
+			if strings.IndexByte(ip, ':') < 0 {
+				ip += "/32"
+			} else {
+				ip += "/128"
+			}
+		}
+
+		for _, _ip := range ips {
+			if _ip == ip {
+				continue OUTER
+			}
+		}
+
+		ips[i] = ip
+	}
+	return
+}
+
 // IPIsOnHost returns true if the ip is on the host, or returns false.
 func IPIsOnHost(ip string) bool {
 	ip = strings.ToLower(ip)
