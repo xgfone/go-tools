@@ -15,42 +15,15 @@
 package net2
 
 import (
-	"fmt"
 	"net"
 	"sync"
 	"sync/atomic"
 )
 
-// TCPServerForever starts a TCP server. If starting successfully, never return.
-func TCPServerForever(addr string, handler func(*net.TCPConn)) error {
-	_addr, err := net.ResolveTCPAddr("tcp", addr)
-	if err != nil {
-		return err
-	}
-
-	ln, err := net.ListenTCP("tcp", _addr)
-	if err != nil {
-		return err
-	}
-	defer ln.Close()
-
-	for {
-		conn, err := ln.AcceptTCP()
-		if err != nil {
-			fmt.Printf("AcceptTCP get an error: %v\n", err)
-		} else {
-			go handler(conn)
-		}
-	}
-
-	// Never execute forever.
-	// return nil
-}
-
 // TCPServer is used to manage a TCP server.
 type TCPServer struct {
 	Listener *net.TCPListener
-	Handler  func(conn *net.TCPConn, isStopped func() bool)
+	Handler  func(conn *net.TCPConn, exit <-chan struct{})
 
 	// When an error occurs, the error handler will be called.
 	// If it returns true, the tcp server will continue to handle the connection.
@@ -64,15 +37,16 @@ type TCPServer struct {
 	conns  int64
 	waits  sync.WaitGroup
 	closed int32
+	exit   chan struct{}
 }
 
 // NewTCPServer returns a new TCPServer.
-func NewTCPServer(ln *net.TCPListener, handler func(conn *net.TCPConn, isStopped func() bool)) *TCPServer {
+func NewTCPServer(ln *net.TCPListener, handler func(*net.TCPConn, <-chan struct{})) *TCPServer {
 	return &TCPServer{Listener: ln, Handler: handler}
 }
 
 // NewTCPServerFromAddr returns a new TCPServer listening on addr.
-func NewTCPServerFromAddr(addr string, handler func(conn *net.TCPConn, isStopped func() bool)) (*TCPServer, error) {
+func NewTCPServerFromAddr(addr string, handler func(*net.TCPConn, <-chan struct{})) (*TCPServer, error) {
 	_addr, err := net.ResolveTCPAddr("tcp", addr)
 	if err != nil {
 		return nil, err
@@ -91,6 +65,10 @@ func (s *TCPServer) Start() {
 	errhandler := s.ErrHandler
 	if errhandler == nil {
 		errhandler = func(err error) bool { return false }
+	}
+
+	if s.exit == nil {
+		s.exit = make(chan struct{})
 	}
 
 	s.waits.Add(1)
@@ -119,7 +97,7 @@ func (s *TCPServer) Start() {
 				s.waits.Done()
 			}()
 
-			s.Handler(conn, s.IsStopped)
+			s.Handler(conn, s.exit)
 		}()
 	}
 }
@@ -129,6 +107,9 @@ func (s *TCPServer) Stop() {
 	if atomic.CompareAndSwapInt32(&s.closed, 0, 1) {
 		s.Listener.Close()
 		s.once.Do(s.close)
+		if s.exit != nil {
+			close(s.exit)
+		}
 	}
 }
 
