@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"testing"
 	"time"
 )
 
@@ -72,4 +73,30 @@ func ExampleMarshalKvJSON() {
 
 	// Output:
 	// {"nil":null,"bool":true,"string":"abc","int":123,"double_quotation":"a\"b","float":1.23,"slice":["abc",123],"sslice":["a","b","c"],"map":{"key":"xyz"}}
+}
+
+func BenchmarkMarshalJSON(b *testing.B) {
+	buf := bytes.NewBuffer(nil)
+	buf.Grow(64)
+
+	ms := map[string]interface{}{"number": 123, "name": "abc"}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		buf.Reset()
+		MarshalJSON(buf, ms)
+	}
+}
+
+func BenchmarkMarshal(b *testing.B) {
+	buf := bytes.NewBuffer(nil)
+	buf.Grow(64)
+
+	ms := map[string]interface{}{"number": 123, "name": "abc"}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		buf.Reset()
+		json.NewEncoder(buf).Encode(ms)
+	}
 }
