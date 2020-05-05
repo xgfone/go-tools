@@ -43,7 +43,7 @@ func addFile(lists []string, fullPath, fileName string, isfull bool) []string {
 	return append(lists, fileName)
 }
 
-// WalkDirFull returns all the filenames in a directory.
+// WalkDir returns all the filenames in a directory.
 //
 // dirPth is the directory where the file is in.
 // If suffix is not empty, it only returns the files which have the suffix.
@@ -53,7 +53,7 @@ func addFile(lists []string, fullPath, fileName string, isfull bool) []string {
 // If ignoreError is true, ignore the error; Or it will stop when an error occurs.
 //
 // Notice: the suffix is case-insensitive.
-func WalkDirFull(dirPth, suffix string, includeDir, recursion, fullPath,
+func WalkDir(dirPth, suffix string, includeDir, recursion, fullPath,
 	ignoreError bool) ([]string, error) {
 
 	files := make([]string, 0, 30)
@@ -99,7 +99,7 @@ func WalkDirFull(dirPth, suffix string, includeDir, recursion, fullPath,
 // ListDir is the short for Walkdirfull, only recursion is false,
 // fullpath is false, and ignoreerror is true.
 func ListDir(dirPth, suffix string, includeDir bool) ([]string, error) {
-	return WalkDirFull(dirPth, suffix, includeDir, false, false, true)
+	return WalkDir(dirPth, suffix, includeDir, false, false, true)
 }
 
 // ListDir2 is the short for Listdir, only suffix is empty, and includedir
