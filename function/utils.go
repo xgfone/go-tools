@@ -24,13 +24,13 @@ func IsNil(v interface{}) bool {
 		return true
 	}
 
-	rv := reflect.ValueOf(v)
-	switch rv.Kind() {
+	switch rv := reflect.ValueOf(v); rv.Kind() {
 	case reflect.Chan, reflect.Func, reflect.Map, reflect.Ptr, reflect.Slice,
 		reflect.Interface:
 		if rv.IsNil() {
 			return true
 		}
 	}
+
 	return false
 }

@@ -27,18 +27,14 @@ var (
 // HasMethod returns true if `t` has the method of `method`.
 func HasMethod(t interface{}, method string) bool {
 	_, b := reflect.TypeOf(t).MethodByName(method)
-	if b {
-		return true
-	}
-	return false
+	return b
 }
 
 func getMethod(t interface{}, method string) reflect.Value {
-	m, b := reflect.TypeOf(t).MethodByName(method)
-	if !b {
-		return reflect.ValueOf(nil)
+	if m, b := reflect.TypeOf(t).MethodByName(method); b {
+		return m.Func
 	}
-	return m.Func
+	return reflect.ValueOf(nil)
 }
 
 // GetMethod returns the method, `method`, of `t`. If not, return nil.
@@ -47,23 +43,22 @@ func getMethod(t interface{}, method string) reflect.Value {
 // when calling the function, you must pass the receiver as the first argument
 // of that, but, which the passed receiver needs not be identical to t.
 func GetMethod(t interface{}, method string) interface{} {
-	m := getMethod(t, method)
-	if !m.IsValid() || m.IsNil() {
-		return nil
+	if m := getMethod(t, method); m.IsValid() {
+		return m.Interface()
 	}
-	return m.Interface()
+	return nil
 }
 
 // CallMethod calls the method 'method' of 't', and return (ReturnedValue, nil)
 // if calling successfully, which ReturnedValue is the result which that method
 // returned. Or return (nil, Error).
-func CallMethod(t interface{}, method string, args ...interface{}) ([]interface{}, error) {
-	m := GetMethod(t, method)
-	if m == nil {
-		return nil, ErrNotHaveMethod
+func CallMethod(t interface{}, method string, args ...interface{}) (
+	results []interface{}, err error) {
+	if m := GetMethod(t, method); m != nil {
+		_args := make([]interface{}, len(args)+1)
+		_args[0] = t
+		copy(_args[1:], args)
+		results, err = Call(m, _args...)
 	}
-	_args := make([]interface{}, len(args)+1)
-	_args[0] = t
-	copy(_args[1:], args)
-	return Call(m, _args...)
+	return nil, ErrNotHaveMethod
 }

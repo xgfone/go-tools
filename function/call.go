@@ -32,11 +32,11 @@ var (
 	ErrArgsType = errors.New("The type of the argument is incorrect")
 )
 
-// Valid valids whether the callee is a function, and the number the type of
-// the arguments is correct, then return the valid function, the valid arguments
-// and nil.
-func Valid(f interface{}, args ...interface{}) (vf reflect.Value, vargs []reflect.Value, err error) {
-	vf = reflect.ValueOf(f)
+// Valid valids whether the callee is a function, and the number and the type
+// of the arguments is correct, then return the valid function and arguments.
+func Valid(callee interface{}, args ...interface{}) (vf reflect.Value,
+	vargs []reflect.Value, err error) {
+	vf = reflect.ValueOf(callee)
 	if vf.Kind() != reflect.Func {
 		return reflect.ValueOf(nil), nil, ErrNotFunc
 	}
