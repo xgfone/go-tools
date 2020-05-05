@@ -21,57 +21,19 @@ import (
 	"strings"
 )
 
-const (
-	// NotExist represents that the file or directory does not exist.
-	NotExist = iota
-
-	// FileType represents a file.
-	FileType
-
-	// DirType represents a directory.
-	DirType
-)
-
 // HomeDir is the home directory of the current user.
 var HomeDir = GetHomeDir()
 
-// Type decides the type of a file.
+// GetHomeDir returns the home directory.
 //
-// It returns FileType, DirType, or NotExist.
-func Type(name string) uint8 {
-	if fi, err := os.Stat(name); err != nil {
-		if os.IsNotExist(err) {
-			return NotExist
-		}
-		panic(err)
-	} else if fi.IsDir() {
-		return DirType
+// Return "" if the home direcotry is empty.
+func GetHomeDir() string {
+	if v := os.Getenv("HOME"); v != "" { // For Unix/Linux
+		return v
+	} else if v := os.Getenv("HOMEPATH"); v != "" { // For Windows
+		return v
 	}
-	return FileType
-}
-
-// IsExist returns true if the file or directory exists, or return false.
-func IsExist(filename string) bool {
-	if Type(filename) == NotExist {
-		return false
-	}
-	return true
-}
-
-// IsFile returns true if it's a file, or return false.
-func IsFile(filename string) bool {
-	if Type(filename) == FileType {
-		return true
-	}
-	return false
-}
-
-// IsDir returns true if it's a directory, or return false.
-func IsDir(filename string) bool {
-	if Type(filename) == DirType {
-		return true
-	}
-	return false
+	return ""
 }
 
 func addFile(lists []string, fullPath, fileName string, isfull bool) []string {
@@ -146,18 +108,6 @@ func ListDir2(dirPth string) ([]string, error) {
 	return ListDir(dirPth, "", false)
 }
 
-// GetHomeDir returns the home directory.
-//
-// Return "" if the home direcotry is empty.
-func GetHomeDir() string {
-	if v := os.Getenv("HOME"); v != "" { // For Unix/Linux
-		return v
-	} else if v := os.Getenv("HOMEPATH"); v != "" { // For Windows
-		return v
-	}
-	return ""
-}
-
 // Abs is similar to Abs in the std library "path/filepath",
 // but firstly convert "~"" and "$HOME" to the home directory.
 //
@@ -183,19 +133,9 @@ func Abs(p string) string {
 	return p
 }
 
-// SelfPath returns the absolute path where the compiled executable file is in.
-func SelfPath() string {
-	return Abs(os.Args[0])
-}
-
-// SelfDir returns the directory where the compiled executable file is in.
-func SelfDir() string {
-	return filepath.Dir(SelfPath())
-}
-
-// EnsureDir make the directory if not exist.
-func EnsureDir(fp string) error {
-	return os.MkdirAll(fp, os.ModePerm)
+func fileIsExist(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil
 }
 
 // SearchFile searches a file in paths.
@@ -206,27 +146,9 @@ func EnsureDir(fp string) error {
 func SearchFile(filename string, paths ...string) []string {
 	files := make([]string, 0, len(paths))
 	for _, path := range paths {
-		if fullPath := filepath.Join(path, filename); IsExist(fullPath) {
+		if fullPath := filepath.Join(path, filename); fileIsExist(fullPath) {
 			files = append(files, fullPath)
 		}
 	}
 	return files
-}
-
-// MTime returns the modified time of the file.
-func MTime(fp string) (int64, error) {
-	f, e := os.Stat(fp)
-	if e != nil {
-		return 0, e
-	}
-	return f.ModTime().Unix(), nil
-}
-
-// Size returns the size of the file as how many bytes.
-func Size(fp string) (int64, error) {
-	f, e := os.Stat(fp)
-	if e != nil {
-		return 0, e
-	}
-	return f.Size(), nil
 }
