@@ -24,7 +24,14 @@ import (
 	"time"
 )
 
-var errNegativeNotAllowed = fmt.Errorf("unable to cast negative value")
+var (
+	errNotMap             = fmt.Errorf("the value is not a map")
+	errNotString          = fmt.Errorf("the value is not a string")
+	errNegativeNotAllowed = fmt.Errorf("unable to cast negative value")
+)
+
+// ErrUnknownType is returned when not to identify a data type.
+var ErrUnknownType = fmt.Errorf("unknown type")
 
 // From html/template/content.go
 // Copyright 2011 The Go Authors. All rights reserved.
@@ -1199,13 +1206,13 @@ func ToMapKeys(v interface{}) ([]string, error) {
 
 	_v := reflect.ValueOf(v)
 	if !_v.IsValid() || _v.Kind() != reflect.Map {
-		return nil, ErrNotMap
+		return nil, errNotMap
 	}
 
 	results := make([]string, _v.Len())
 	for i, key := range _v.MapKeys() {
 		if key.Kind() != reflect.String {
-			return nil, ErrNotString
+			return nil, errNotString
 		}
 		results[i] = key.String()
 	}
@@ -1247,7 +1254,7 @@ func ToMapValues(v interface{}) ([]interface{}, error) {
 
 	_v := reflect.ValueOf(v)
 	if !_v.IsValid() || _v.Kind() != reflect.Map {
-		return nil, ErrNotMap
+		return nil, errNotMap
 	}
 
 	results := make([]interface{}, _v.Len())
