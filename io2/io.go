@@ -16,23 +16,9 @@
 package io2
 
 import (
-	"bufio"
 	"bytes"
 	"io"
 )
-
-// ReadLine reads the content in the buffer by line.
-func ReadLine(r *bufio.Reader) (lines [][]byte, err error) {
-	var line []byte
-	isPrefix := true
-	for isPrefix && err == nil {
-		line, isPrefix, err = r.ReadLine()
-		if len(line) > 0 {
-			lines = append(lines, line)
-		}
-	}
-	return lines, err
-}
 
 // ReadN reads the data from io.Reader until n bytes or no incoming data
 // if n is equal to or less than 0.
