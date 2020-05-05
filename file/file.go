@@ -39,15 +39,13 @@ var HomeDir = GetHomeDir()
 //
 // It returns FileType, DirType, or NotExist.
 func Type(name string) uint8 {
-	fi, err := os.Stat(name)
-	if err == nil {
-		if fi.IsDir() {
-			return DirType
+	if fi, err := os.Stat(name); err != nil {
+		if os.IsNotExist(err) {
+			return NotExist
 		}
-		return FileType
-	}
-	if os.IsNotExist(err) {
-		return NotExist
+		panic(err)
+	} else if fi.IsDir() {
+		return DirType
 	}
 	return FileType
 }
