@@ -58,7 +58,7 @@ func CallMethod(t interface{}, method string, args ...interface{}) (
 		_args := make([]interface{}, len(args)+1)
 		_args[0] = t
 		copy(_args[1:], args)
-		results, err = Call(m, _args...)
+		return Call(m, _args...)
 	}
 	return nil, ErrNotHaveMethod
 }
