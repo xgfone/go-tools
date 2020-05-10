@@ -24,21 +24,7 @@ func ExampleGetFieldTags() {
 		Field string `name1:"value1" name2:"value2"`
 	}
 
-	for _, tag := range GetFieldTags(reflect.TypeOf(S{}).Field(0).Tag) {
-		fmt.Printf("Tag=%s, Value=%s\n", tag[0], tag[1])
-	}
-
-	// Output:
-	// Tag=name1, Value=value1
-	// Tag=name2, Value=value2
-}
-
-func ExampleGetFieldTagsMap() {
-	type S struct {
-		Field string `name1:"value1" name2:"value2"`
-	}
-
-	for name, value := range GetFieldTagsMap(reflect.TypeOf(S{}).Field(0).Tag) {
+	for name, value := range GetFieldTags(reflect.TypeOf(S{}).Field(0).Tag) {
 		fmt.Printf("Tag=%s, Value=%s\n", name, value)
 	}
 
@@ -53,24 +39,7 @@ func ExampleGetStructTags() {
 		Field2 string `name1:"value1" name2:"value2"`
 	}
 
-	for _, tag := range GetStructTags(S{}) {
-		fmt.Printf("Field=%s, Tag=%s, Value=%s\n", tag[0], tag[1], tag[2])
-	}
-
-	// Output:
-	// Field=Field1, Tag=name1, Value=value1
-	// Field=Field1, Tag=name2, Value=value2
-	// Field=Field2, Tag=name1, Value=value1
-	// Field=Field2, Tag=name2, Value=value2
-}
-
-func ExampleGetStructTagsMap() {
-	type S struct {
-		Field1 string `name1:"value1" name2:"value2"`
-		Field2 string `name1:"value1" name2:"value2"`
-	}
-
-	for field, tags := range GetStructTagsMap(S{}) {
+	for field, tags := range GetStructTags(S{}) {
 		for name, value := range tags {
 			fmt.Printf("Field=%s, Tag=%s, Value=%s\n", field, name, value)
 		}

@@ -21,27 +21,11 @@ import (
 	"strings"
 )
 
-// GetFieldTagsMap is the same as GetFieldTags, but returns a map, the key
-// of which is the tag name, and the value of which is the tag value.
-func GetFieldTagsMap(t interface{}) map[string]string {
-	tags := GetFieldTags(t)
-	if tags == nil {
-		return nil
-	}
-
-	ms := make(map[string]string, len(tags))
-	for _, tag := range tags {
-		ms[tag[0]] = tag[1]
-	}
-	return ms
-}
-
 // GetFieldTags returns all tags in a fields of a struct.
+// The key is the tag name, and the value is the tag value.
 //
 // If the type of v is not string or reflect.StructTag, return nil.
-//
-// For each element in the returned slice, it's [2]string{TagName, TagValue}.
-func GetFieldTags(t interface{}) [][2]string {
+func GetFieldTags(t interface{}) map[string]string {
 	var tag string
 	switch v := t.(type) {
 	case reflect.StructTag:
@@ -52,7 +36,7 @@ func GetFieldTags(t interface{}) [][2]string {
 		return nil
 	}
 
-	tags := make([][2]string, 0)
+	tags := make(map[string]string)
 	for tag != "" {
 		// Strip the two-side whitespaces.
 		tag = strings.Trim(tag, " \t\n")
@@ -89,7 +73,7 @@ func GetFieldTags(t interface{}) [][2]string {
 
 		if value, err := strconv.Unquote(qvalue); err == nil {
 			if strings.TrimSpace(value) != "" {
-				tags = append(tags, [2]string{name, value})
+				tags[name] = value
 			}
 		}
 	}
@@ -98,11 +82,10 @@ func GetFieldTags(t interface{}) [][2]string {
 
 // GetStructTags returns all tags in all the fields of a struct.
 //
-// If v is not a struct or a pointer to struct, return nil.
+// The returned type is map[FieldName]map[TagName]TagValue.
 //
-// For each element in the returned slice,
-// it's [3]string{FieldName, TagName, TagValue}.
-func GetStructTags(v interface{}) [][3]string {
+// If v is not a struct or a pointer to struct, return nil.
+func GetStructTags(v interface{}) map[string]map[string]string {
 	_type := reflect.TypeOf(v)
 	if _type.Kind() == reflect.Ptr {
 		_type = _type.Elem()
@@ -112,34 +95,12 @@ func GetStructTags(v interface{}) [][3]string {
 	}
 
 	fieldNum := _type.NumField()
-	tags := make([][3]string, 0, fieldNum)
+	tags := make(map[string]map[string]string, fieldNum)
 	for i := 0; i < fieldNum; i++ {
 		field := _type.Field(i)
-		fieldName := field.Name
-		for _, tag := range GetFieldTags(field.Tag) {
-			tags = append(tags, [3]string{fieldName, tag[0], tag[1]})
+		if _tags := GetFieldTags(field.Tag); _tags != nil {
+			tags[field.Name] = _tags
 		}
 	}
 	return tags
-}
-
-// GetStructTagsMap is the same as GetStructTags, but returns a map,
-// which is `map[FieldName]map[TagName]TagValue`.
-func GetStructTagsMap(t interface{}) map[string]map[string]string {
-	tags := GetStructTags(t)
-	if tags == nil {
-		return nil
-	}
-
-	maps := make(map[string]map[string]string, len(tags))
-	for _, tag := range tags {
-		ms := maps[tag[0]]
-		if ms == nil {
-			ms = make(map[string]string, 4)
-			maps[tag[0]] = ms
-		}
-		ms[tag[1]] = tag[2]
-	}
-
-	return maps
 }
