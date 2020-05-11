@@ -15,15 +15,39 @@
 package net2
 
 import (
+	"context"
 	"net"
 	"sync"
 	"sync/atomic"
 )
 
+type cancelContext struct {
+	context.Context
+
+	exit <-chan struct{}
+}
+
+func newCancelContext(c context.Context, ch <-chan struct{}) context.Context {
+	return cancelContext{Context: c, exit: ch}
+}
+
+func (c cancelContext) Done() <-chan struct{} {
+	return c.exit
+}
+
+func (c cancelContext) Err() error {
+	select {
+	case <-c.exit:
+		return context.Canceled
+	default:
+		return nil
+	}
+}
+
 // TCPServer is used to manage a TCP server.
 type TCPServer struct {
 	Listener *net.TCPListener
-	Handler  func(conn *net.TCPConn, exit <-chan struct{})
+	Handler  func(context.Context, *net.TCPConn)
 
 	// When an error occurs, the error handler will be called.
 	// If it returns true, the tcp server will continue to handle the connection.
@@ -41,12 +65,12 @@ type TCPServer struct {
 }
 
 // NewTCPServer returns a new TCPServer.
-func NewTCPServer(ln *net.TCPListener, handler func(*net.TCPConn, <-chan struct{})) *TCPServer {
+func NewTCPServer(ln *net.TCPListener, handler func(context.Context, *net.TCPConn)) *TCPServer {
 	return &TCPServer{Listener: ln, Handler: handler}
 }
 
 // NewTCPServerFromAddr returns a new TCPServer listening on addr.
-func NewTCPServerFromAddr(addr string, handler func(*net.TCPConn, <-chan struct{})) (*TCPServer, error) {
+func NewTCPServerFromAddr(addr string, handler func(context.Context, *net.TCPConn)) (*TCPServer, error) {
 	_addr, err := net.ResolveTCPAddr("tcp", addr)
 	if err != nil {
 		return nil, err
@@ -97,7 +121,7 @@ func (s *TCPServer) Start() {
 				s.waits.Done()
 			}()
 
-			s.Handler(conn, s.exit)
+			s.Handler(newCancelContext(context.Background(), s.exit), conn)
 		}()
 	}
 }
