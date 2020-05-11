@@ -41,7 +41,6 @@ pools        | Some simple convenient pools, such as `BytesPool`, `BufferPool`, 
 signal2      | The supplement of the standard library of `signal`, such as `HandleSignal`.
 sort2        | The supplement of the standard library of `sort`.
 strings2     | The supplement of the standard library of `strings`.
-sync2        | The supplement of the standard library `sync`, such as some atomic types.
 tag          | Find and get the tags in a struct.
 types        | Some assistant functions about type, such as the type validation and conversion, etc.
 wait         | Poll or listen for changes to a condition. It's copied from `k8s.io/apimachinery/pkg/util/wait`.
