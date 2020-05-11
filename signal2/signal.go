@@ -30,43 +30,30 @@ var DefaultSignals = []os.Signal{
 	syscall.SIGQUIT,
 	syscall.SIGABRT,
 	syscall.SIGINT,
+	os.Interrupt,
 }
 
-// HandleSignal is the same as HandleSignalWithLifecycle, but using the global
-// default lifecycle manager.
+// HandleSignal is the same as HandleSignalWithCallback, but using lifecycle.Stop
+// as the callback function.
 //
-// It's equal to
-//   HandleSignalWithLifecycle(lifecycle.GetDefaultManager(), signals...)
-//
-// Notice: If the signals are empty, it will be equal to
-//   HandleSignal(DefaultSignals...)
+// Notice: If the signals are empty, it is DefaultSignals by default.
 func HandleSignal(signals ...os.Signal) {
 	if len(signals) == 0 {
 		signals = DefaultSignals
 	}
-	HandleSignalWithLifecycle(lifecycle.GetDefaultManager(), signals...)
+	HandleSignalWithCallback(lifecycle.Stop, signals...)
 }
 
-// HandleSignalWithLifecycle wraps and handles the signals.
-//
-// The default wraps os.Interrupt. And you can pass the extra signals,
-// syscall.SIGTERM, syscall.SIGQUIT, etc, such as
-//   m := lifecycle.GetDefaultManager()
-//   HandleSignalWithLifecycle(m, syscall.SIGTERM, syscall.SIGQUIT)
-//
-// For running it in a goroutine, use
-//   go HandleSignalWithLifecycle(m, syscall.SIGTERM, syscall.SIGQUIT)
-func HandleSignalWithLifecycle(m *lifecycle.Manager, signals ...os.Signal) {
-	HandleSignalWithFunc(func() { m.Stop() }, os.Interrupt, signals...)
-}
+// HandleSignalWithCallback calls the callback function when the signals are received.
+func HandleSignalWithCallback(cb func(), signals ...os.Signal) {
+	if len(signals) == 0 {
+		panic("no singals")
+	}
 
-// HandleSignalWithFunc calls the function f when the signals are received.
-func HandleSignalWithFunc(f func(), sig os.Signal, signals ...os.Signal) {
 	ss := make(chan os.Signal, 1)
-	signals = append(signals, sig)
 	signal.Notify(ss, signals...)
 	for {
 		<-ss
-		f()
+		cb()
 	}
 }
