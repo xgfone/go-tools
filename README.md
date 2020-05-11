@@ -37,7 +37,7 @@ json2        | The supplement of the standard library of `json`.
 lifecycle    | The manager of the lifecycle of some apps in a program.
 net2         | The supplement of the standard library `net`, such as some helpers about net.
 option       | Supply a type to represent the optional value referring to Option in Rust.
-pools        | Some simple convenient pools, such as `BytesPool`, `BufferPool`, `ResourcePool`, etc.
+pools        | Some simple convenient pools, such as `BytesPool`, `BufferPool`, etc.
 signal2      | The supplement of the standard library of `signal`, such as `HandleSignal`.
 sort2        | The supplement of the standard library of `sort`.
 strings2     | The supplement of the standard library of `strings`.

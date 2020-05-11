@@ -12,6 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package pools supplies some simple convenient pools, such as `BufferPool`,
-// `ResourcePool`, etc.
+// Package pools supplies some simple convenient pools, such as `BufferPool`.
 package pools
