@@ -13,5 +13,5 @@
 // limitations under the License.
 
 // Package types supplies some assistant functions about type,
-// such as the type validation and conversion, etc.
+// such as the type validation, deque, and set, etc.
 package types
