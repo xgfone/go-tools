@@ -21,7 +21,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/xgfone/go-tools/v6/types"
+	"github.com/xgfone/cast"
 )
 
 // ToBytesErr encodes a value to []byte.
@@ -53,7 +53,7 @@ import (
 //   interface encoding.TextMarshaler
 //
 // For other types, use fmt.Sprintf("%v") to format it if fmtSprintf is true,
-// or return the error types.ErrUnknownType.
+// or return the error cast.ErrUnknownType.
 func ToBytesErr(i interface{}, fmtSprintf ...bool) ([]byte, error) {
 	switch v := i.(type) {
 	case nil:
@@ -103,7 +103,7 @@ func ToBytesErr(i interface{}, fmtSprintf ...bool) ([]byte, error) {
 		if len(fmtSprintf) > 0 && fmtSprintf[0] {
 			return []byte(fmt.Sprintf("%v", v)), nil
 		}
-		return nil, types.ErrUnknownType
+		return nil, cast.ErrUnknownType
 	}
 }
 

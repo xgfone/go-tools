@@ -20,7 +20,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/xgfone/go-tools/v6/types"
+	"github.com/xgfone/cast"
 )
 
 // DefaultFormat is the default global formatter.
@@ -127,7 +127,7 @@ func (f Format) FormatOutput(w io.Writer, s string, getValue func(key string) (i
 				if n, err = writeString(w, n, format, value); err != nil {
 					return
 				}
-			} else if v, err := types.ToString(value); err == nil {
+			} else if v, err := cast.ToString(value); err == nil {
 				if n, err = writeString(w, n, v); err != nil {
 					return n, err
 				}

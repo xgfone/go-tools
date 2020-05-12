@@ -20,7 +20,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/xgfone/go-tools/v6/types"
+	"github.com/xgfone/cast"
 )
 
 // SetValuer is used to set the itself value to v.
@@ -83,12 +83,12 @@ func SetValue(v interface{}, data interface{}, ignoreNil ...bool) (err error) {
 		case string, float32, float64,
 			int, int8, int16, int32, int64,
 			uint, uint8, uint16, uint32, uint64:
-			*p, err = types.ToBool(data)
+			*p, err = cast.ToBool(data)
 		default:
-			return types.ErrUnknownType
+			return cast.ErrUnknownType
 		}
 	case *string:
-		*p, err = types.ToString(data)
+		*p, err = cast.ToString(data)
 	case *[]byte:
 		switch d := data.(type) {
 		case string:
@@ -96,36 +96,36 @@ func SetValue(v interface{}, data interface{}, ignoreNil ...bool) (err error) {
 		case []byte:
 			*p = d
 		default:
-			s, e := types.ToString(data)
+			s, e := cast.ToString(data)
 			*p = []byte(s)
 			err = e
 		}
 	case *float32:
-		f64, e := types.ToFloat64(data)
+		f64, e := cast.ToFloat64(data)
 		*p = float32(f64)
 		err = e
 	case *float64:
-		*p, err = types.ToFloat64(data)
+		*p, err = cast.ToFloat64(data)
 	case *int:
-		*p, err = types.ToInt(data)
+		*p, err = cast.ToInt(data)
 	case *int8:
-		*p, err = types.ToInt8(data)
+		*p, err = cast.ToInt8(data)
 	case *int16:
-		*p, err = types.ToInt16(data)
+		*p, err = cast.ToInt16(data)
 	case *int32:
-		*p, err = types.ToInt32(data)
+		*p, err = cast.ToInt32(data)
 	case *int64:
-		*p, err = types.ToInt64(data)
+		*p, err = cast.ToInt64(data)
 	case *uint:
-		*p, err = types.ToUint(data)
+		*p, err = cast.ToUint(data)
 	case *uint8:
-		*p, err = types.ToUint8(data)
+		*p, err = cast.ToUint8(data)
 	case *uint16:
-		*p, err = types.ToUint16(data)
+		*p, err = cast.ToUint16(data)
 	case *uint32:
-		*p, err = types.ToUint32(data)
+		*p, err = cast.ToUint32(data)
 	case *uint64:
-		*p, err = types.ToUint64(data)
+		*p, err = cast.ToUint64(data)
 	case *map[string]string:
 		switch d := data.(type) {
 		case map[string]string:
@@ -133,7 +133,7 @@ func SetValue(v interface{}, data interface{}, ignoreNil ...bool) (err error) {
 				(*p)[k] = v
 			}
 		default:
-			return types.ErrUnknownType
+			return cast.ErrUnknownType
 		}
 	case *map[string]interface{}:
 		switch d := data.(type) {
@@ -146,7 +146,7 @@ func SetValue(v interface{}, data interface{}, ignoreNil ...bool) (err error) {
 				(*p)[k] = v
 			}
 		default:
-			return types.ErrUnknownType
+			return cast.ErrUnknownType
 		}
 	case *time.Time:
 
@@ -164,10 +164,10 @@ func SetValue(v interface{}, data interface{}, ignoreNil ...bool) (err error) {
 				*p, err = time.Parse(time.RFC3339, d)
 			}
 		default:
-			return types.ErrUnknownType
+			return cast.ErrUnknownType
 		}
 	default:
-		return types.ErrUnknownType
+		return cast.ErrUnknownType
 	}
 	return
 }
