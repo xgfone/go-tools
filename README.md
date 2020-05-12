@@ -2,8 +2,6 @@
 
 A utility tool library of Golang.
 
-The current version is **`v7`** to support **Semantic Import Versioning**. See [Doc](https://godoc.org/github.com/xgfone/go-tools).
-
 
 ## Installation
 ```shell
@@ -30,7 +28,7 @@ signal2      | The supplement of the standard library of `signal`, such as `Hand
 sort2        | The supplement of the standard library of `sort`.
 strings2     | The supplement of the standard library of `strings`.
 tag          | Find and get the tags in a struct.
-types        | Some assistant functions about type, such as the type validation and conversion, etc.
+types        | Some assistant functions about type, such as the type validation.
 wait         | Poll or listen for changes to a condition. It's copied from `k8s.io/apimachinery/pkg/util/wait`.
 
 ## Example
