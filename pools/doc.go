@@ -13,4 +13,6 @@
 // limitations under the License.
 
 // Package pools supplies some simple convenient pools, such as `BufferPool`.
+//
+// DEPRECATED!!! Please use github.com/xgfone/go-pools.
 package pools
