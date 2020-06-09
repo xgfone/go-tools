@@ -20,6 +20,12 @@ import (
 	"io"
 )
 
+// Peeker is an interface in order for Peek read.
+type Peeker interface {
+	// Peek returns the next n bytes without advancing the reader.
+	Peek(n int) ([]byte, error)
+}
+
 // ReadN reads the data from io.Reader until n bytes or no incoming data
 // if n is equal to or less than 0.
 func ReadN(r io.Reader, n int64) (v []byte, err error) {
