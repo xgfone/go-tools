@@ -59,3 +59,22 @@ func ReadNWriter(w io.Writer, r io.Reader, n int64) (err error) {
 	}
 	return nil
 }
+
+// CopyNBuffer is the same as io.CopyN, but uses the given buf as the buffer.
+//
+// If buf is nil or empty, it will make a new one with 2048.
+func CopyNBuffer(dst io.Writer, src io.Reader, n int64, buf []byte) (written int64, err error) {
+	if len(buf) == 0 {
+		buf = make([]byte, 2048)
+	}
+
+	written, err = io.CopyBuffer(dst, io.LimitReader(src, n), buf)
+	if written == n {
+		return n, nil
+	} else if written < n && err == nil {
+		// src stopped early; must have been EOF.
+		err = io.EOF
+	}
+
+	return
+}
