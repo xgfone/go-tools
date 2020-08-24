@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package execution executes a command line program in a new process and returns a output.
 package execution
 
 import "context"
