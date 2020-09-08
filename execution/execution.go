@@ -75,15 +75,24 @@ func (c CmdError) Unwrap() error {
 // Hook is used to filter or handle the cmd `name` with the arguments `args`.
 //
 // If returning true, it will continue to run it, or do nothing.
+//
+// DEPRECATED!!! Please use FilterHook.
 type Hook func(name string, args ...string) bool
+
+// FilterHook is used to filter or handle the cmd `name` with the arguments
+// `args`, which returns the new name and args. If the returned name is empty,
+// it will terminate to execute the cmd and do nothing.
+type FilterHook func(name string, args ...string) (string, []string)
 
 // ResultHook is used to filter the result and returns the new result.
 type ResultHook func(name string, args []string, stdout, stderr []byte, err error) ([]byte, []byte, error)
 
 // Cmd represents a command executor.
 type Cmd struct {
+	// DEPRECATED!!! Please use FilterHooks.
 	Hooks []Hook
 
+	FilterHooks []FilterHook
 	ResultHooks []ResultHook
 
 	// Timeout is used to produce the timeout context based on the context
@@ -105,10 +114,22 @@ func NewCmd() *Cmd {
 }
 
 // AppendHooks appends some hooks.
+//
+// DEPRECATED!!! Please use AppendFilterHooks.
 func (c *Cmd) AppendHooks(hooks ...Hook) *Cmd {
 	for _, hook := range hooks {
 		if hook != nil {
 			c.Hooks = append(c.Hooks, hook)
+		}
+	}
+	return c
+}
+
+// AppendFilterHooks appends some filter hooks.
+func (c *Cmd) AppendFilterHooks(hooks ...FilterHook) *Cmd {
+	for _, hook := range hooks {
+		if hook != nil {
+			c.FilterHooks = append(c.FilterHooks, hook)
 		}
 	}
 	return c
@@ -146,6 +167,14 @@ func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 		if ok := hook(name, args...); !ok {
 			return c.runResultHooks(name, args, nil, nil, ErrDeny)
 		}
+	}
+
+	for _, hook := range c.FilterHooks {
+		_name, _args := hook(name, args...)
+		if _name == "" {
+			return c.runResultHooks(name, args, nil, nil, ErrDeny)
+		}
+		name, args = _name, _args
 	}
 
 	var cancel func()

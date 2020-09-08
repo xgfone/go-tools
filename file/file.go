@@ -96,8 +96,8 @@ func WalkDir(dirPth, suffix string, includeDir, recursion, fullPath,
 	return files, nil
 }
 
-// ListDir is the short for Walkdirfull, only recursion is false,
-// fullpath is false, and ignoreerror is true.
+// ListDir is the short for WalkDir, only recursion is false, fullpath is false,
+// and ignoreerror is true.
 func ListDir(dirPth, suffix string, includeDir bool) ([]string, error) {
 	return WalkDir(dirPth, suffix, includeDir, false, false, true)
 }

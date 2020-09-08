@@ -24,6 +24,11 @@ func AppendHooks(hooks ...Hook) {
 	DefaultCmd.AppendHooks(hooks...)
 }
 
+// AppendFilterHooks is equal to DefaultCmd.AppendFilterHooks(hooks...).
+func AppendFilterHooks(hooks ...FilterHook) {
+	DefaultCmd.AppendFilterHooks(hooks...)
+}
+
 // AppendResultHooks is equal to DefaultCmd.AppendResultHooks(hooks...).
 func AppendResultHooks(hooks ...ResultHook) {
 	DefaultCmd.AppendResultHooks(hooks...)
