@@ -25,6 +25,9 @@ import (
 	"time"
 )
 
+// DefaultTimeout is the default timeout.
+var DefaultTimeout time.Duration
+
 // ErrDeny is returned when the hook denies the cmd.
 var ErrDeny = errors.New("the cmd is denied")
 
@@ -185,6 +188,9 @@ func (c *Cmd) RunCmd(cxt context.Context, name string, args ...string) (
 	var cancel func()
 	if c.Timeout > 0 {
 		cxt, cancel = context.WithTimeout(cxt, c.Timeout)
+		defer cancel()
+	} else if DefaultTimeout > 0 {
+		cxt, cancel = context.WithTimeout(cxt, DefaultTimeout)
 		defer cancel()
 	}
 
