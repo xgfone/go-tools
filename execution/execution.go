@@ -95,6 +95,11 @@ type Cmd struct {
 	FilterHooks []FilterHook
 	ResultHooks []ResultHook
 
+	// Shell is used to execute the command as the shell.
+	//
+	// If it's empty, it uses DefaultShell as the default.
+	Shell string
+
 	// Timeout is used to produce the timeout context based on the context
 	// argument if not 0 when executing the command.
 	Timeout time.Duration
