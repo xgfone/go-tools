@@ -18,6 +18,8 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
+
+	"github.com/xgfone/cast"
 )
 
 // Set is a set type.
@@ -216,6 +218,71 @@ func (s Set) List() []interface{} {
 		list = append(list, e)
 	}
 	return list
+}
+
+// Strings converts the set to a string slice.
+func (s Set) Strings() []string {
+	vs := make([]string, 0, len(s.cache))
+	for e := range s.cache {
+		es, err := cast.ToString(e)
+		if err != nil {
+			panic(err)
+		}
+		vs = append(vs, es)
+	}
+	return vs
+}
+
+// Uints converts the set to a uint slice.
+func (s Set) Uints() []uint {
+	vs := make([]uint, 0, len(s.cache))
+	for e := range s.cache {
+		_e, err := cast.ToUint(e)
+		if err != nil {
+			panic(err)
+		}
+		vs = append(vs, _e)
+	}
+	return vs
+}
+
+// Uint64s converts the set to a uint64 slice.
+func (s Set) Uint64s() []uint64 {
+	vs := make([]uint64, 0, len(s.cache))
+	for e := range s.cache {
+		_e, err := cast.ToUint64(e)
+		if err != nil {
+			panic(err)
+		}
+		vs = append(vs, _e)
+	}
+	return vs
+}
+
+// Ints converts the set to a int slice.
+func (s Set) Ints() []int {
+	vs := make([]int, 0, len(s.cache))
+	for e := range s.cache {
+		_e, err := cast.ToInt(e)
+		if err != nil {
+			panic(err)
+		}
+		vs = append(vs, _e)
+	}
+	return vs
+}
+
+// Int64s converts the set to a int64 slice.
+func (s Set) Int64s() []int64 {
+	vs := make([]int64, 0, len(s.cache))
+	for e := range s.cache {
+		_e, err := cast.ToInt64(e)
+		if err != nil {
+			panic(err)
+		}
+		vs = append(vs, _e)
+	}
+	return vs
 }
 
 // Copy returns a copy of the current set.
