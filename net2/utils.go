@@ -99,11 +99,13 @@ func GetInterfaceAndIP(ipOrIface string) (iface, ip string, err error) {
 	if IsIP(ipOrIface) {
 		ip = ipOrIface
 		iface, err = GetInterfaceByIP(ipOrIface)
-	} else if ips, err = GetIP(ipOrIface); len(ips) != 0 {
-		iface = ipOrIface
-		ip = ips[0]
-	} else {
-		iface = ipOrIface
+	} else if ips, err = GetIP(ipOrIface); err == nil {
+		if len(ips) == 0 {
+			err = fmt.Errorf("no ip on the interface '%s'", ipOrIface)
+		} else {
+			iface = ipOrIface
+			ip = ips[0]
+		}
 	}
 	return
 }
