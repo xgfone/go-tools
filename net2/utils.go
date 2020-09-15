@@ -92,6 +92,22 @@ func GetInterfaceByIP(ip string) (iface string, err error) {
 	return "", fmt.Errorf("not found the interface bound '%s'", ip)
 }
 
+// GetInterfaceAndIP returns the interface name and the ip
+// by the interface name or ip.
+func GetInterfaceAndIP(ipOrIface string) (iface, ip string, err error) {
+	var ips []string
+	if IsIP(ipOrIface) {
+		ip = ipOrIface
+		iface, err = GetInterfaceByIP(ipOrIface)
+	} else if ips, err = GetIP(ipOrIface); len(ips) != 0 {
+		iface = ipOrIface
+		ip = ips[0]
+	} else {
+		iface = ipOrIface
+	}
+	return
+}
+
 // GetAllIPs returns all the ips on the current host.
 func GetAllIPs() (ips []string, err error) {
 	ifaces, err := net.Interfaces()

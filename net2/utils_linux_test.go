@@ -33,3 +33,15 @@ func TestGetInterfaceByIP(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestGetInterfaceAndIP(t *testing.T) {
+	iface, ip, err := GetInterfaceAndIP("127.0.0.1")
+	if err != nil || iface != "lo" || ip != "127.0.0.1" {
+		t.Error(iface, ip, err)
+	}
+
+	iface, ip, err = GetInterfaceAndIP("lo")
+	if err != nil || iface != "lo" || ip != "127.0.0.1" {
+		t.Error(iface, ip, err)
+	}
+}
