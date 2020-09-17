@@ -69,6 +69,41 @@ func GetIP(iname string) (ips []string, err error) {
 	return getIPByName(iname, true)
 }
 
+// GetMac returns the mac address by the ip or interface name.
+func GetMac(ipOrIface string) (mac string, err error) {
+	if ip := net.ParseIP(ipOrIface); ip != nil {
+		ifaces, err := net.Interfaces()
+		if err != nil {
+			return "", err
+		}
+
+		ips := ip.String()
+		for _, iface := range ifaces {
+			addrs, err := iface.Addrs()
+			if err != nil {
+				return "", err
+			}
+
+			for _, addr := range addrs {
+				netip := addr.String()
+				if index := strings.IndexByte(netip, '/'); index > 0 {
+					netip = netip[:index]
+				}
+
+				if ips == netip {
+					return iface.HardwareAddr.String(), nil
+				}
+			}
+		}
+	} else if iface, err := net.InterfaceByName(ipOrIface); err != nil {
+		return "", err
+	} else if iface.Name == ipOrIface {
+		return iface.HardwareAddr.String(), nil
+	}
+
+	return "", fmt.Errorf("no mac address associated with '%s'", ipOrIface)
+}
+
 // GetInterfaceByIP returns the interface name bound the ip.
 func GetInterfaceByIP(ip string) (iface string, err error) {
 	ifaces, err := net.Interfaces()

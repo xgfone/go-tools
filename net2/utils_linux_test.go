@@ -45,3 +45,19 @@ func TestGetInterfaceAndIP(t *testing.T) {
 		t.Error(iface, ip, err)
 	}
 }
+
+func TestGetMac(t *testing.T) {
+	mac1, err := GetMac("127.0.0.1")
+	if err != nil {
+		t.Error(err)
+	}
+
+	mac2, err := GetMac("lo")
+	if err != nil {
+		t.Error(err)
+	}
+
+	if mac1 != mac2 {
+		t.Errorf("inconsistent mac address: %s != %s", mac1, mac2)
+	}
+}
