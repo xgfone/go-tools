@@ -24,7 +24,9 @@ json2        | The supplement of the standard library of `json`.
 lifecycle    | The manager of the lifecycle of some apps in a program.
 net2         | The supplement of the standard library `net`, such as some helpers about net.
 pools        | Some simple convenient pools, such as `BytesPool`, `BufferPool`, etc.
+scanner      | the replacer of the stdlib `bufio.Scanner`, which adds the read offset.
 signal2      | The supplement of the standard library of `signal`, such as `HandleSignal`.
+slice        | Supply some assistant functions about slice.
 sort2        | The supplement of the standard library of `sort`.
 strings2     | The supplement of the standard library of `strings`.
 tag          | Find and get the tags in a struct.
