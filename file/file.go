@@ -45,7 +45,7 @@ func addFile(lists []string, fullPath, fileName string, isfull bool) []string {
 
 // WalkDir returns all the filenames in a directory.
 //
-// dirPth is the directory where the file is in.
+// dirPath is the directory where the file is in.
 // If suffix is not empty, it only returns the files which have the suffix.
 // If includeDir is true, it also returns the directory, not only the filename.
 // If recursion is true, it will walk recursively.
@@ -53,19 +53,14 @@ func addFile(lists []string, fullPath, fileName string, isfull bool) []string {
 // If ignoreError is true, ignore the error; Or it will stop when an error occurs.
 //
 // Notice: the suffix is case-insensitive.
-func WalkDir(dirPth, suffix string, includeDir, recursion, fullPath,
+func WalkDir(dirPath, suffix string, includeDir, recursion, fullPath,
 	ignoreError bool) ([]string, error) {
+	dirPath = filepath.Clean(dirPath)
+	suffix = strings.ToLower(suffix)
 
+	rootDir := filepath.Base(dirPath)
 	files := make([]string, 0, 30)
-	dirPth = strings.TrimRight(dirPth, "/")
-	dirPth = strings.TrimRight(dirPth, "\\")
-	if dirPth == "" {
-		dirPth = "."
-	}
-	_, rootDir := filepath.Split(dirPth)
-
-	suffix = strings.ToUpper(suffix)
-	err := filepath.Walk(dirPth, func(filename string, fi os.FileInfo, err error) error {
+	err := filepath.Walk(dirPath, func(filename string, fi os.FileInfo, err error) error {
 		if err != nil && !ignoreError {
 			return err
 		}
@@ -82,7 +77,7 @@ func WalkDir(dirPth, suffix string, includeDir, recursion, fullPath,
 			return filepath.SkipDir
 		}
 
-		if strings.HasSuffix(strings.ToUpper(fi.Name()), suffix) {
+		if suffix == "" || strings.HasSuffix(strings.ToLower(fi.Name()), suffix) {
 			files = addFile(files, filename, fi.Name(), fullPath)
 		}
 
