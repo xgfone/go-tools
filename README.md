@@ -22,6 +22,7 @@ function     | Collect some convenient funtions, for example, calling a function
 io2          | The supplement of the standard library of `io`.
 json2        | The supplement of the standard library of `json`.
 lifecycle    | The manager of the lifecycle of some apps in a program.
+namespace    | Supply the operation about linux namespace.
 net2         | The supplement of the standard library `net`, such as some helpers about net.
 pools        | Some simple convenient pools, such as `BytesPool`, `BufferPool`, etc.
 scanner      | the replacer of the stdlib `bufio.Scanner`, which adds the read offset.
