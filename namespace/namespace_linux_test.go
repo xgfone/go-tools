@@ -14,7 +14,10 @@
 
 package namespace
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestNameSpace(t *testing.T) {
 	ns := NewNameSpace("_test_ns_")
@@ -26,6 +29,9 @@ func TestNameSpace(t *testing.T) {
 	}
 
 	if err := ns.Create(); err != nil {
+		if strings.Contain(err.Error(), "Permission denied") {
+			return
+		}
 		t.Fatal(err)
 	}
 
