@@ -29,7 +29,7 @@ func TestNameSpace(t *testing.T) {
 	}
 
 	if err := ns.Create(); err != nil {
-		if strings.Contain(err.Error(), "Permission denied") {
+		if strings.Contains(err.Error(), "Permission denied") {
 			return
 		}
 		t.Fatal(err)
