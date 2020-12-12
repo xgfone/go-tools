@@ -89,7 +89,7 @@ func (ns NameSpace) Pids() (pids []int, err error) {
 func (ns NameSpace) Create() (err error) {
 	if _, err = execute("ip", "netns", "add", ns.Name); err != nil {
 		if strings.Contains(err.Error(), "File exists") {
-			err = nil
+			_, err = ns.Exec("ip", "link", "set", "lo", "up")
 		}
 	}
 	return
