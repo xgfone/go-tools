@@ -88,10 +88,12 @@ func (ns NameSpace) Pids() (pids []int, err error) {
 // Create creates the namespace.
 func (ns NameSpace) Create() (err error) {
 	if _, err = execute("ip", "netns", "add", ns.Name); err != nil {
-		if strings.Contains(err.Error(), "File exists") {
-			_, err = ns.Exec("ip", "link", "set", "lo", "up")
+		if !strings.Contains(err.Error(), "File exists") {
+			return
 		}
 	}
+
+	_, err = ns.Exec("ip", "link", "set", "lo", "up")
 	return
 }
 
