@@ -36,11 +36,16 @@ func GetHomeDir() string {
 	return ""
 }
 
-func addFile(lists []string, fullPath, fileName string, isfull bool) []string {
-	if isfull {
-		return append(lists, fullPath)
+func addFile(lists []string, suffix, fullPath, fileName string, isfull bool) []string {
+	if suffix == "" || strings.HasSuffix(fileName, suffix) {
+		if isfull {
+			lists = append(lists, fullPath)
+		} else {
+			lists = append(lists, fileName)
+		}
 	}
-	return append(lists, fileName)
+
+	return lists
 }
 
 // WalkDir returns all the filenames in a directory.
@@ -56,7 +61,6 @@ func addFile(lists []string, fullPath, fileName string, isfull bool) []string {
 func WalkDir(dirPath, suffix string, includeDir, recursion, fullPath,
 	ignoreError bool) ([]string, error) {
 	dirPath = filepath.Clean(dirPath)
-	suffix = strings.ToLower(suffix)
 
 	rootDir := filepath.Base(dirPath)
 	files := make([]string, 0, 30)
@@ -66,19 +70,23 @@ func WalkDir(dirPath, suffix string, includeDir, recursion, fullPath,
 		}
 
 		if fi.IsDir() {
-			if fi.Name() == rootDir || recursion {
+			if fi.Name() == rootDir {
 				return nil
 			}
 
 			if includeDir {
-				files = addFile(files, filename, fi.Name(), fullPath)
+				files = addFile(files, suffix, filename, fi.Name(), fullPath)
+			}
+
+			if recursion {
+				return nil
 			}
 
 			return filepath.SkipDir
 		}
 
 		if suffix == "" || strings.HasSuffix(strings.ToLower(fi.Name()), suffix) {
-			files = addFile(files, filename, fi.Name(), fullPath)
+			files = addFile(files, suffix, filename, fi.Name(), fullPath)
 		}
 
 		return nil
