@@ -32,46 +32,46 @@ func JoinHostPort(host, port interface{}) string {
 	return net.JoinHostPort(fmt.Sprintf("%v", host), fmt.Sprintf("%v", port))
 }
 
-func getIPByName(iname string, empty bool) (ips []string, err error) {
-	if len(iname) == 0 {
-		return nil, fmt.Errorf("the parameter is empty")
+// GetIPs returns the ip list of the network interface name.
+//
+// If nicName is a valid ip itself, return it directly.
+//
+// The ip may be a ipv4 or ipv6, which does not include CIDR, but only ip.
+func GetIPs(nicName string) (ips []string, err error) {
+	if nicName == "" {
+		return nil, fmt.Errorf("the NIC name is empty")
 	}
 
-	if ip := net.ParseIP(iname); ip != nil {
-		return []string{iname}, nil
+	if net.ParseIP(nicName) != nil {
+		return []string{nicName}, nil
 	}
 
-	var _interface *net.Interface
-	if _interface, err = net.InterfaceByName(iname); err != nil {
+	var iface *net.Interface
+	if iface, err = net.InterfaceByName(nicName); err != nil {
 		return
 	}
 
 	var addrs []net.Addr
-	if addrs, err = _interface.Addrs(); err != nil {
+	if addrs, err = iface.Addrs(); err != nil {
 		return
 	}
-	for _, addr := range addrs {
-		ips = append(ips, strings.Split(addr.String(), "/")[0])
+
+	ips = make([]string, len(addrs))
+	for i, _len := 0, len(addrs); i < _len; i++ {
+		ips[i] = strings.Split(addrs[i].String(), "/")[0]
 	}
 
-	if empty && len(ips) == 0 {
-		err = fmt.Errorf("not found the ip of %s", iname)
-	}
 	return
 }
 
-// GetIP returns the ip of the network interface name.
+// GetIP is the alias of the GetIPs.
 //
-// If the argument iname is a valid ip itself, return it directly.
-//
-// The ip may be a ipv4 or ipv6, which does not include CIDR, but only ip.
-func GetIP(iname string) (ips []string, err error) {
-	return getIPByName(iname, true)
-}
+// DEPRECATED! Please use GetIPs.
+func GetIP(nicName string) (ips []string, err error) { return GetIPs(nicName) }
 
 // GetMac returns the mac address by the ip or interface name.
-func GetMac(ipOrIface string) (mac string, err error) {
-	if ip := net.ParseIP(ipOrIface); ip != nil {
+func GetMac(ipOrNicName string) (mac string, err error) {
+	if ip := net.ParseIP(ipOrNicName); ip != nil {
 		ifaces, err := net.Interfaces()
 		if err != nil {
 			return "", err
@@ -95,71 +95,89 @@ func GetMac(ipOrIface string) (mac string, err error) {
 				}
 			}
 		}
-	} else if iface, err := net.InterfaceByName(ipOrIface); err != nil {
+	} else if iface, err := net.InterfaceByName(ipOrNicName); err != nil {
 		return "", err
-	} else if iface.Name == ipOrIface {
+	} else if iface.Name == ipOrNicName {
 		return iface.HardwareAddr.String(), nil
 	}
 
-	return "", fmt.Errorf("no mac address associated with '%s'", ipOrIface)
+	return "", fmt.Errorf("no mac address associated with '%s'", ipOrNicName)
 }
 
-// GetInterfaceByIP returns the interface name bound the ip.
-func GetInterfaceByIP(ip string) (iface string, err error) {
-	ifaces, err := net.Interfaces()
-	if err != nil {
-		return "", err
-	}
-
-	ip = strings.ToLower(ip)
-	for _, iface := range ifaces {
-		_ips, err := getIPByName(iface.Name, false)
+// GetNICNameByIP returns the NIC name by the ip.
+//
+// If ipOrNicName is a valid NIC name, return it.
+func GetNICNameByIP(ipOrNicName string) (nicName string, err error) {
+	if ip := net.ParseIP(ipOrNicName); ip != nil {
+		ifaces, err := net.Interfaces()
 		if err != nil {
 			return "", err
 		}
-		for _, _ip := range _ips {
-			if _ip == ip {
-				return iface.Name, nil
+
+		ips := ip.String()
+		for _, iface := range ifaces {
+			addrs, err := iface.Addrs()
+			if err != nil {
+				return "", err
+			}
+
+			for _, addr := range addrs {
+				if strings.Split(addr.String(), "/")[0] == ips {
+					return iface.Name, nil
+				}
 			}
 		}
-	}
 
-	return "", fmt.Errorf("not found the interface bound '%s'", ip)
+		return "", fmt.Errorf("no NIC binding '%s'", ipOrNicName)
+	} else if iface, err := net.InterfaceByName(ipOrNicName); err != nil {
+		return "", fmt.Errorf("'%s' is the invalid ip or NIC name", ipOrNicName)
+	} else {
+		return iface.Name, nil
+	}
 }
 
-// GetInterfaceAndIP returns the interface name and the ip
-// by the interface name or ip.
-func GetInterfaceAndIP(ipOrIface string) (iface, ip string, err error) {
+// GetInterfaceByIP is the alias of GetNICNameByIP.
+//
+// DEPRECATED! Please use GetNICNameByIP.
+func GetInterfaceByIP(ip string) (nicName string, err error) {
+	return GetNICNameByIP(ip)
+}
+
+// GetNICNameAndIP returns the NIC name and the ip by the NIC name or ip.
+func GetNICNameAndIP(ipOrNicName string) (nicName, ip string, err error) {
 	var ips []string
-	if IsIP(ipOrIface) {
-		ip = ipOrIface
-		iface, err = GetInterfaceByIP(ipOrIface)
-	} else if ips, err = GetIP(ipOrIface); err == nil {
+	if net.ParseIP(ipOrNicName) != nil { // For IP
+		ip = ipOrNicName
+		nicName, err = GetNICNameByIP(ipOrNicName)
+	} else if ips, err = GetIPs(ipOrNicName); err == nil { // For NIC name
 		if len(ips) == 0 {
-			err = fmt.Errorf("no ip on the interface '%s'", ipOrIface)
+			err = fmt.Errorf("no ips bound to the NIC named '%s'", ipOrNicName)
 		} else {
-			iface = ipOrIface
+			nicName = ipOrNicName
 			ip = ips[0]
 		}
 	}
+
 	return
+}
+
+// GetInterfaceAndIP is the alias of GetNICNameAndIP.
+//
+// DEPRECATED! Please use GetNICNameAndIP.
+func GetInterfaceAndIP(ipOrIface string) (iface, ip string, err error) {
+	return GetInterfaceAndIP(ipOrIface)
 }
 
 // GetAllIPs returns all the ips on the current host.
 func GetAllIPs() (ips []string, err error) {
-	ifaces, err := net.Interfaces()
+	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		return
 	}
 
-	var _ips []string
-	for _, iface := range ifaces {
-		if _ips, err = getIPByName(iface.Name, false); err != nil {
-			return
-		}
-		for _, ip := range _ips {
-			ips = append(ips, ip)
-		}
+	ips = make([]string, len(addrs))
+	for i, _len := 0, len(addrs); i < _len; i++ {
+		ips[i] = strings.Split(addrs[i].String(), "/")[0]
 	}
 
 	return
@@ -180,10 +198,10 @@ func GetAllNetIPs() (ips []string, err error) {
 	}
 
 	var ip string
-	ips = make([]string, len(addrs))
+	ips = make([]string, 0, len(addrs))
 
 OUTER:
-	for i, addr := range addrs {
+	for _, addr := range addrs {
 		if ip = addr.String(); strings.IndexByte(ip, '/') < 0 {
 			if strings.IndexByte(ip, ':') < 0 {
 				ip += "/32"
@@ -198,20 +216,32 @@ OUTER:
 			}
 		}
 
-		ips[i] = ip
+		ips = append(ips, ip)
 	}
 	return
 }
 
 // IPIsOnHost returns true if the ip is on the host, or returns false.
+//
+// If the ip is empty or invalid, return false.
 func IPIsOnHost(ip string) bool {
-	ip = strings.ToLower(ip)
-	ips, _ := GetAllIPs()
-	for _, _ip := range ips {
-		if _ip == ip {
+	netip := net.ParseIP(strings.TrimSpace(ip))
+	if netip == nil {
+		return false
+	}
+
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return false
+	}
+
+	ips := netip.String()
+	for _, addr := range addrs {
+		if strings.Split(addr.String(), "/")[0] == ips {
 			return true
 		}
 	}
+
 	return false
 }
 
