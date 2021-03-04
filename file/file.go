@@ -65,7 +65,10 @@ func WalkDir(dirPath, suffix string, includeDir, recursion, fullPath,
 	rootDir := filepath.Base(dirPath)
 	files := make([]string, 0, 30)
 	err := filepath.Walk(dirPath, func(filename string, fi os.FileInfo, err error) error {
-		if err != nil && !ignoreError {
+		if err != nil {
+			if ignoreError {
+				return nil
+			}
 			return err
 		}
 

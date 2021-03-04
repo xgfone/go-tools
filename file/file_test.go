@@ -53,8 +53,8 @@ func TestWalkDir(t *testing.T) {
 		t.Error(err)
 	} else {
 		for _, file := range files {
-			if !strings.HasPrefix(file, "../") {
-				t.Errorf("'%s' has no the directory prefix '%s'", file, "../")
+			if !strings.HasPrefix(file, "..") {
+				t.Errorf("'%s' has no the directory prefix '%s'", file, "..")
 			}
 		}
 	}
@@ -65,8 +65,8 @@ func TestWalkDir(t *testing.T) {
 		t.Error(err)
 	} else {
 		for _, file := range files {
-			if strings.HasPrefix(file, "../") {
-				t.Errorf("'%s' has the directory prefix '%s'", file, "../")
+			if strings.HasPrefix(file, "..") {
+				t.Errorf("'%s' has the directory prefix '%s'", file, "..")
 			}
 		}
 	}
