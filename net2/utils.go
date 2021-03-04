@@ -165,7 +165,7 @@ func GetNICNameAndIP(ipOrNicName string) (nicName, ip string, err error) {
 //
 // DEPRECATED! Please use GetNICNameAndIP.
 func GetInterfaceAndIP(ipOrIface string) (iface, ip string, err error) {
-	return GetInterfaceAndIP(ipOrIface)
+	return GetNICNameAndIP(ipOrIface)
 }
 
 // GetAllIPs returns all the ips on the current host.
