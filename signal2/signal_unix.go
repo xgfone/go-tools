@@ -16,9 +16,11 @@
 
 package signal2
 
-import "os"
+import (
+	"syscall"
+)
 
 // Kill sends a signal to the process by the pid.
-func Kill(pid int, sig os.Signal) error {
-	return syscal.Kill(pid, sig)
+func Kill(pid int, sig syscall.Signal) error {
+	return syscall.Kill(pid, sig)
 }
