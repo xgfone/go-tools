@@ -67,3 +67,33 @@ func TestReverseStrings(t *testing.T) {
 		t.Error(ss1)
 	}
 }
+
+func TestBinarySearch(t *testing.T) {
+	nums := []int64{1, 2, 3, 4, 5, 6}
+	searched := int64(4)
+
+	index := BinarySearch(len(nums), func(n int) int {
+		if searched < nums[n] {
+			return -1
+		} else if searched > nums[n] {
+			return 1
+		}
+		return 0
+	})
+	if index != 3 {
+		t.Errorf("expect the index '%d', but got '%d'", 3, index)
+	}
+
+	nums = []int64{9, 8, 7, 6, 5, 4, 3}
+	index = BinarySearch(len(nums), func(n int) int {
+		if searched < nums[n] {
+			return -1
+		} else if searched > nums[n] {
+			return 1
+		}
+		return 0
+	})
+	if index != -1 {
+		t.Errorf("expect the index '%d', but got '%d'", -1, index)
+	}
+}

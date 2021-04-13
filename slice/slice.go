@@ -15,7 +15,10 @@
 // Package slice supplies some assistant functions about slice.
 package slice
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+)
 
 // InSlice reports whether v is in vs.
 func InSlice(v interface{}, vs []interface{}) bool {
@@ -80,4 +83,35 @@ func ReverseStrings(ss []string) {
 		k := slen - i - 1
 		ss[i], ss[k] = ss[k], ss[i]
 	}
+}
+
+// BinarySearch search an element from a slice or array and returns its index
+// [0, num). But return -1 if there is not the element in the slice or array.
+//
+// num is the total number of the slice or array.
+//
+// search is a function to compare the Nth element with the searched element,
+// which returns
+//   -1: searched < Nth, the searched element is in the front half.
+//    0: searched = Nth, the searched element has been found.
+//    1: searched > Nth, the searched element is in the back half.
+//
+// Notice: the slice or array must be sorted in the ascending order
+// before calling the search function.
+func BinarySearch(num int, search func(N int) int) int {
+	for low, high := 0, num-1; low <= high; {
+		mid := (low + high)
+		switch n := search(mid); n {
+		case -1:
+			high = mid - 1
+		case 0:
+			return mid
+		case 1:
+			low = mid + 1
+		default:
+			panic(fmt.Errorf("BinarySearch: unknown search result '%d'", n))
+		}
+	}
+
+	return -1
 }
