@@ -15,6 +15,7 @@ $ go get -u github.com/xgfone/go-tools/v7
 
 subpackage   |   notice
 -------------|-----------
+atexit       | Manage the exit of a certain lifecycle.
 cache        | Supply some caches, such as `LRUCache`. Notice: LRUCache is copied from `github.com/youtube/vitess/go/cache`.
 execution    | execution executes a command line program in a new process and returns an output.
 file         | Some convenient functions about the file operation.
