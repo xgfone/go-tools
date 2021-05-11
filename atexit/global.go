@@ -19,7 +19,7 @@ import "context"
 // DefaultManager is the default global atexit manager.
 var DefaultManager = NewManager()
 
-// PushBack is equal to DefaultManager.PushBack(functions).
+// PushBack is equal to DefaultManager.PushBack(functions...).
 func PushBack(functions ...func()) { DefaultManager.PushBack(functions...) }
 
 // PushFront is equal to DefaultManager.PushFront(functions...).
