@@ -13,6 +13,8 @@
 // limitations under the License.
 
 // Package lifecycle offers a manager of the lifecycle of some apps in a program.
+//
+// DEPRECATED!!! Please use the sub-package atexit.
 package lifecycle
 
 import (
