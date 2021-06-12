@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package strings2
+package strings
 
 import (
 	"bytes"
@@ -46,7 +46,8 @@ func FmtStringByFunc(s string, getValue func(string) (interface{}, bool)) string
 
 // FmtStringOutput formats the string s by DefaultFormat, which is short for
 //   DefaultFormat.FormatOutput(w, s, getValue)
-func FmtStringOutput(w io.Writer, s string, getValue func(string) (interface{}, bool)) (int, error) {
+func FmtStringOutput(w io.Writer, s string,
+	getValue func(string) (interface{}, bool)) (int, error) {
 	return DefaultFormat.FormatOutput(w, s, getValue)
 }
 
@@ -84,7 +85,8 @@ func writeString(w io.Writer, n int, s string, args ...interface{}) (int, error)
 // The placeholder key maybe contain the formatter, and the value will be
 // formatted by fmt.Sprintf(formatter, value). They are separated by the colon
 // and the % character is optional.
-func (f Format) FormatOutput(w io.Writer, s string, getValue func(key string) (interface{}, bool)) (n int, err error) {
+func (f Format) FormatOutput(w io.Writer, s string,
+	getValue func(key string) (interface{}, bool)) (n int, err error) {
 	for {
 		leftIndex := strings.Index(s, f.Left)
 		if leftIndex == -1 {
@@ -152,7 +154,7 @@ func (f Format) FormatOutput(w io.Writer, s string, getValue func(key string) (i
 	return
 }
 
-// FormatByFunc is the same as FormatByFunc, but returns the result string.
+// FormatByFunc is the same as FormatOutput, but returns the result string.
 func (f Format) FormatByFunc(s string, getValue func(key string) (interface{}, bool)) string {
 	_len := len(s)
 	if _len < 1024 {
