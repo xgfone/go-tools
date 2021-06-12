@@ -1,4 +1,4 @@
-// Copyright 2019 xgfone
+// Copyright 2021 xgfone
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,32 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package net2
+package net
 
-import (
-	"fmt"
-)
+import "testing"
 
-func ExampleGetMacByInterface() {
-	_, err := GetMacByInterface("lo")
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("OK")
+func TestIPIsOnHost(t *testing.T) {
+	if !IPIsOnHost("127.0.0.1") {
+		t.Fail()
 	}
-
-	// Output:
-	// OK
-}
-
-func ExampleGetMacByIP() {
-	_, err := GetMacByIP("127.0.0.1")
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("OK")
-	}
-
-	// Output:
-	// OK
 }

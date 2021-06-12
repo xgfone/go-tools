@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package net2
+package net
 
 import (
 	"bufio"
 	"net"
-
-	"github.com/xgfone/go-tools/v7/io2"
 )
 
 // PeekerConn is a union interface with net.Conn and Peeker.
 type PeekerConn interface {
+	// Peek returns the next n bytes without advancing the reader.
+	Peek(n int) ([]byte, error)
+
 	net.Conn
-	io2.Peeker
 }
 
 // NewPeekerConn is equal to NewPeekerConnSize(conn, 2048).

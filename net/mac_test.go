@@ -12,5 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package net2 is the supplement of the standard library `net`.
-package net2
+package net
+
+import (
+	"fmt"
+)
+
+func ExmapleNormalizeMac() {
+	mac := "Aa:bB:01:2:00:0"
+	fmt.Println(NormalizeMac(mac))
+
+	// Output:
+	// aa:bb:01:02:00:00
+}
