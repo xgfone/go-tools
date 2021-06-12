@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package sort2
+// Package sort is the supplement of the standard library of `sort`.
+package sort
 
 import "sort"
 

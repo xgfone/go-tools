@@ -12,17 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package sort2
+package sort
 
-import (
-	"fmt"
-)
+import "fmt"
 
-func ExampleInterfaces() {
-	data1 := []interface{}{3, 2, 4, 1, 5}
-	Interfaces(data1, func(v1, v2 interface{}) bool { return v1.(int) < v2.(int) })
-	fmt.Println(data1)
+func ExampleInt64s() {
+	vs := []int64{1, 3, 4, 2}
+	Int64s(vs)
+	fmt.Println(vs)
 
 	// Output:
-	// [1 2 3 4 5]
+	// [1 2 3 4]
+}
+
+func ExampleUint64s() {
+	vs := []uint64{1, 3, 4, 2}
+	Uint64s(vs)
+	fmt.Println(vs)
+
+	// Output:
+	// [1 2 3 4]
+}
+
+func ExampleUints() {
+	vs := []uint{1, 3, 4, 2}
+	Uints(vs)
+	fmt.Println(vs)
+
+	// Output:
+	// [1 2 3 4]
 }
