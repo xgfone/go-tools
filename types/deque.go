@@ -8,9 +8,7 @@
 
 package types
 
-import (
-	"container/list"
-)
+import "container/list"
 
 // Deque implements an efficient double-ended queue.
 //
