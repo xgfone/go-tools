@@ -14,9 +14,7 @@
 
 package function
 
-import (
-	"reflect"
-)
+import "reflect"
 
 // IsNil returns true when v is the nil value.
 func IsNil(v interface{}) bool {

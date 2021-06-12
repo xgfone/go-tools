@@ -12,7 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package function supplies some convenient functions, such as calling a
-// function or method dynamically, and getting a integer range
-// between the maximal and the minimum.
+// Package function supplies some convenient functions.
 package function

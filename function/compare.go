@@ -14,9 +14,7 @@
 
 package function
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // Comparer is used to compare two values.
 type Comparer interface {

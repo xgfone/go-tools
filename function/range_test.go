@@ -14,9 +14,7 @@
 
 package function
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func ExampleRange() {
 	fmt.Println(Ranges(1, 10, 2))

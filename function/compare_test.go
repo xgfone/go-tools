@@ -14,9 +14,7 @@
 
 package function
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func ExampleEQ() {
 	fmt.Println(EQ(1, 1))

@@ -14,9 +14,7 @@
 
 package function
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // Ranges returns a integer range between start and stop, which progressively
 // increase or descrease by step.
@@ -41,7 +39,7 @@ func Ranges(start, stop, step int) (r []int) {
 		return
 	}
 
-	panic(fmt.Errorf("The step must not be 0"))
+	panic(fmt.Errorf("step must not be 0"))
 }
 
 // Range collects three kinds of the using of Range.
