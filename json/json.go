@@ -22,8 +22,6 @@ import (
 	"reflect"
 	"strconv"
 	"time"
-
-	"github.com/xgfone/go-tools/v8/strings"
 )
 
 // Predefine some json mark
@@ -75,13 +73,13 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 		}
 		return w.Write(falseBytes)
 	case string:
-		return strings.WriteString(w, _v, true)
+		return marshalString(w, _v)
 	case error:
-		return strings.WriteString(w, _v.Error(), true)
+		return marshalString(w, _v.Error())
 	case time.Time:
-		return strings.WriteString(w, _v.Format(time.RFC3339Nano), true)
+		return marshalString(w, _v.Format(time.RFC3339Nano))
 	case fmt.Stringer:
-		return strings.WriteString(w, _v.String(), true)
+		return marshalString(w, _v.String())
 	case int, int8, int16, int32, int64,
 		uint, uint8, uint16, uint32, uint64,
 		float32, float64:
@@ -104,7 +102,7 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 			}
 
 			// Write key
-			if n, err = strings.WriteString(w, key, true); err != nil {
+			if n, err = marshalString(w, key); err != nil {
 				return total, err
 			}
 			total += n
@@ -145,7 +143,7 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 			}
 
 			// Write key
-			if n, err = strings.WriteString(w, key, true); err != nil {
+			if n, err = marshalString(w, key); err != nil {
 				return total, err
 			}
 			total += n
@@ -157,7 +155,7 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 			total += n
 
 			// Write value
-			if n, err = strings.WriteString(w, value, true); err != nil {
+			if n, err = marshalString(w, value); err != nil {
 				return total, err
 			}
 			total += n
@@ -188,7 +186,7 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 				total += n
 			}
 
-			if n, err = strings.WriteString(w, _v[i], true); err != nil {
+			if n, err = marshalString(w, _v[i]); err != nil {
 				return total, err
 			}
 			total += n
@@ -308,13 +306,13 @@ func MarshalKvJSON(w io.Writer, args ...interface{}) (n int, err error) {
 		if !ok {
 			return 0, fmt.Errorf("the %dth key is not string", i/2)
 		}
-		if m, err = strings.WriteString(w, key, true); err != nil {
+		if m, err = marshalString(w, key); err != nil {
 			return
 		}
 		n += m
 
 		// Write :
-		if m, err = strings.WriteString(w, ":"); err != nil {
+		if m, err = io.WriteString(w, ":"); err != nil {
 			return
 		}
 		n += m
@@ -337,22 +335,22 @@ func MarshalKvJSON(w io.Writer, args ...interface{}) (n int, err error) {
 			}
 			n += m
 		case string:
-			if m, err = strings.WriteString(w, v, true); err != nil {
+			if m, err = marshalString(w, v); err != nil {
 				return
 			}
 			n += m
 		case error:
-			if m, err = strings.WriteString(w, v.Error(), true); err != nil {
+			if m, err = marshalString(w, v.Error()); err != nil {
 				return
 			}
 			n += m
 		case time.Time:
-			if m, err = strings.WriteString(w, v.Format(time.RFC3339Nano), true); err != nil {
+			if m, err = marshalString(w, v.Format(time.RFC3339Nano)); err != nil {
 				return
 			}
 			n += m
 		case fmt.Stringer:
-			if m, err = strings.WriteString(w, v.String(), true); err != nil {
+			if m, err = marshalString(w, v.String()); err != nil {
 				return
 			}
 			n += m
@@ -417,4 +415,38 @@ func marshalNumber(w io.Writer, n interface{}) (int, error) {
 	default:
 		return 0, nil
 	}
+}
+
+var doubleQuotationByte = []byte{'"'}
+
+func marshalString(w io.Writer, s string) (n int, err error) {
+	// Check whether it needs to be escaped.
+	var escape bool
+	for _, c := range s {
+		if c == '"' {
+			escape = true
+		}
+	}
+	if escape {
+		return io.WriteString(w, strconv.Quote(s))
+	}
+
+	var m int
+
+	m, err = w.Write(doubleQuotationByte)
+	n += m
+	if err != nil {
+		return
+	}
+
+	m, err = io.WriteString(w, s)
+	n += m
+	if err != nil {
+		return
+	}
+
+	m, err = w.Write(doubleQuotationByte)
+	n += m
+
+	return
 }
