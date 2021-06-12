@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package json2 is the supplement of the standard library of `json`.
-package json2
+// Package json is the supplement of the standard library of `json`.
+package json
 
 import (
 	"encoding/json"
 	"fmt"
 	"io"
 	"reflect"
+	"strconv"
 	"time"
 
-	"github.com/xgfone/go-tools/v7/strings2"
+	"github.com/xgfone/go-tools/v8/strings"
 )
 
 // Predefine some json mark
 var (
-	nilBytes   = []byte("nil")
 	nullBytes  = []byte("null")
 	trueBytes  = []byte("true")
 	falseBytes = []byte("false")
@@ -75,15 +75,17 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 		}
 		return w.Write(falseBytes)
 	case string:
-		return strings2.WriteString(w, _v, true)
+		return strings.WriteString(w, _v, true)
 	case error:
-		return strings2.WriteString(w, _v.Error(), true)
+		return strings.WriteString(w, _v.Error(), true)
 	case time.Time:
-		return strings2.WriteString(w, _v.Format(time.RFC3339Nano), true)
+		return strings.WriteString(w, _v.Format(time.RFC3339Nano), true)
 	case fmt.Stringer:
-		return strings2.WriteString(w, _v.String(), true)
-	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64,
+		return strings.WriteString(w, _v.String(), true)
+	case int, int8, int16, int32, int64,
+		uint, uint8, uint16, uint32, uint64,
 		float32, float64:
+		return marshalNumber(w, v)
 	case map[string]interface{}:
 		// Write {
 		if n, err = w.Write(leftBraceBytes); err != nil {
@@ -102,7 +104,7 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 			}
 
 			// Write key
-			if n, err = strings2.WriteString(w, key, true); err != nil {
+			if n, err = strings.WriteString(w, key, true); err != nil {
 				return total, err
 			}
 			total += n
@@ -123,10 +125,8 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 		}
 
 		// Write }
-		if n, err = w.Write(rightBraceBytes); err != nil {
-			return n, err
-		}
-		return total + 1, nil
+		n, err = w.Write(rightBraceBytes)
+		return total + n, err
 	case map[string]string: // Optimize for map[string]string
 		// Write {
 		if n, err = w.Write(leftBraceBytes); err != nil {
@@ -145,7 +145,7 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 			}
 
 			// Write key
-			if n, err = strings2.WriteString(w, key, true); err != nil {
+			if n, err = strings.WriteString(w, key, true); err != nil {
 				return total, err
 			}
 			total += n
@@ -157,7 +157,7 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 			total += n
 
 			// Write value
-			if n, err = strings2.WriteString(w, value, true); err != nil {
+			if n, err = strings.WriteString(w, value, true); err != nil {
 				return total, err
 			}
 			total += n
@@ -166,10 +166,8 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 		}
 
 		// Write }
-		if n, err = w.Write(rightBraceBytes); err != nil {
-			return n, err
-		}
-		return total + 1, nil
+		n, err = w.Write(rightBraceBytes)
+		return total + n, err
 	case json.Marshaler:
 		bs, err := _v.MarshalJSON()
 		if err != nil {
@@ -190,15 +188,14 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 				total += n
 			}
 
-			if n, err = strings2.WriteString(w, _v[i], true); err != nil {
+			if n, err = strings.WriteString(w, _v[i], true); err != nil {
 				return total, err
 			}
 			total += n
 		}
 
-		if n, err = w.Write(rightBracketBytes); err != nil {
-			return total, err
-		}
+		n, err = w.Write(rightBracketBytes)
+		return total + n, err
 	case []interface{}: // Optimzie []interface{}
 		if n, err = w.Write(leftBracketBytes); err != nil {
 			return n, err
@@ -219,9 +216,8 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 			total += n
 		}
 
-		if n, err = w.Write(rightBracketBytes); err != nil {
-			return total, err
-		}
+		n, err = w.Write(rightBracketBytes)
+		return total + n, err
 	default:
 		// Check whether it's an array or slice.
 		value := reflect.ValueOf(v)
@@ -254,13 +250,9 @@ func MarshalJSON(w io.Writer, v interface{}) (n int, err error) {
 			total += n
 		}
 
-		if n, err = w.Write(rightBracketBytes); err != nil {
-			return total, err
-		}
-		return total + 1, nil
+		n, err = w.Write(rightBracketBytes)
+		return total + n, err
 	}
-
-	return w.Write(ToBytes(v))
 }
 
 // MarshalKvJSON marshals some key-value pairs as JSON into w.
@@ -316,13 +308,13 @@ func MarshalKvJSON(w io.Writer, args ...interface{}) (n int, err error) {
 		if !ok {
 			return 0, fmt.Errorf("the %dth key is not string", i/2)
 		}
-		if m, err = strings2.WriteString(w, key, true); err != nil {
+		if m, err = strings.WriteString(w, key, true); err != nil {
 			return
 		}
 		n += m
 
 		// Write :
-		if m, err = strings2.WriteString(w, ":"); err != nil {
+		if m, err = strings.WriteString(w, ":"); err != nil {
 			return
 		}
 		n += m
@@ -345,29 +337,29 @@ func MarshalKvJSON(w io.Writer, args ...interface{}) (n int, err error) {
 			}
 			n += m
 		case string:
-			if m, err = strings2.WriteString(w, v, true); err != nil {
+			if m, err = strings.WriteString(w, v, true); err != nil {
 				return
 			}
 			n += m
 		case error:
-			if m, err = strings2.WriteString(w, v.Error(), true); err != nil {
+			if m, err = strings.WriteString(w, v.Error(), true); err != nil {
 				return
 			}
 			n += m
 		case time.Time:
-			if m, err = strings2.WriteString(w, v.Format(time.RFC3339Nano), true); err != nil {
+			if m, err = strings.WriteString(w, v.Format(time.RFC3339Nano), true); err != nil {
 				return
 			}
 			n += m
 		case fmt.Stringer:
-			if m, err = strings2.WriteString(w, v.String(), true); err != nil {
+			if m, err = strings.WriteString(w, v.String(), true); err != nil {
 				return
 			}
 			n += m
 		case int, int8, int16, int32, int64,
 			uint, uint8, uint16, uint32, uint64,
 			float32, float64:
-			if m, err = w.Write(ToBytes(v)); err != nil {
+			if m, err = marshalNumber(w, v); err != nil {
 				return
 			}
 			n += m
@@ -393,4 +385,36 @@ func MarshalKvJSON(w io.Writer, args ...interface{}) (n int, err error) {
 	}
 	n += m
 	return
+}
+
+func marshalNumber(w io.Writer, n interface{}) (int, error) {
+	var buf [8]byte
+	switch v := n.(type) {
+	case int:
+		return w.Write(strconv.AppendInt(buf[:0], int64(v), 10))
+	case int8:
+		return w.Write(strconv.AppendInt(buf[:0], int64(v), 10))
+	case int16:
+		return w.Write(strconv.AppendInt(buf[:0], int64(v), 10))
+	case int32:
+		return w.Write(strconv.AppendInt(buf[:0], int64(v), 10))
+	case int64:
+		return w.Write(strconv.AppendInt(buf[:0], v, 10))
+	case uint:
+		return w.Write(strconv.AppendUint(buf[:0], uint64(v), 10))
+	case uint8:
+		return w.Write(strconv.AppendUint(buf[:0], uint64(v), 10))
+	case uint16:
+		return w.Write(strconv.AppendUint(buf[:0], uint64(v), 10))
+	case uint32:
+		return w.Write(strconv.AppendUint(buf[:0], uint64(v), 10))
+	case uint64:
+		return w.Write(strconv.AppendUint(buf[:0], v, 10))
+	case float32:
+		return w.Write(strconv.AppendFloat(buf[:0], float64(v), 'f', -1, 64))
+	case float64:
+		return w.Write(strconv.AppendFloat(buf[:0], v, 'f', -1, 64))
+	default:
+		return 0, nil
+	}
 }
