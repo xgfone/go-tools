@@ -14,11 +14,9 @@
 
 package net
 
-import (
-	"fmt"
-)
+import "fmt"
 
-func ExmapleNormalizeMac() {
+func ExampleNormalizeMac() {
 	mac := "Aa:bB:01:2:00:0"
 	fmt.Println(NormalizeMac(mac))
 
