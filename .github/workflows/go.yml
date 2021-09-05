@@ -34,4 +34,4 @@ jobs:
         if [ $version -lt 11 ]; then
             go get -v -t -d
         fi
-    - run: go test -race
+    - run: go test -race ./...
