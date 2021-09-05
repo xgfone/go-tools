@@ -2,7 +2,6 @@ name: Go
 on: push
 env:
   GO111MODULE: on
-  GOPATH: /home/runner/go  # For go 1.7
 jobs:
   build:
     runs-on: ubuntu-18.04
@@ -10,10 +9,6 @@ jobs:
     strategy:
       matrix:
         go:
-        - '1.7'
-        - '1.8'
-        - '1.9'
-        - '1.10'
         - '1.11'
         - '1.12'
         - '1.13'
@@ -27,11 +22,4 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: ${{ matrix.go }}
-    - name: Get dependencies
-      shell: bash
-      run: |
-        version=`go version | awk '{print $3}' | awk -F. '{print $2}'`
-        if [ $version -lt 11 ]; then
-            go get -v -t -d
-        fi
     - run: go test -race ./...
