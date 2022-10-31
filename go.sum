@@ -1,2 +1,2 @@
-github.com/xgfone/cast v0.5.0 h1:5nROCXsIKvdD+zxNeiiPT1BqnLM8sDm4elTYd5KR50c=
-github.com/xgfone/cast v0.5.0/go.mod h1:T+gPbsD/fD72zz9wy/XaLTv236sPHaf6TcT7uvIhV/k=
+golang.org/x/exp v0.0.0-20221028150844-83b7d23a625f h1:Al51T6tzvuh3oiwX11vex3QgJ2XTedFPGmbEVh8cdoc=
+golang.org/x/exp v0.0.0-20221028150844-83b7d23a625f/go.mod h1:CxIveKay+FTh1D0yPZemJVgC/95VzuuOLq5Qi4xnoYc=

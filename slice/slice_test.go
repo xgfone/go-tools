@@ -1,4 +1,4 @@
-// Copyright 2020 xgfone
+// Copyright 2022 xgfone
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,86 +14,47 @@
 
 package slice
 
-import "testing"
+import "fmt"
 
-func TestInInts(t *testing.T) {
-	if !InInts(1, []int{1, 2, 3}) {
-		t.Fail()
-	}
-	if InInts(0, []int{1, 2, 3}) {
-		t.Fail()
-	}
+func ExampleContains() {
+	fmt.Println(Contains([]int{1, 2, 3}, 0))
+	fmt.Println(Contains([]int{1, 2, 3}, 1))
+	fmt.Println(Contains([]int{1, 2, 3}, 2))
+	fmt.Println(Contains([]int{1, 2, 3}, 3))
+	fmt.Println(Contains([]int{1, 2, 3}, 4))
+
+	// Output:
+	// false
+	// true
+	// true
+	// true
+	// false
 }
 
-func TestInUints(t *testing.T) {
-	if !InUints(1, []uint{1, 2, 3}) {
-		t.Fail()
-	}
-	if InUints(0, []uint{1, 2, 3}) {
-		t.Fail()
-	}
+func ExampleReverse() {
+	vs1 := []string{"a", "b", "c", "d"}
+	Reverse(vs1)
+	fmt.Println(vs1)
+
+	vs2 := []int{1, 2, 3, 4}
+	Reverse(vs2)
+	fmt.Println(vs2)
+
+	// Output:
+	// [d c b a]
+	// [4 3 2 1]
 }
 
-func TestInStrings(t *testing.T) {
-	if !InStrings("a", []string{"a", "b", "c"}) {
-		t.Fail()
-	}
-	if InStrings("z", []string{"a", "b", "c"}) {
-		t.Fail()
-	}
-}
+func ExampleToInterfaces() {
+	ss := []string{"a", "b", "c"}
+	vs1 := ToInterfaces(ss)
+	fmt.Printf("%T: %v\n", vs1, vs1)
 
-func TestInSlice(t *testing.T) {
-	if !InSlice(1, []interface{}{1, 2, 3}) {
-		t.Fail()
-	}
-	if InSlice(0, []interface{}{1, 2, 3}) {
-		t.Fail()
-	}
-}
+	ints := []int{1, 2, 3}
+	vs2 := ToInterfaces(ints)
+	fmt.Printf("%T: %v\n", vs2, vs2)
 
-func TestReverseStrings(t *testing.T) {
-	ss1 := []string{"a", "b", "c", "d"}
-	ss2 := []string{"d", "c", "b", "a"}
-	ReverseStrings(ss1)
-	if !StringsEqual(ss1, ss2) {
-		t.Error(ss1)
-	}
-
-	ss1 = []string{"a", "b", "c", "d", "e"}
-	ss2 = []string{"e", "d", "c", "b", "a"}
-	ReverseStrings(ss1)
-	if !StringsEqual(ss1, ss2) {
-		t.Error(ss1)
-	}
-}
-
-func TestBinarySearch(t *testing.T) {
-	nums := []int64{1, 2, 3, 4, 5, 6}
-	searched := int64(4)
-
-	index := BinarySearch(len(nums), func(n int) int {
-		if searched < nums[n] {
-			return -1
-		} else if searched > nums[n] {
-			return 1
-		}
-		return 0
-	})
-	if index != 3 {
-		t.Errorf("expect the index '%d', but got '%d'", 3, index)
-	}
-
-	nums = []int64{9, 8, 7, 6, 5, 4, 3}
-	index = BinarySearch(len(nums), func(n int) int {
-		if searched < nums[n] {
-			return -1
-		} else if searched > nums[n] {
-			return 1
-		}
-		return 0
-	})
-	if index != -1 {
-		t.Errorf("expect the index '%d', but got '%d'", -1, index)
-	}
+	// Output:
+	// []interface {}: [a b c]
+	// []interface {}: [1 2 3]
 }

@@ -1,5 +1,5 @@
-module github.com/xgfone/go-tools/v8
+module github.com/xgfone/go-tools/v9
 
-require github.com/xgfone/cast v0.5.0
+require golang.org/x/exp v0.0.0-20221028150844-83b7d23a625f
 
-go 1.11
+go 1.18
