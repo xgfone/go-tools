@@ -25,13 +25,16 @@ type Set[T comparable] struct {
 	cache map[T]struct{}
 }
 
-// NewSet returns a new Set.
-//
-// If the element is string, it will ignore the empty string.
+// NewSet returns a new Set from a slice.
 func NewSet[T comparable](elements ...T) Set[T] {
 	s := Set[T]{cache: make(map[T]struct{}, len(elements))}
 	s.Add(elements...)
 	return s
+}
+
+// NewSetWithCap returns a new Set with the initialization capacity.
+func NewSetWithCap[T comparable](cap int) Set[T] {
+	return Set[T]{cache: make(map[T]struct{}, cap)}
 }
 
 // NewSetFromSet returns a new Set.
